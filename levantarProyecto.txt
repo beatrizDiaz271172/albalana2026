@@ -1,0 +1,42 @@
+DESDE CONSOLA
+-------CONSOLA 1 --- El servidor correrá en http://localhost:8081 con una base de datos H2 en memoria.
+cd backend
+# Si tienes Maven instalado:
+mvn spring-boot:run
+
+----------
+
+-------CONSOLA 2  --- Abre http://localhost:5173 en tu navegador para ver la interfaz conectada al backend.
+cd frontend
+# Detén el servidor si está corriendo (Ctrl + C)
+# Luego inicia el servidor en modo desarrollo:
+npm run dev
+---------------------------------------------
+CON VISUALCODE
+
+Iniciando el Debug:
+Ve al panel Run and Debug de la barra lateral izquierda en VS Code (o presiona Ctrl + Shift + D).
+
+En el desplegable superior, selecciona la opción que desees:
+
+Debug Spring Boot (Backend): Inicia la app Java en modo depuración.
+
+Debug React (Frontend): Abre una ventana de Chrome conectada al depurador de VS Code.  -->NO SIRVE
+
+Debug Full Stack (Java + React): Inicia la depuración de ambas partes al mismo tiempo.  -->NO SIRVE
+
+-----
+
+BASE DE DATOS: PostgreSql
+
+puerto de la Base de Datos:5432
+contraseña del administrador=123
+
+-----
+
+Buscar API de codigo alimentario
+
+---
+
+netstat -ano | findstr :8081
+taskkill /PID 23768 /F

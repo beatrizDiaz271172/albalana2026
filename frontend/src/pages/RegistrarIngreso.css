@@ -1,0 +1,161 @@
+/* Configuración general de la página */
+.ingreso-page {
+  background-color: #f2f5f3;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #333;
+}
+
+/* Header Verde Superior */
+.navbar {
+  background-color: #276749;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.btn-menu {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Layout del contenedor */
+.ingreso-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px 16px;
+}
+
+/* Botones superiores (Inicio / Volver) */
+.nav-actions {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.btn-nav-top {
+  background-color: #e2e8f0;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #4a5568;
+}
+
+.btn-nav-top:hover {
+  background-color: #cbd5e0;
+}
+
+.screen-title {
+  color: #276749;
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Tarjeta del Formulario */
+.form-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.form-card-header {
+  background-color: #276749;
+  color: white;
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.ingreso-form {
+  padding: 20px;
+}
+
+/* Grid de 2 columnas para campos */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group.full-width {
+  grid-column: span 2;
+}
+
+.form-group label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 10px 12px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  outline: none;
+  background-color: #fff;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #276749;
+  box-shadow: 0 0 0 2px rgba(39, 103, 73, 0.2);
+}
+
+/* Botón principal de submit */
+.btn-submit-ingreso {
+  width: 100%;
+  background-color: #276749;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.2s;
+}
+
+.btn-submit-ingreso:hover {
+  background-color: #1e4e37;
+}
+
+/* Adaptación Responsive para pantallas chicas */
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .form-group.full-width {
+    grid-column: span 1;
+  }
+}
