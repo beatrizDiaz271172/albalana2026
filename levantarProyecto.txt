@@ -1,12 +1,8 @@
 DESDE CONSOLA
--------CONSOLA 1 --- El servidor correrá en http://localhost:8081 con una base de datos H2 en memoria.
-cd backend
-# Si tienes Maven instalado:
-mvn spring-boot:run
 
-----------
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: http://192.168.0.32:8081:5173/
 
--------CONSOLA 2  --- Abre http://localhost:5173 en tu navegador para ver la interfaz conectada al backend.
 cd frontend
 # Detén el servidor si está corriendo (Ctrl + C)
 # Luego inicia el servidor en modo desarrollo:

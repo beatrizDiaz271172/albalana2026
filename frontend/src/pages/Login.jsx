@@ -16,7 +16,7 @@ const Login = () => {
     setCargando(true);
 
     try {
-      const response = await fetch('http://localhost:8081/api/auth/login', {
+      const response = await fetch('http://192.168.0.32:8081/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -25,6 +25,7 @@ const Login = () => {
       });
 
       const data = await response.json();
+      console.log('📦 RESPUESTA DEL BACKEND EN LOGIN:', data);
 
       if (response.ok && data.exito) {
         alert(`¡Bienvenido/a ${data.usuario}!`);

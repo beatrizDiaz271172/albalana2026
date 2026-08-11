@@ -1,0 +1,15 @@
+@beatrizDiaz271172  ->USUARIO GIT-HUB
+https://github.com/beatrizDiaz271172/albalana2026.git
+
+$ git config --global http.postBuffer 524288000  --> al inicializar, aumentar buffer si se tilda el add en el servidor
+
+
+git remote add origin https://github.com/beatrizDiaz271172/albalana2026.git
+
+git push -u origin master
+
+
+----------------
+
+docker-compose up --build -d   ->SUBIR
+docker-compose down  -->BAJAR

@@ -34,7 +34,7 @@ public class Usuario {
     public void setNombre(String nombre) { this.nombre = nombre; }
 
     public String getEmail() { return email; }
-    public void setEmail(String usuario) { this.usuario = usuario; }
+    public void setEmail(String email) { this.usuario = email; }
 
     public String getUsuario() { return usuario; }
     public void setUsuario(String usuario) { this.usuario = usuario; }

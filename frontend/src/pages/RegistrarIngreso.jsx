@@ -35,7 +35,9 @@ useEffect(() => {
   const obtenerLotes = async () => {
     try {
       const token = localStorage.getItem('userToken');
-      const response = await fetch('http://localhost:8081/api/lotes', {
+ 
+      console.log('🔑 TOKEN ENVIADO A LOTES:', token);
+      const response = await fetch('http://192.168.0.32:8081/api/lotes', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -58,7 +60,7 @@ useEffect(() => {
     const obtenerCamaras = async () => {
       try {
         const token = localStorage.getItem('userToken');
-        const response = await fetch('http://localhost:8081/api/camaras', {
+        const response = await fetch('http://192.168.0.32:8081/api/camaras', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -83,7 +85,7 @@ useEffect(() => {
     const obtenerProductos = async () => {
       try {
         const token = localStorage.getItem('userToken');
-        const response = await fetch('http://localhost:8081/api/productos', {
+        const response = await fetch('http://192.168.0.32:8081/api/productos', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -106,7 +108,7 @@ useEffect(() => {
     const obtenerOperadores = async () => {
       try {
         const token = localStorage.getItem('userToken');
-        const res = await fetch('http://localhost:8081/api/operadores', {
+        const res = await fetch('http://192.168.0.32:8081/api/operadores', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -135,7 +137,7 @@ useEffect(() => {
 
     try {
       const token = localStorage.getItem('userToken');
-      const response = await fetch('http://localhost:8081/api/movimientos', {
+      const response = await fetch('http://192.168.0.32:8081/api/movimientos', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
