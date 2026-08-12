@@ -5,14 +5,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "operador") // Ajusta el nombre de la tabla si en tu BD se llama 'operador'
+@Table(name = "cliente") // Ajusta el nombre de la tabla si en tu BD se llama 'cliente'
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Operador {
+public class Cliente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

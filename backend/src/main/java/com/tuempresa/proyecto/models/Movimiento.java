@@ -48,16 +48,24 @@ public class Movimiento {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cd_producto", nullable = false) 
     private Producto producto;
+     
+    private String cdLote;
 
-      // Relación ManyToOne para la Clave Foránea
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cd_lote", nullable = false) 
-    private Lote cdLote;
+     private Long cdRemito;
+
 
     // Relación ManyToOne para la Clave Foránea
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cd_camara", nullable = false) 
     private Camara camara;
+    
+    /*@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cd_camara_destino", nullable = false) 
+    private Camara camaraDestino;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cd_cliente", nullable = false) 
+    private Cliente cliente;*/
 
     private Double hormas;
 
@@ -72,9 +80,6 @@ public class Movimiento {
 
     @Column(name = "cd_operador")
     private Long cdOperador;
-
-    @Column(name = "cd_cliente")
-    private Long cdCliente;
 
     private String motivo;
 

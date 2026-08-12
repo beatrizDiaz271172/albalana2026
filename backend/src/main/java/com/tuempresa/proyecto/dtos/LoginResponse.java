@@ -4,14 +4,17 @@ public class LoginResponse {
     private boolean exito;
     private String mensaje;
     private String usuario;
+    private String token;
 
-    public LoginResponse(boolean exito, String mensaje, String usuario) {
+    public LoginResponse(boolean exito, String mensaje, String usuario, String token) {
         this.exito = exito;
         this.mensaje = mensaje;
         this.usuario = usuario;
+        this.token = token;
     }
 
     public boolean isExito() { return exito; }
     public String getMensaje() { return mensaje; }
     public String getUsuario() { return usuario; }
-} 
+    public String getToken() { return token; }
+}

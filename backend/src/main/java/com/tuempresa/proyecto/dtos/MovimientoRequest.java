@@ -14,7 +14,7 @@ public class MovimientoRequest {
     private Long cdTipoMov;
     private LocalDate fechaElaboracion;
     private Long cdProducto;
-    private Long cdLote;
+    private String cdLote;
     private Long cdCamara;
     private Double hormas;
     private Double kgs;

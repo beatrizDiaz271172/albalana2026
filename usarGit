@@ -9,7 +9,8 @@ git remote add origin https://github.com/beatrizDiaz271172/albalana2026.git
 git push -u origin master
 
 
-----------------
+DOCKERIZAR----------------
 
+application.properties cambiar : #spring.datasource.url=jdbc:postgresql://host.docker.internal:5432/albalanadb
 docker-compose up --build -d   ->SUBIR
 docker-compose down  -->BAJAR

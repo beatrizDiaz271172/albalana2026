@@ -233,28 +233,18 @@ useEffect(() => {
                 </select>
               </div>
 
-              
-
-<div className="form-group">
-  <label htmlFor="cdLote">N° de lote</label>
-  <select
-    id="cdLote"
-    name="cdLote"
-    value={formData.cdLote}
-    onChange={handleChange}
-    required
-  >
-    <option value="">-- Seleccionar --</option>
-    {lotes.map((item, idx) => {
-      const id = item.cdLote;
-      return (
-        <option key={id} value={id}>
-          { item.codigo}
-        </option>
-      );
-    })}
-  </select>
-</div>
+              <div className="form-group">
+                <label htmlFor="cdLote">N° de lote</label>
+                <input
+                  type="text"
+                  id="cdLote"
+                  name="cdLote"
+                  min="0"
+                  value={formData.cdLote}
+                  onChange={handleChange}
+                  required
+                />
+            </div>
 
 <div className="form-group">
   <label htmlFor="cdCamara">Cámara</label>
@@ -355,7 +345,7 @@ useEffect(() => {
                     );
                   })}
                 </select>
-              </div> {/* 👈 AQUÍ FALTABA CERRAR EL DIV DE OPERARIO */}
+              </div>
 
               {/* Observaciones */}
               <div className="form-group full-width">
