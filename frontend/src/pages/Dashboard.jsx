@@ -8,8 +8,8 @@ const Dashboard = () => {
   const stats = userData.stats || { hormasStock: 40, kgsStock: 107.7, movimientos: 12 };
 
   const menuOptions = [
-    { title: "Registrar ingreso", icon: "👤", color: "#1e5338", path: "/registrarIngreso" }, // Se agrega la ruta 'path'
-    { title: "Registrar egreso", icon: "👤", color: "#d9534f" },
+    { title: "Registrar ingreso", icon: "👤", color: "#1e5338", path: "/registrarIngreso" },
+    { title: "Registrar egreso", icon: "👤", color: "#d9534f", path: "/registrarEgresoRemito" }, // 👈 se agrega la ruta 'path'
     { title: "Stock actual", icon: "📦", color: "#2e3880" },
     { title: "Movimientos", icon: "📋", color: "#7a3e9d" },
     { title: "Maduración lotes", icon: "⏳", color: "#1e5338" },

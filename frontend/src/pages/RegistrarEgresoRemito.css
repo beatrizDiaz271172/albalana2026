@@ -1,0 +1,267 @@
+/* Configuración general de la página */
+.egreso-page {
+  background-color: #f2f5f3;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #333;
+}
+
+/* Header Verde Superior (misma marca que el resto de la app) */
+.navbar-egreso {
+  background-color: #276749;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+}
+
+.navbar-brand-egreso {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.btn-menu-egreso {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Layout del contenedor */
+.egreso-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px 16px 60px 16px;
+}
+
+.nav-actions-egreso {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.btn-nav-top-egreso {
+  background-color: #e2e8f0;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 15px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: #4a5568;
+}
+
+.btn-nav-top-egreso:hover {
+  background-color: #cbd5e0;
+}
+
+.screen-title-egreso {
+  color: #276749;
+  font-size: 1.4rem;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Tarjetas (Datos del remito / Ítems del remito) — encabezado en rojo,
+   siguiendo el color de "Registrar egreso" del Dashboard */
+.card-egreso {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.card-header-egreso {
+  background-color: #d9534f;
+  color: white;
+  padding: 12px 20px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.card-body-egreso {
+  padding: 20px;
+}
+
+/* Grillas y campos */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group-egreso {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.form-group-egreso label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a5568;
+}
+
+.form-group-egreso input,
+.form-group-egreso select,
+.form-group-egreso textarea {
+  padding: 10px 12px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  outline: none;
+  background-color: #fff;
+}
+
+.form-group-egreso input:focus,
+.form-group-egreso select:focus,
+.form-group-egreso textarea:focus {
+  border-color: #d9534f;
+  box-shadow: 0 0 0 2px rgba(217, 83, 79, 0.2);
+}
+
+.ayuda-texto {
+  font-size: 0.72rem;
+  color: #8b98a5;
+}
+
+/* Autocomplete de cliente */
+.sugerencias-lista {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  margin-top: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 4px 0;
+  z-index: 10;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.sugerencias-lista li {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.sugerencias-lista li:hover {
+  background-color: #fdecea;
+}
+
+/* Tabla de ítems agregados */
+.sin-items {
+  text-align: center;
+  color: #a0aec0;
+  font-size: 0.9rem;
+  padding: 12px 0;
+}
+
+.tabla-items {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: 0.88rem;
+}
+
+.tabla-items th {
+  text-align: left;
+  color: #4a5568;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  border-bottom: 2px solid #edf2f7;
+  padding: 6px 8px;
+}
+
+.tabla-items td {
+  padding: 8px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.btn-quitar-item {
+  background: transparent;
+  border: none;
+  color: #d9534f;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+/* Bloque para agregar un ítem nuevo */
+.agregar-item-box {
+  background-color: #f7f8f9;
+  border: 1px dashed #cbd5e0;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.agregar-item-titulo {
+  font-weight: 600;
+  color: #276749;
+  margin-bottom: 12px;
+}
+
+.lote-manual-input {
+  margin-top: 6px;
+}
+
+.btn-agregar-item {
+  width: 100%;
+  background-color: #276749;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: background-color 0.2s;
+}
+
+.btn-agregar-item:hover {
+  background-color: #1e4e37;
+}
+
+/* Botón final de guardado del remito */
+.btn-submit-egreso {
+  width: 100%;
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-submit-egreso:hover {
+  background-color: #c9302c;
+}
+
+.btn-submit-egreso:disabled {
+  background-color: #e6a5a3;
+  cursor: not-allowed;
+}
+
+/* Adaptación Responsive */
+@media (max-width: 600px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}

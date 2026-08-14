@@ -41,23 +41,15 @@ public class Movimiento {
     @Column(name = "cd_tipo_mov")
     private Long cdTipoMov;
 
-    @Column(name = "fecha_elaboracion")
-    private LocalDate fechaElaboracion;
-    
+  
+     
     // Relación ManyToOne para la Clave Foránea
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cd_producto", nullable = false) 
-    private Producto producto;
-     
-    private String cdLote;
+    @JoinColumn(name = "cd_lote", nullable = false) 
+    private Lote lote;
 
      private Long cdRemito;
 
-
-    // Relación ManyToOne para la Clave Foránea
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cd_camara", nullable = false) 
-    private Camara camara;
     
     /*@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cd_camara_destino", nullable = false) 

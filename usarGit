@@ -14,3 +14,9 @@ DOCKERIZAR----------------
 application.properties cambiar : #spring.datasource.url=jdbc:postgresql://host.docker.internal:5432/albalanadb
 docker-compose up --build -d   ->SUBIR
 docker-compose down  -->BAJAR
+
+
+USAR Claude..ir al directorio del proyecto
+
+npx repomix(lo instala den shell)
+repomix-output.txt

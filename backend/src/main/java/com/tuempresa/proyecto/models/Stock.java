@@ -26,15 +26,10 @@ public class Stock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    // Relación ManyToOne para la Clave Foránea
+     // Relación ManyToOne para la Clave Foránea
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cd_producto", nullable = false) 
-    private Producto producto;
-
-    // Relación ManyToOne para la Clave Foránea
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cd_camara", nullable = false) 
-    private Camara camara;
+    @JoinColumn(name = "cd_lote", nullable = false) 
+    private Lote lote;
 
     private Double hormas;
 

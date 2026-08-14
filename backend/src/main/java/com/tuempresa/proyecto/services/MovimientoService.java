@@ -9,7 +9,7 @@ import com.tuempresa.proyecto.repositories.ProductoRepository;
 import com.tuempresa.proyecto.repositories.StockRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.List;
 
 @Service
@@ -39,23 +39,36 @@ public class MovimientoService {
         return movimientos;
     }
 
+    @Transactional
+    public Lote crearYGuardarLote(String codigo, Producto producto, Camara camara, LocalDate fechaElab) {
+        
+        Lote nuevoLote = new Lote();
+        nuevoLote.setCodigo(codigo);
+        nuevoLote.setProducto(producto);
+        nuevoLote.setCamara(camara);
+        nuevoLote.setFechaElaboracion(fechaElab);
+
+        return loteRepository.save(nuevoLote);
+    }
   
     @Transactional
     public Movimiento guardarMovimiento(MovimientoRequest request) {
         Movimiento movimiento = new Movimiento();
 
         movimiento.setCdTipoMov(request.getCdTipoMov());
-        movimiento.setFechaElaboracion(request.getFechaElaboracion());
+       // movimiento.setFechaElaboracion(request.getFechaElaboracion());
 
         long idProducto = request.getCdProducto();
-        Producto producto = productoRepository.getById(idProducto);
-        movimiento.setProducto(producto);
+        Producto producto = productoRepository.getReferenceById(idProducto);
+        //movimiento.setProducto(producto);
         
         long idCamara= request.getCdCamara();        
-        Camara camara = camaraRepository.getById(idCamara);
-        movimiento.setCamara(camara);
-
-        movimiento.setCdLote(request.getCdLote());
+        Camara camara = camaraRepository.getReferenceById(idCamara);
+       //movimiento.setCamara(camara);
+ 
+        String codigo = request.getCdLote();
+        Lote lote = crearYGuardarLote(codigo, producto, camara, request.getFechaElaboracion()); 
+        movimiento.setLote(lote);
         
         movimiento.setHormas(request.getHormas());
         movimiento.setKgs(request.getKgs());
@@ -72,17 +85,18 @@ public class MovimientoService {
         Movimiento movimientoGuardado = movimientoRepository.save(movimiento);
 
         // Actualiza el stock (por cámara y producto) según el movimiento registrado
-        actualizarStock(producto, camara, request.getCdTipoMov(), request.getHormas(), request.getKgs());
+        //actualizarStock(producto, camara, request.getCdTipoMov(), request.getHormas(), request.getKgs());
+        actualizarStock(lote, request.getCdTipoMov(), request.getHormas(), request.getKgs());
 
         return movimientoGuardado;
     }
 
     /**
-     * Actualiza (o crea) el registro de Stock correspondiente a la combinación
-     * cámara + producto, sumando o restando las hormas y kgs del movimiento
+     * Actualiza (o crea) el registro de Stock correspondiente al lote
+     * sumando o restando las hormas y kgs del movimiento
      * según su tipo (INGRESO suma, cualquier otro tipo se considera EGRESO y resta).
      */
-    private void actualizarStock(Producto producto, Camara camara, Long cdTipoMov, Double hormas, Double kgs) {
+    private void actualizarStock(Lote lote, Long cdTipoMov, Double hormas, Double kgs) {
         double deltaHormas = hormas != null ? hormas : 0.0;
         double deltaKgs = kgs != null ? kgs : 0.0;
 
@@ -93,10 +107,9 @@ public class MovimientoService {
         }
 
         Stock stock = stockRepository
-                .findByProductoIdAndCamaraId(producto.getId(), camara.getId())
+                .findById(lote.getId())
                 .orElseGet(() -> Stock.builder()
-                        .producto(producto)
-                        .camara(camara)
+                        .lote(lote)
                         .hormas(0.0)
                         .kgs(0.0)
                         .fechaAlta(LocalDateTime.now())

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/lotes")
@@ -40,5 +41,16 @@ public class LoteController {
     public ResponseEntity<Lote> crearLote(@RequestBody Lote lote) {
         Lote nuevoLote = loteRepository.save(lote);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoLote);
+    }
+
+    @GetMapping("/{idProducto}/{idCamara}")
+    public ResponseEntity<List<Lote>> obtenerTodos(@PathVariable Long idProducto, @PathVariable Long idCamara) {
+        List<Lote> lotes = loteRepository.findAll();
+
+        List<Lote> lotesFiltrados = lotes.stream()
+            .filter(lote -> lote.getProducto().getId().equals(idProducto)
+                         && lote.getCamara().getId().equals(idCamara))
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(lotes);
     }
 }

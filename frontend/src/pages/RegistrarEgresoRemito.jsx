@@ -1,0 +1,451 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './RegistrarEgresoRemito.css';
+
+const API_BASE = 'http://192.168.0.32:8081/api';
+
+const RegistrarEgresoRemito = () => {
+  const navigate = useNavigate();
+  const hoy = new Date().toISOString().split('T')[0];
+
+  // --- Datos de referencia (combos) ---
+  const [productos, setProductos] = useState([]);
+  const [camaras, setCamaras] = useState([]);
+  const [operadores, setOperadores] = useState([]);
+  const [lotes, setLotes] = useState([]);
+  const [stockLotes, setStockLotes] = useState([]);
+  const [clientes, setClientes] = useState([]);
+
+  // --- Cabecera del remito ---
+  const [fechaEgreso, setFechaEgreso] = useState(hoy);
+  const [cdOperador, setCdOperador] = useState('');
+  const [clienteTexto, setClienteTexto] = useState('');
+  const [cdCliente, setCdCliente] = useState('');
+  const [mostrarSugerencias, setMostrarSugerencias] = useState(false);
+  const [observaciones, setObservaciones] = useState('');
+
+  // --- Formulario del item a agregar ---
+  const [itemActual, setItemActual] = useState({
+    cdProducto: '',
+    cdCamara: '',
+    cdLote: '',
+    loteManual: '',
+    hormas: 1,
+    kgs: 0
+  });
+
+  // --- Items ya agregados al remito ---
+  const [items, setItems] = useState([]);
+
+  const [cargando, setCargando] = useState(false);
+
+  const authHeaders = () => {
+    const token = localStorage.getItem('userToken');
+    return { 'Authorization': `Bearer ${token}` };
+  };
+
+  // 1. useEffect inicial (Carga todo excepto lotes)
+  useEffect(() => {
+    const cargarDatos = async () => {
+      try {
+        const [resProd, resCam, resOp, resCli, resStockLotes] = await Promise.all([
+          fetch(`${API_BASE}/productos`, { headers: authHeaders() }),
+          fetch(`${API_BASE}/camaras`, { headers: authHeaders() }),
+          fetch(`${API_BASE}/operadores`, { headers: authHeaders() }),
+          fetch(`${API_BASE}/clientes`, { headers: authHeaders() }),
+          fetch(`${API_BASE}/stockLotes`, { headers: authHeaders() }),
+        ]);
+
+        if (resProd.ok) setProductos(await resProd.json());
+        if (resCam.ok) setCamaras((await resCam.json()).sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '')));
+        if (resOp.ok) setOperadores(await resOp.json());
+        if (resCli.ok) setClientes(await resCli.json());
+        if (resStockLotes.ok) setStockLotes(await resStockLotes.json());
+      } catch (error) {
+        console.error('Error al cargar datos iniciales:', error);
+      }
+    };
+
+    cargarDatos();
+  }, []);
+
+  // 2. useEffect secundario (Carga lotes según Producto y Cámara seleccionados)
+  useEffect(() => {
+    const idProducto = itemActual.cdProducto;
+    const idCamara = itemActual.cdCamara;
+
+    // Solo consulta a la API si ambos campos tienen un valor seleccionado
+    if (!idProducto || !idCamara) {
+      setLotes([]);
+      return;
+    }
+
+    const cargarLotesFiltrados = async () => {
+      try {
+        const res = await fetch(
+          `${API_BASE}/lotes?idProducto=${idProducto}&idCamara=${idCamara}`, 
+          { headers: authHeaders() }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setLotes(data.sort((a, b) => (a.codigo || '').localeCompare(b.codigo || '')));
+        }
+      } catch (error) {
+        console.error('Error al cargar lotes filtrados:', error);
+      }
+    };
+
+    cargarLotesFiltrados();
+  }, [itemActual.cdProducto, itemActual.cdCamara]);
+
+  // Sugerencias de cliente filtradas por lo tipeado
+  const sugerenciasClientes = useMemo(() => {
+    if (!clienteTexto) return [];
+    const texto = clienteTexto.toLowerCase();
+    return clientes.filter((c) => (c.nombre || '').toLowerCase().includes(texto)).slice(0, 8);
+  }, [clienteTexto, clientes]);
+
+  const handleSeleccionarCliente = (cliente) => {
+    setCdCliente(cliente.id);
+    setClienteTexto(cliente.nombre);
+    setMostrarSugerencias(false);
+  };
+
+  const handleChangeItem = (e) => {
+    const { name, value, type } = e.target;
+    setItemActual((prev) => ({
+      ...prev,
+      [name]: type === 'number' ? (value === '' ? '' : Number(value)) : value
+    }));
+  };
+
+  const productoSeleccionado = productos.find((p) => String(p.id) === String(itemActual.cdProducto));
+  const camaraSeleccionada = camaras.find((c) => String(c.id) === String(itemActual.cdCamara));
+  const loteHabilitado = Boolean(itemActual.cdProducto && itemActual.cdCamara);
+
+  const handleAgregarItem = () => {
+    const loteFinal = itemActual.loteManual?.trim() || itemActual.cdLote;
+
+    if (!itemActual.cdProducto || !itemActual.cdCamara || !loteFinal) {
+      alert('Completá producto, cámara y lote antes de agregar el ítem.');
+      return;
+    }
+    if (!itemActual.hormas && !itemActual.kgs) {
+      alert('Ingresá hormas/cuñas o kgs para el ítem.');
+      return;
+    }
+
+    const nuevoItem = {
+      id: Date.now(),
+      cdProducto: itemActual.cdProducto,
+      producto: productoSeleccionado?.nombre || '',
+      cdCamara: itemActual.cdCamara,
+      camara: camaraSeleccionada?.nombre || '',
+      cdLote: loteFinal,
+      hormas: itemActual.hormas === '' ? 0 : Number(itemActual.hormas),
+      kgs: itemActual.kgs === '' ? 0 : Number(itemActual.kgs)
+    };
+
+    setItems((prev) => [...prev, nuevoItem]);
+
+    // Reseteamos solo el sub-formulario del item, mantenemos producto/cámara para cargar rápido varios lotes
+    setItemActual((prev) => ({
+      ...prev,
+      cdLote: '',
+      loteManual: '',
+      hormas: 0,
+      kgs: 0
+    }));
+  };
+
+  const handleQuitarItem = (id) => {
+    setItems((prev) => prev.filter((it) => it.id !== id));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (items.length === 0) {
+      alert('Agregá al menos un ítem al remito antes de guardarlo.');
+      return;
+    }
+
+    setCargando(true);
+
+    const payload = {
+      fechaEgreso,
+      cdCliente: cdCliente || null,
+      cdOperador: cdOperador || null,
+      observaciones,
+      items: items.map((it) => ({
+        cdProducto: it.cdProducto,
+        cdCamara: it.cdCamara,
+        cdLote: it.cdLote,
+        hormas: it.hormas,
+        kgs: it.kgs
+      }))
+    };
+
+    try {
+      const response = await fetch(`${API_BASE}/remitos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeaders()
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        alert('¡Remito de egreso registrado con éxito!');
+        navigate('/dashboard');
+      } else {
+        const errData = await response.json().catch(() => ({}));
+        alert(`Error al registrar el remito: ${errData.mensaje || 'Ocurrió un error inesperado'}`);
+      }
+    } catch (error) {
+      alert('Error de conexión con el servidor: ' + error.message);
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  return (
+    <div className="egreso-page">
+      {/* Navbar Superior */}
+      <header className="navbar-egreso">
+        <div className="navbar-brand-egreso">
+          <span className="brand-icon">🧀</span>
+          <span className="brand-title">Alba Lana</span>
+        </div>
+        <button className="btn-menu-egreso">≡ Menú</button>
+      </header>
+
+      <main className="egreso-container">
+        <div className="nav-actions-egreso">
+          <button className="btn-nav-top-egreso" onClick={() => navigate('/dashboard')}>
+            ← Inicio
+          </button>
+          <button className="btn-nav-top-egreso" onClick={() => navigate(-1)}>
+            ↰ Volver
+          </button>
+        </div>
+
+        <h2 className="screen-title-egreso">
+          <span className="title-icon">📤</span> Registrar egreso — Remito
+        </h2>
+
+        <form onSubmit={handleSubmit}>
+          {/* Datos del remito */}
+          <div className="card-egreso">
+            <div className="card-header-egreso">Datos del remito</div>
+            <div className="card-body-egreso">
+              <div className="grid-2">
+                <div className="form-group-egreso">
+                  <label htmlFor="fechaEgreso">Fecha del egreso</label>
+                  <input
+                    type="date"
+                    id="fechaEgreso"
+                    value={fechaEgreso}
+                    onChange={(e) => setFechaEgreso(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group-egreso">
+                  <label htmlFor="cdOperador">Operario</label>
+                  <select
+                    id="cdOperador"
+                    value={cdOperador}
+                    onChange={(e) => setCdOperador(e.target.value)}
+                  >
+                    <option value="">— Seleccionar —</option>
+                    {operadores.map((op) => (
+                      <option key={op.id} value={op.id}>{op.nombre}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group-egreso" style={{ position: 'relative' }}>
+                <label htmlFor="cliente">Cliente</label>
+                <input
+                  type="text"
+                  id="cliente"
+                  placeholder="Escribí para filtrar..."
+                  value={clienteTexto}
+                  onChange={(e) => {
+                    setClienteTexto(e.target.value);
+                    setCdCliente('');
+                    setMostrarSugerencias(true);
+                  }}
+                  onFocus={() => setMostrarSugerencias(true)}
+                  onBlur={() => setTimeout(() => setMostrarSugerencias(false), 150)}
+                  autoComplete="off"
+                />
+                {mostrarSugerencias && sugerenciasClientes.length > 0 && (
+                  <ul className="sugerencias-lista">
+                    {sugerenciasClientes.map((c) => (
+                      <li key={c.id} onMouseDown={() => handleSeleccionarCliente(c)}>
+                        {c.nombre}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div className="form-group-egreso">
+                <label htmlFor="observaciones">Observaciones del remito</label>
+                <textarea
+                  id="observaciones"
+                  rows="3"
+                  placeholder="Opcional"
+                  value={observaciones}
+                  onChange={(e) => setObservaciones(e.target.value)}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Items del remito */}
+          <div className="card-egreso">
+            <div className="card-header-egreso">Ítems del remito</div>
+            <div className="card-body-egreso">
+              {items.length === 0 ? (
+                <p className="sin-items">Sin ítems aún</p>
+              ) : (
+                <table className="tabla-items">
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th>Cámara</th>
+                      <th>Lote</th>
+                      <th>Hormas/Cuñas</th>
+                      <th>Kgs</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {items.map((it) => (
+                      <tr key={it.id}>
+                        <td>{it.producto}</td>
+                        <td>{it.camara}</td>
+                        <td>{it.cdLote}</td>
+                        <td>{it.hormas}</td>
+                        <td>{it.kgs}</td>
+                        <td>
+                          <button
+                            type="button"
+                            className="btn-quitar-item"
+                            onClick={() => handleQuitarItem(it.id)}
+                          >
+                            ✕
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+
+              <div className="agregar-item-box">
+                <div className="agregar-item-titulo">Agregar ítem</div>
+
+                <div className="grid-2">
+                  <div className="form-group-egreso">
+                    <label htmlFor="itemProducto">Producto</label>
+                    <select
+                      id="itemProducto"
+                      name="cdProducto"
+                      value={itemActual.cdProducto}
+                      onChange={handleChangeItem}
+                    >
+                      <option value="">— Seleccionar —</option>
+                      {productos.map((p) => (
+                        <option key={p.id} value={p.id}>{p.nombre}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group-egreso">
+                    <label htmlFor="itemCamara">Cámara</label>
+                    <select
+                      id="itemCamara"
+                      name="cdCamara"
+                      value={itemActual.cdCamara}
+                      onChange={handleChangeItem}
+                    >
+                      <option value="">— Seleccionar —</option>
+                      {camaras.map((c) => (
+                        <option key={c.id} value={c.id}>{c.nombre}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid-2">
+                  <div className="form-group-egreso">
+                    <label htmlFor="itemLote">Lote</label>
+                    <select
+                      id="itemLote"
+                      name="cdLote"
+                      value={itemActual.cdLote}
+                      onChange={handleChangeItem}
+                      disabled={!loteHabilitado}
+                    >
+                      <option value="">
+                        {loteHabilitado ? '— Seleccionar —' : '— Seleccioná producto y cámara primero —'}
+                      </option>
+                      {lotes.map((l, index) => (
+                        <option key={l.cdLote || l.id || index} value={l.codigo}>
+                          {l.codigo} - Hormas: {l.hormas} - Kgs: {l.kgs}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group-egreso">
+                    <label htmlFor="itemHormas">Hormas / Cuñas</label>
+                    <input
+                      type="number"
+                      id="itemHormas"
+                      name="hormas"
+                      step="0.01"
+                      min="0"
+                      value={itemActual.hormas}
+                      onChange={handleChangeItem}
+                    />
+                    <span className="ayuda-texto">Horma entera = 1 · Media horma = 0.5 · Cuña pequeña = 0.25</span>
+                  </div>
+                </div>
+
+                <div className="form-group-egreso">
+                  <label htmlFor="itemKgs">Kgs</label>
+                  <input
+                    type="number"
+                    id="itemKgs"
+                    name="kgs"
+                    step="0.01"
+                    min="0"
+                    value={itemActual.kgs}
+                    onChange={handleChangeItem}
+                  />
+                </div>
+
+                <button type="button" className="btn-agregar-item" onClick={handleAgregarItem}>
+                  + Agregar al remito
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" className="btn-submit-egreso" disabled={cargando}>
+            📤 {cargando ? 'Guardando...' : 'Guardar remito'}
+          </button>
+        </form>
+      </main>
+    </div>
+  );
+};
+
+export default RegistrarEgresoRemito;
