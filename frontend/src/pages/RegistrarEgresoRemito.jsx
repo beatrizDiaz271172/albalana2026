@@ -13,7 +13,6 @@ const RegistrarEgresoRemito = () => {
   const [camaras, setCamaras] = useState([]);
   const [operadores, setOperadores] = useState([]);
   const [lotes, setLotes] = useState([]);
-  const [stockLotes, setStockLotes] = useState([]);
   const [clientes, setClientes] = useState([]);
 
   // --- Cabecera del remito ---
@@ -24,7 +23,7 @@ const RegistrarEgresoRemito = () => {
   const [mostrarSugerencias, setMostrarSugerencias] = useState(false);
   const [observaciones, setObservaciones] = useState('');
 
-  // --- Formulario del item a agregar ---
+  // --- Formulario del ítem a agregar ---
   const [itemActual, setItemActual] = useState({
     cdProducto: '',
     cdCamara: '',
@@ -34,9 +33,8 @@ const RegistrarEgresoRemito = () => {
     kgs: 0
   });
 
-  // --- Items ya agregados al remito ---
+  // --- Ítems ya agregados al remito ---
   const [items, setItems] = useState([]);
-
   const [cargando, setCargando] = useState(false);
 
   const authHeaders = () => {
@@ -44,23 +42,21 @@ const RegistrarEgresoRemito = () => {
     return { 'Authorization': `Bearer ${token}` };
   };
 
-  // 1. useEffect inicial (Carga todo excepto lotes)
+  // 1. useEffect inicial (Carga productos, cámaras, operadores y clientes)
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const [resProd, resCam, resOp, resCli, resStockLotes] = await Promise.all([
+        const [resProd, resCam, resOp, resCli] = await Promise.all([
           fetch(`${API_BASE}/productos`, { headers: authHeaders() }),
           fetch(`${API_BASE}/camaras`, { headers: authHeaders() }),
           fetch(`${API_BASE}/operadores`, { headers: authHeaders() }),
           fetch(`${API_BASE}/clientes`, { headers: authHeaders() }),
-          fetch(`${API_BASE}/stockLotes`, { headers: authHeaders() }),
         ]);
 
         if (resProd.ok) setProductos(await resProd.json());
         if (resCam.ok) setCamaras((await resCam.json()).sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '')));
         if (resOp.ok) setOperadores(await resOp.json());
         if (resCli.ok) setClientes(await resCli.json());
-        if (resStockLotes.ok) setStockLotes(await resStockLotes.json());
       } catch (error) {
         console.error('Error al cargar datos iniciales:', error);
       }
@@ -74,7 +70,6 @@ const RegistrarEgresoRemito = () => {
     const idProducto = itemActual.cdProducto;
     const idCamara = itemActual.cdCamara;
 
-    // Solo consulta a la API si ambos campos tienen un valor seleccionado
     if (!idProducto || !idCamara) {
       setLotes([]);
       return;
@@ -82,10 +77,9 @@ const RegistrarEgresoRemito = () => {
 
     const cargarLotesFiltrados = async () => {
       try {
-        const res = await fetch(
-          `${API_BASE}/lotes?idProducto=${idProducto}&idCamara=${idCamara}`, 
-          { headers: authHeaders() }
-        );
+        const res = await fetch(`${API_BASE}/lotes/${idProducto}/${idCamara}`, { 
+          headers: authHeaders() 
+        });
         if (res.ok) {
           const data = await res.json();
           setLotes(data.sort((a, b) => (a.codigo || '').localeCompare(b.codigo || '')));
@@ -119,9 +113,25 @@ const RegistrarEgresoRemito = () => {
     }));
   };
 
+  // --- Referencias, Objetos Seleccionados y Cálculo de Stock Restante ---
   const productoSeleccionado = productos.find((p) => String(p.id) === String(itemActual.cdProducto));
   const camaraSeleccionada = camaras.find((c) => String(c.id) === String(itemActual.cdCamara));
+  const loteSeleccionado = lotes.find((l) => String(l.codigo) === String(itemActual.cdLote) || String(l.id) === String(itemActual.cdLote));
   const loteHabilitado = Boolean(itemActual.cdProducto && itemActual.cdCamara);
+
+  // Suma de hormas agregadas en la lista actual para este mismo Producto + Cámara + Lote
+  const hormasYaAgregadas = items
+    .filter(
+      (it) =>
+        String(it.cdProducto) === String(itemActual.cdProducto) &&
+        String(it.cdCamara) === String(itemActual.cdCamara) &&
+        String(it.cdLote) === String(itemActual.cdLote)
+    )
+    .reduce((acc, it) => acc + Number(it.hormas), 0);
+
+  // Disponibilidad en vivo para el input
+  const maxHormasDisponibles = loteSeleccionado ? Number(loteSeleccionado.hormas) : 0;
+  const maxHormasRestantes = Math.max(0, maxHormasDisponibles - hormasYaAgregadas);
 
   const handleAgregarItem = () => {
     const loteFinal = itemActual.loteManual?.trim() || itemActual.cdLote;
@@ -130,6 +140,21 @@ const RegistrarEgresoRemito = () => {
       alert('Completá producto, cámara y lote antes de agregar el ítem.');
       return;
     }
+
+    const hormasIngresadas = Number(itemActual.hormas);
+
+    if (hormasIngresadas <= 0) {
+      alert('La cantidad de hormas/cuñas debe ser mayor a 0.');
+      return;
+    }
+
+    // Validación contra el stock restante (descontando lo ya agregado)
+    if (loteSeleccionado && hormasIngresadas > maxHormasRestantes) {
+      const msjAgregado = hormasYaAgregadas > 0 ? ` (ya tenés ${hormasYaAgregadas} agregadas en la lista)` : '';
+      alert(`La cantidad ingresada (${hormasIngresadas}) supera el stock restante disponible para este lote que es:${maxHormasRestantes}${msjAgregado}.`);
+      return;
+    }
+
     if (!itemActual.hormas && !itemActual.kgs) {
       alert('Ingresá hormas/cuñas o kgs para el ítem.');
       return;
@@ -148,12 +173,12 @@ const RegistrarEgresoRemito = () => {
 
     setItems((prev) => [...prev, nuevoItem]);
 
-    // Reseteamos solo el sub-formulario del item, mantenemos producto/cámara para cargar rápido varios lotes
+    // Reset del subformulario de ítem
     setItemActual((prev) => ({
       ...prev,
       cdLote: '',
       loteManual: '',
-      hormas: 0,
+      hormas: 1,
       kgs: 0
     }));
   };
@@ -307,7 +332,7 @@ const RegistrarEgresoRemito = () => {
             </div>
           </div>
 
-          {/* Items del remito */}
+          {/* Ítems del remito */}
           <div className="card-egreso">
             <div className="card-header-egreso">Ítems del remito</div>
             <div className="card-body-egreso">
@@ -396,8 +421,8 @@ const RegistrarEgresoRemito = () => {
                       <option value="">
                         {loteHabilitado ? '— Seleccionar —' : '— Seleccioná producto y cámara primero —'}
                       </option>
-                      {lotes.map((l, index) => (
-                        <option key={l.cdLote || l.id || index} value={l.codigo}>
+                      {lotes.map((l) => (
+                        <option key={l.id} value={l.codigo}>
                           {l.codigo} - Hormas: {l.hormas} - Kgs: {l.kgs}
                         </option>
                       ))}
@@ -405,13 +430,21 @@ const RegistrarEgresoRemito = () => {
                   </div>
 
                   <div className="form-group-egreso">
-                    <label htmlFor="itemHormas">Hormas / Cuñas</label>
+                    <label htmlFor="itemHormas">
+                      Hormas / Cuñas
+                      {loteSeleccionado && (
+                        <span style={{ fontSize: '0.85em', color: maxHormasRestantes === 0 ? '#d9534f' : '#666', marginLeft: '6px' }}>
+                          (Disponible: {maxHormasRestantes})
+                        </span>
+                      )}
+                    </label>
                     <input
                       type="number"
                       id="itemHormas"
                       name="hormas"
                       step="0.01"
-                      min="0"
+                      min="0.01"
+                      max={loteSeleccionado ? maxHormasRestantes : undefined}
                       value={itemActual.hormas}
                       onChange={handleChangeItem}
                     />
