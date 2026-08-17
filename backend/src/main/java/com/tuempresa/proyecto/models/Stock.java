@@ -40,4 +40,7 @@ public class Stock {
 
     @Column(name = "fecha_emision")
     private LocalDateTime fechaEmision;
+
+  @Column(name = "activo")
+  private Boolean activo = true;
 } 

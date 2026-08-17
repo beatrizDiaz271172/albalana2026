@@ -40,13 +40,14 @@ public class MovimientoService {
     }
 
     @Transactional
-    public Lote crearYGuardarLote(String codigo, Producto producto, Camara camara, LocalDate fechaElab) {
+    public Lote crearYGuardarLote(String codigo, Producto producto, Camara camara, LocalDate fechaElab, Double hormas, Double kgs) {
         
         Lote nuevoLote = new Lote();
         nuevoLote.setCodigo(codigo);
         nuevoLote.setProducto(producto);
         nuevoLote.setCamara(camara);
         nuevoLote.setFechaElaboracion(fechaElab);
+        nuevoLote.setKgsXHorma(kgs/hormas);
 
         return loteRepository.save(nuevoLote);
     }
@@ -67,7 +68,7 @@ public class MovimientoService {
        //movimiento.setCamara(camara);
  
         String codigo = request.getCdLote();
-        Lote lote = crearYGuardarLote(codigo, producto, camara, request.getFechaElaboracion()); 
+        Lote lote = crearYGuardarLote(codigo, producto, camara, request.getFechaElaboracion(), request.getHormas(), request.getKgs()); 
         movimiento.setLote(lote);
         
         movimiento.setHormas(request.getHormas());
@@ -81,7 +82,6 @@ public class MovimientoService {
 
         // Se asigna la fecha y hora de creación de forma automática
         movimiento.setFechaAlta(LocalDateTime.now());
-
         Movimiento movimientoGuardado = movimientoRepository.save(movimiento);
 
         // Actualiza el stock (por cámara y producto) según el movimiento registrado
@@ -121,6 +121,7 @@ public class MovimientoService {
         stock.setHormas(hormasActuales + deltaHormas);
         stock.setKgs(kgsActuales + deltaKgs);
         stock.setFechaEmision(LocalDateTime.now());
+        
 
         stockRepository.save(stock);
     }

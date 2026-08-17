@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface LoteRepository extends JpaRepository<Lote, Long> {
     
     // Método para buscar lotes por código exacto
-    Optional<Lote> findByCodigo(String codigo);
+    Lote findByCodigo(String codigo);
 
     // Método para traer solo los lotes activos
     List<Lote> findByActivoTrue();

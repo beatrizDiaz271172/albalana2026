@@ -22,7 +22,6 @@ package com.tuempresa.proyecto.models;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -40,24 +39,15 @@ public class Movimiento {
 
     @Column(name = "cd_tipo_mov")
     private Long cdTipoMov;
-
-  
      
     // Relación ManyToOne para la Clave Foránea
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cd_lote", nullable = false) 
     private Lote lote;
 
-     private Long cdRemito;
-
-    
-    /*@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cd_camara_destino", nullable = false) 
-    private Camara camaraDestino;
-    
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cd_cliente", nullable = false) 
-    private Cliente cliente;*/
+    @JoinColumn(name = "cd_remito", nullable = true) 
+    private Remito remito;
 
     private Double hormas;
 

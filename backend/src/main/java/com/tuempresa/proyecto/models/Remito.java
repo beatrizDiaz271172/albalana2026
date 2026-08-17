@@ -24,7 +24,6 @@ public class Remito {
     @Column(name = "fecha_egreso")
     private LocalDate fechaEgreso;
 
-    // Relación ManyToOne con el cliente destinatario del remito
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cd_cliente")
     private Cliente cliente;

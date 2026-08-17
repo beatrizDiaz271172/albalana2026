@@ -39,4 +39,10 @@ public class Lote {
     
     @Column(name = "activo")
     private Boolean activo = true;
+
+    private Double hormas;
+
+    private Double kgs;
+
+    private Double kgsXHorma;
 }

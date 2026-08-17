@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './RegistrarIngreso.css';
+import './RegistrarIngreso'; // Asegurate de crear/renombrar tu CSS correspondiente
+const API_BASE = 'http://192.168.0.32:8081/api';
 
-const RegistrarIngreso = () => {
+const AjusteStock = () => {
   const navigate = useNavigate();
 
   // Fecha actual por defecto en formato ISO (YYYY-MM-DD)
@@ -14,69 +15,60 @@ const RegistrarIngreso = () => {
   const [lotes, setLotes] = useState([]);
 
   const [formData, setFormData] = useState({
-    cdTipoMov: 1, // Representa el tipo de movimiento INGRESO=1
-    fechaElaboracion: hoy,
+    cdTipoMov: 3, // Representa el tipo de movimiento AJUSTE=3 (Ajustalo según tu BD)
+    fechaAjuste: hoy,
     cdProducto: '',
-    cdLote: '',
     cdCamara: '',
+    cdLote: '',
+    cdOperador: '',
     hormas: 0.0,
     kgs: 0.0,
-    ltsLeche: 0.0,
-    fermento: '',
-    obs: '',
-    cdOperador: '',
-    cdCliente: '',
     motivo: ''
   });
 
   const [cargando, setCargando] = useState(false);
 
-useEffect(() => {
-  const obtenerLotes = async () => {
-    try {
-      const token = localStorage.getItem('userToken');
- 
-      console.log('🔑 TOKEN ENVIADO A LOTES:', token);
-      const response = await fetch('http://192.168.0.32:8081/api/lotes', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (response.ok) {
+  // Obtener lotes desde la BD
+  useEffect(() => {
+    const obtenerLotes = async () => {
+      try {
+        const token = localStorage.getItem('userToken');
+        const response = await fetch(API_BASE + '/lotes', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
           const data = await response.json();
           const lotesOrdenados = data.sort((a, b) => 
-              (a.codigo || '').localeCompare(b.codigo || ''));
-          setLotes(lotesOrdenados);
-          console.log('DATOS RECIBIDOS DE LOTES:', lotesOrdenados);
+            (a.codigo || '').localeCompare(b.codigo || '')
+          );
           setLotes(lotesOrdenados);
         }
       } catch (error) {
-        console.error('Error al cargar Lotes :', error);
+        console.error('Error al cargar Lotes:', error);
       }
     };
-  obtenerLotes();
-}, []);
+    obtenerLotes();
+  }, []);
 
   // Obtener cámaras desde la BD
   useEffect(() => {
     const obtenerCamaras = async () => {
       try {
         const token = localStorage.getItem('userToken');
-        const response = await fetch('http://192.168.0.32:8081/api/camaras', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+        const response = await fetch(API_BASE + '/camaras', {
+          headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {
           const data = await response.json();
           const ordenados = data.sort((a, b) => 
-              (a.nombre || '').localeCompare(b.nombre || ''));
-          console.log('DATOS RECIBIDOS DE CAMARAS:', ordenados);
+            (a.nombre || '').localeCompare(b.nombre || '')
+          );
           setCamara(ordenados);
         }
       } catch (error) {
         console.error('Error al cargar cámaras:', error);
       }
     };
-
     obtenerCamaras();
   }, []);
 
@@ -85,21 +77,17 @@ useEffect(() => {
     const obtenerProductos = async () => {
       try {
         const token = localStorage.getItem('userToken');
-        const response = await fetch('http://192.168.0.32:8081/api/productos', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+        const response = await fetch(API_BASE + '/productos', {
+          headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {
           const data = await response.json();
-          console.log('DATOS RECIBIDOS DE PRODUCTOS:', data);
           setProducto(data);
         }
       } catch (error) {
         console.error('Error al cargar Productos:', error);
       }
     };
-
     obtenerProductos();
   }, []);
 
@@ -108,12 +96,11 @@ useEffect(() => {
     const obtenerOperadores = async () => {
       try {
         const token = localStorage.getItem('userToken');
-        const res = await fetch('http://192.168.0.32:8081/api/operadores', {
+        const res = await fetch(API_BASE + '/operadores', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
           const data = await res.json();
-          console.log('DATOS RECIBIDOS DE OPERADORES:', data);
           setOperadores(data);
         }
       } catch (err) {
@@ -137,7 +124,7 @@ useEffect(() => {
 
     try {
       const token = localStorage.getItem('userToken');
-      const response = await fetch('http://192.168.0.32:8081/api/movimientos', {
+      const response = await fetch(API_BASE + '/movimientos', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -147,11 +134,11 @@ useEffect(() => {
       });
 
       if (response.ok) {
-        alert('¡Ingreso de producción registrado con éxito!');
+        alert('¡Ajuste de stock registrado con éxito!');
         navigate('/dashboard');
       } else {
         const errData = await response.json().catch(() => ({}));
-        alert(`Error al registrar: ${errData.mensaje || 'Ocurrió un error inesperado'}`);
+        alert(`Error al registrar el ajuste: ${errData.mensaje || 'Ocurrió un error inesperado'}`);
       }
     } catch (error) {
       alert('Error de conexión con el servidor: ' + error.message);
@@ -185,26 +172,30 @@ useEffect(() => {
 
         {/* Título principal */}
         <h2 className="screen-title">
-          <span className="title-icon">📥</span> Registrar ingreso de producción
+          <span className="title-icon">⚖️</span> Ajuste de stock
         </h2>
 
         {/* Card Formulario */}
         <div className="form-card">
-          <div className="form-card-header">
-            Datos del lote
+          <div className="form-card-header" style={{ backgroundColor: '#2e6b4d', color: 'white' }}>
+            Corrección de stock real
+          </div>
+          
+          <div style={{ padding: '15px 20px', color: '#555', fontSize: '0.95rem' }}>
+            Fija los valores reales contados físicamente en una cámara.
           </div>
 
           <form onSubmit={handleSubmit} className="ingreso-form">
             <div className="form-grid">
               
-              {/* Fecha de elaboración */}
+              {/* Fecha de ajuste */}
               <div className="form-group">
-                <label htmlFor="fechaElaboracion">Fecha de elaboración</label>
+                <label htmlFor="fechaAjuste">Fecha del ajuste</label>
                 <input
                   type="date"
-                  id="fechaElaboracion"
-                  name="fechaElaboracion"
-                  value={formData.fechaElaboracion}
+                  id="fechaAjuste"
+                  name="fechaAjuste"
+                  value={formData.fechaAjuste}
                   onChange={handleChange}
                   required
                 />
@@ -220,57 +211,78 @@ useEffect(() => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">-- Seleccionar --</option>
-                  {producto.map((item, idx) => {
-                    const id = item.id;
-                    const nombre = item.nombre;
-                    return (
-                      <option key={id} value={id}>
-                        {nombre}
-                      </option>
-                    );
-                  })}
+                  <option value="">— Seleccionar —</option>
+                  {producto.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.nombre}
+                    </option>
+                  ))}
                 </select>
               </div>
 
+              {/* Cámara */}
               <div className="form-group">
-                <label htmlFor="cdLote">N° de lote</label>
-                <input
-                  type="text"
+                <label htmlFor="cdCamara">Cámara</label>
+                <select
+                  id="cdCamara"
+                  name="cdCamara"
+                  value={formData.cdCamara}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">— Seleccionar —</option>
+                  {camara.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Lote (Agregado solicitado) */}
+              <div className="form-group">
+                <label htmlFor="cdLote">Lote</label>
+                <select
                   id="cdLote"
                   name="cdLote"
-                  min="0"
                   value={formData.cdLote}
                   onChange={handleChange}
                   required
-                />
-            </div>
+                >
+                  <option value="">— Seleccionar —</option>
+                  {lotes.map((lote) => (
+                    <option key={lote.id} value={lote.codigo}>
+                      {lote.codigo}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-<div className="form-group">
-  <label htmlFor="cdCamara">Cámara</label>
-  <select
-    id="cdCamara"
-    name="cdCamara"
-    value={formData.cdCamara}
-    onChange={handleChange}
-    required
-  >
-    <option value="">-- Seleccionar --</option>
-    {camara.map((item, idx) => {
-      const id = item.id;
-      return (
-        <option key={id} value={id}>
-          { item.nombre}
-        </option>
-      );
-    })}
-  </select>
-</div>
-
-
-              {/* Hormas */}
+              {/* Operario / Operador */}
               <div className="form-group">
-                <label htmlFor="hormas">Hormas</label>
+                <label htmlFor="cdOperador">Operario</label>
+                <select
+                  id="cdOperador"
+                  name="cdOperador"
+                  value={formData.cdOperador}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">— Seleccionar —</option>
+                  {operadores.map((op) => (
+                    <option key={op.id} value={op.id}>
+                      {op.nombre}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Div vacío para mantener la grilla alineada si usas grid-template-columns: 1fr 1fr */}
+              <div className="form-group hidden-desktop"></div>
+
+              {/* Hormas Reales */}
+              <div className="form-group">
+                <label htmlFor="hormas">Hormas REALES (nuevo valor)</label>
                 <input
                   type="number"
                   step="0.01"
@@ -283,9 +295,9 @@ useEffect(() => {
                 />
               </div>
 
-              {/* Kgs */}
+              {/* Kgs Reales */}
               <div className="form-group">
-                <label htmlFor="kgs">Kgs</label>
+                <label htmlFor="kgs">Kgs REALES (nuevo valor)</label>
                 <input
                   type="number"
                   step="0.01"
@@ -298,73 +310,29 @@ useEffect(() => {
                 />
               </div>
 
-              {/* Litros de leche */}
-              <div className="form-group">
-                <label htmlFor="ltsLeche">Litros de leche</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  id="ltsLeche"
-                  name="ltsLeche"
-                  min="0"
-                  value={formData.ltsLeche}
-                  onChange={handleChange}
-                />
-              </div>
-
-              {/* Fermento */}
-              <div className="form-group">
-                <label htmlFor="fermento">Fermento</label>
+              {/* Motivo del ajuste */}
+              <div className="form-group full-width">
+                <label htmlFor="motivo">Motivo del ajuste</label>
                 <input
                   type="text"
-                  id="fermento"
-                  name="fermento"
-                  placeholder="Opcional"
-                  value={formData.fermento}
-                  onChange={handleChange}
-                />
-              </div>
-
-              {/* Operario / Operador */}
-              <div className="form-group full-width">
-                <label htmlFor="cdOperador">Operario</label>
-                <select
-                  id="cdOperador"
-                  name="cdOperador"
-                  value={formData.cdOperador}
+                  id="motivo"
+                  name="motivo"
+                  placeholder="Ej: Inventario físico"
+                  value={formData.motivo}
                   onChange={handleChange}
                   required
-                >
-                  <option value="">-- Seleccionar --</option>
-                  {operadores.map((op, idx) => {
-                    const id = op.id;
-                    const nombre = op.nombre;
-                    return (
-                      <option key={id} value={id}>
-                        {nombre}
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
-
-              {/* Observaciones */}
-              <div className="form-group full-width">
-                <label htmlFor="obs">Observaciones</label>
-                <textarea
-                  id="obs"
-                  name="obs"
-                  rows="3"
-                  placeholder="Opcional"
-                  value={formData.obs}
-                  onChange={handleChange}
                 />
               </div>
 
             </div>
 
-            <button type="submit" className="btn-submit-ingreso" disabled={cargando}>
-              📥 {cargando ? 'Guardando...' : 'Registrar Ingreso'}
+            <button 
+              type="submit" 
+              className="btn-submit-ingreso" 
+              style={{ backgroundColor: '#f09c5a', color: 'white', borderColor: '#e68a44' }} 
+              disabled={cargando}
+            >
+              ⚖️ {cargando ? 'Registrando...' : 'Registrar ajuste'}
             </button>
           </form>
         </div>
@@ -373,4 +341,4 @@ useEffect(() => {
   );
 };
 
-export default RegistrarIngreso;
+export default AjusteStock;

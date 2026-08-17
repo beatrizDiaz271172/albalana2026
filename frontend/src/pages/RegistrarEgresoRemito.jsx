@@ -113,25 +113,33 @@ const RegistrarEgresoRemito = () => {
     }));
   };
 
-  // --- Referencias, Objetos Seleccionados y Cálculo de Stock Restante ---
+  // --- Referencias, Objetos Seleccionados y Cálculo de Stock Restante (Hormas y Kgs) ---
   const productoSeleccionado = productos.find((p) => String(p.id) === String(itemActual.cdProducto));
   const camaraSeleccionada = camaras.find((c) => String(c.id) === String(itemActual.cdCamara));
   const loteSeleccionado = lotes.find((l) => String(l.codigo) === String(itemActual.cdLote) || String(l.id) === String(itemActual.cdLote));
   const loteHabilitado = Boolean(itemActual.cdProducto && itemActual.cdCamara);
 
-  // Suma de hormas agregadas en la lista actual para este mismo Producto + Cámara + Lote
-  const hormasYaAgregadas = items
-    .filter(
-      (it) =>
-        String(it.cdProducto) === String(itemActual.cdProducto) &&
-        String(it.cdCamara) === String(itemActual.cdCamara) &&
-        String(it.cdLote) === String(itemActual.cdLote)
-    )
-    .reduce((acc, it) => acc + Number(it.hormas), 0);
+  // Suma de hormas y kgs agregados en la lista actual para este mismo Producto + Cámara + Lote
+  const itemsFiltradosMisLote = items.filter(
+    (it) =>
+      String(it.cdProducto) === String(itemActual.cdProducto) &&
+      String(it.cdCamara) === String(itemActual.cdCamara) &&
+      String(it.cdLote) === String(itemActual.cdLote)
+  );
 
-  // Disponibilidad en vivo para el input
+  const hormasYaAgregadas = itemsFiltradosMisLote.reduce((acc, it) => acc + Number(it.hormas), 0);
+  const kgsYaAgregados = itemsFiltradosMisLote.reduce((acc, it) => acc + Number(it.kgs), 0);
+
+  // Disponibilidad en vivo para Hormas
   const maxHormasDisponibles = loteSeleccionado ? Number(loteSeleccionado.hormas) : 0;
   const maxHormasRestantes = Math.max(0, maxHormasDisponibles - hormasYaAgregadas);
+
+  // Disponibilidad en vivo para Kgs
+  //const maxKgsDisponibles = loteSeleccionado ? Number(loteSeleccionado.kgs) : 0;
+  //const maxKgsRestantes = Math.max(0, maxKgsDisponibles - kgsYaAgregados);
+  const ctKgsXHorma = loteSeleccionado ? Number(loteSeleccionado.kgsXHorma) : 0;
+  const maxKgsRestantes = maxHormasRestantes * ctKgsXHorma;
+
 
   const handleAgregarItem = () => {
     const loteFinal = itemActual.loteManual?.trim() || itemActual.cdLote;
@@ -142,16 +150,35 @@ const RegistrarEgresoRemito = () => {
     }
 
     const hormasIngresadas = Number(itemActual.hormas);
+    const kgsIngresados = Number(itemActual.kgs);
 
     if (hormasIngresadas <= 0) {
       alert('La cantidad de hormas/cuñas debe ser mayor a 0.');
       return;
     }
 
-    // Validación contra el stock restante (descontando lo ya agregado)
+    if (kgsIngresados < 0) {
+      alert('La cantidad de kgs no puede ser menor a 0.');
+      return;
+    }
+
+    // Validación contra el stock restante de HORMAS
     if (loteSeleccionado && hormasIngresadas > maxHormasRestantes) {
       const msjAgregado = hormasYaAgregadas > 0 ? ` (ya tenés ${hormasYaAgregadas} agregadas en la lista)` : '';
-      alert(`La cantidad ingresada (${hormasIngresadas}) supera el stock restante disponible para este lote que es:${maxHormasRestantes}${msjAgregado}.`);
+      alert(`La cantidad de hormas ingresada (${hormasIngresadas}) supera el stock restante disponible para este lote que es: ${maxHormasRestantes}${msjAgregado}.`);
+      return;
+    }
+
+    // Validación contra el stock restante de KGS
+    if (loteSeleccionado && kgsIngresados > maxKgsRestantes) {
+      const msjAgregado = kgsYaAgregados > 0 ? ` (ya tenés ${kgsYaAgregados} kg agregados en la lista)` : '';
+      alert(`La cantidad de kg ingresada (${kgsIngresados}) supera el stock restante disponible para este lote que es: ${maxKgsRestantes} kg${msjAgregado}.`);
+      return;
+    }
+
+    const ctKgsPermitidos = ctKgsXHorma * hormasIngresadas;
+    if (loteSeleccionado && kgsIngresados > ctKgsPermitidos) {
+      alert(`La cantidad de Kilos ingresados(${kgsIngresados}) supera el maximo de kilos para la cantidad de hormas cargadas: ${hormasIngresadas}.`);
       return;
     }
 
@@ -282,6 +309,7 @@ const RegistrarEgresoRemito = () => {
                   <select
                     id="cdOperador"
                     value={cdOperador}
+                    required
                     onChange={(e) => setCdOperador(e.target.value)}
                   >
                     <option value="">— Seleccionar —</option>
@@ -297,6 +325,7 @@ const RegistrarEgresoRemito = () => {
                 <input
                   type="text"
                   id="cliente"
+                  required
                   placeholder="Escribí para filtrar..."
                   value={clienteTexto}
                   onChange={(e) => {
@@ -453,13 +482,21 @@ const RegistrarEgresoRemito = () => {
                 </div>
 
                 <div className="form-group-egreso">
-                  <label htmlFor="itemKgs">Kgs</label>
+                  <label htmlFor="itemKgs">
+                    Kgs
+                    {loteSeleccionado && (
+                      <span style={{ fontSize: '0.85em', color: maxKgsRestantes === 0 ? '#d9534f' : '#666', marginLeft: '6px' }}>
+                        (Disponible: {maxKgsRestantes} kg)
+                      </span>
+                    )}
+                  </label>
                   <input
                     type="number"
                     id="itemKgs"
                     name="kgs"
                     step="0.01"
                     min="0"
+                    max={loteSeleccionado ? maxKgsRestantes : undefined}
                     value={itemActual.kgs}
                     onChange={handleChangeItem}
                   />

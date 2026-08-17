@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RemitoService {
@@ -81,15 +82,14 @@ public class RemitoService {
 
         Movimiento movimiento = new Movimiento();
         movimiento.setCdTipoMov(TIPO_MOV_EGRESO);
-        movimiento.setFechaElaboracion(request.getFechaEgreso());
-        Long idLote = item.getIdLote();
-        Lote lote = loteRepository.getReferenceById(idLote);
+        //movimiento.setFechaElaboracion(request.getFechaEgreso());
+        Lote lote = loteRepository.findByCodigo(item.getCdLote());
         movimiento.setLote(lote);
         movimiento.setHormas(item.getHormas());
         movimiento.setKgs(item.getKgs());
         movimiento.setCdOperador(request.getCdOperador());
         movimiento.setObs(request.getObservaciones());
-        movimiento.setCdRemito(remito.getId());
+        movimiento.setRemito(remito);
         movimiento.setFechaAlta(LocalDateTime.now());
 
         movimientoRepository.save(movimiento);
@@ -97,19 +97,12 @@ public class RemitoService {
         actualizarStock(lote, item.getHormas(), item.getKgs());
     }
 
-
         private void actualizarStock(Lote lote, Double hormas, Double kgs) {
         double deltaHormas = hormas != null ? -hormas : 0.0;
         double deltaKgs = kgs != null ? -kgs : 0.0;
 
         Stock stock = stockRepository
-                .findById(lote.getId())
-                .orElseGet(() -> Stock.builder()
-                        .lote(lote)
-                        .hormas(0.0)
-                        .kgs(0.0)
-                        .fechaAlta(LocalDateTime.now())
-                        .build());
+                .findByLote_IdAndActivoTrue(lote.getId());
 
         double hormasActuales = stock.getHormas() != null ? stock.getHormas() : 0.0;
         double kgsActuales = stock.getKgs() != null ? stock.getKgs() : 0.0;
