@@ -15,9 +15,11 @@ import java.util.List;
 @Service
 public class MovimientoService {
 
-    // Código de tipo de movimiento que representa un INGRESO (suma al stock).
-    // Cualquier otro valor de cdTipoMov se trata como EGRESO (resta del stock).
+    // Código de tipo de movimiento que representa un INGRESO (suma al stock)/EGRESO (resta del stock)/AJUSTE(cambia stock)
     private static final long TIPO_MOV_INGRESO = 1L;
+    private static final long TIPO_MOV_EGRESO = 2L;
+    private static final long TIPO_MOV_AJUSTE = 3L;
+    private static final long TIPO_MOV_TRANSFERENCIA = 4L;
 
     private final MovimientoRepository movimientoRepository;
     private final CamaraRepository camaraRepository;
@@ -63,12 +65,39 @@ public class MovimientoService {
         Producto producto = productoRepository.getReferenceById(idProducto);
         //movimiento.setProducto(producto);
         
+        String codigo = request.getCdLote();
         long idCamara= request.getCdCamara();        
         Camara camara = camaraRepository.getReferenceById(idCamara);
-       //movimiento.setCamara(camara);
- 
-        String codigo = request.getCdLote();
-        Lote lote = crearYGuardarLote(codigo, producto, camara, request.getFechaElaboracion(), request.getHormas(), request.getKgs()); 
+        List<Lote> lotes =loteRepository.findByProducto_IdAndCamara_IdAndActivoTrue(idProducto, idCamara);
+        List<Lote> lotesFiltrados = lotes.stream()
+                                .filter(lotef -> lotef.getCodigo().equals(codigo))
+                                .toList();
+
+        Lote loteAnt = null;
+        if (lotesFiltrados.size()>0)
+            loteAnt = lotesFiltrados.get(0);
+        
+        boolean esAjuste =  request.getCdTipoMov()== TIPO_MOV_AJUSTE;
+        boolean esTransferencia =  request.getCdTipoMov()== TIPO_MOV_TRANSFERENCIA;
+        Lote lote = null;
+        if (esAjuste){
+            lotes =loteRepository.findByProducto_IdAndCamara_IdAndActivoTrue(idProducto, idCamara);
+            lotesFiltrados = lotes.stream()
+                                .filter(lotef -> lotef.getCodigo().equals(codigo))
+                                .toList();
+
+            lote = lotesFiltrados.get(0);
+            Double kgsXHorma = request.getKgs() / request.getHormas();
+            lote.setKgsXHorma(kgsXHorma);
+            lote = loteRepository.save(lote);
+        } else if (esTransferencia){
+
+            long idCamaraD= request.getCdCamaraDestino();        
+            Camara camaraD = camaraRepository.getReferenceById(idCamaraD);
+            lote = crearYGuardarLote(codigo, producto, camaraD, loteAnt.getFechaElaboracion(), request.getHormas(), request.getKgs()); 
+        } else {
+            lote = crearYGuardarLote(codigo, producto, camara, request.getFechaElaboracion(), request.getHormas(), request.getKgs()); 
+        }
         movimiento.setLote(lote);
         
         movimiento.setHormas(request.getHormas());
@@ -77,7 +106,7 @@ public class MovimientoService {
         movimiento.setFermento(request.getFermento());
         movimiento.setObs(request.getObs());
         movimiento.setCdOperador(request.getCdOperador());
-       // movimiento.setCdCliente(request.getCdCliente());
+        movimiento.setObs(request.getObs());
         movimiento.setMotivo(request.getMotivo());
 
         // Se asigna la fecha y hora de creación de forma automática
@@ -86,7 +115,7 @@ public class MovimientoService {
 
         // Actualiza el stock (por cámara y producto) según el movimiento registrado
         //actualizarStock(producto, camara, request.getCdTipoMov(), request.getHormas(), request.getKgs());
-        actualizarStock(lote, request.getCdTipoMov(), request.getHormas(), request.getKgs());
+        actualizarStock(lote, request.getCdTipoMov(), request.getHormas(), request.getKgs(), loteAnt);
 
         return movimientoGuardado;
     }
@@ -96,32 +125,51 @@ public class MovimientoService {
      * sumando o restando las hormas y kgs del movimiento
      * según su tipo (INGRESO suma, cualquier otro tipo se considera EGRESO y resta).
      */
-    private void actualizarStock(Lote lote, Long cdTipoMov, Double hormas, Double kgs) {
+    private void actualizarStock(Lote lote, Long cdTipoMov, Double hormas, Double kgs, Lote loteAnt) {
         double deltaHormas = hormas != null ? hormas : 0.0;
         double deltaKgs = kgs != null ? kgs : 0.0;
 
         boolean esIngreso = cdTipoMov != null && cdTipoMov == TIPO_MOV_INGRESO;
-        if (!esIngreso) {
-            deltaHormas = -deltaHormas;
-            deltaKgs = -deltaKgs;
+        boolean esAjuste = cdTipoMov != null && cdTipoMov == TIPO_MOV_AJUSTE;
+        boolean esTransferencia =  cdTipoMov == TIPO_MOV_TRANSFERENCIA;
+         Stock stock = stockRepository
+                .findByLote_IdAndActivoTrue(lote.getId());;
+        if (esAjuste) {
+            if (stock != null){
+               stock.setActivo(false);
+               stockRepository.save(stock);
+               stock = null;
+            }
+        } else if (esTransferencia){
+            Stock stockAnt = stockRepository.findByLote_IdAndActivoTrue(loteAnt.getId());;
+            double hormasActuales = stockAnt.getHormas() != null ? stockAnt.getHormas() : 0.0;
+            double kgsActuales = stockAnt.getKgs() != null ? stockAnt.getKgs() : 0.0;
+
+            stockAnt.setHormas(hormasActuales - deltaHormas);
+            stockAnt.setKgs(kgsActuales - (kgs * loteAnt.getKgsXHorma()));
+            stockAnt.setFechaEmision(LocalDateTime.now());
+            stockRepository.save(stockAnt);
         }
 
-        Stock stock = stockRepository
-                .findById(lote.getId())
-                .orElseGet(() -> Stock.builder()
-                        .lote(lote)
-                        .hormas(0.0)
-                        .kgs(0.0)
-                        .fechaAlta(LocalDateTime.now())
-                        .build());
-
+        if (stock == null){
+            stock = new Stock();
+            stock.setLote(lote);
+            stock.setFechaAlta(LocalDateTime.now());
+        }                
         double hormasActuales = stock.getHormas() != null ? stock.getHormas() : 0.0;
         double kgsActuales = stock.getKgs() != null ? stock.getKgs() : 0.0;
 
-        stock.setHormas(hormasActuales + deltaHormas);
-        stock.setKgs(kgsActuales + deltaKgs);
-        stock.setFechaEmision(LocalDateTime.now());
-        
+        if (esTransferencia){
+            stock.setHormas(deltaHormas);
+            stock.setKgs(deltaKgs);
+        } else if (esIngreso){
+            stock.setHormas(hormasActuales + deltaHormas);
+            stock.setKgs(kgsActuales + deltaKgs);
+        } else if (esAjuste){
+            stock.setHormas( deltaHormas);
+            stock.setKgs(deltaKgs);
+        }
+        stock.setFechaEmision(LocalDateTime.now());        
 
         stockRepository.save(stock);
     }

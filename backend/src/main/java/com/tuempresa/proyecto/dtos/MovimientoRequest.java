@@ -16,6 +16,7 @@ public class MovimientoRequest {
     private Long cdProducto;
     private String cdLote;
     private Long cdCamara;
+     private Long cdCamaraDestino;
     private Double hormas;
     private Double kgs;
     private Double ltsLeche;

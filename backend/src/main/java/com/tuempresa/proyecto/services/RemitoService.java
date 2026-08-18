@@ -82,9 +82,13 @@ public class RemitoService {
 
         Movimiento movimiento = new Movimiento();
         movimiento.setCdTipoMov(TIPO_MOV_EGRESO);
-        //movimiento.setFechaElaboracion(request.getFechaEgreso());
-        Lote lote = loteRepository.findByCodigo(item.getCdLote());
-        movimiento.setLote(lote);
+
+        List<Lote> lotes =loteRepository.findByProducto_IdAndCamara_IdAndActivoTrue(producto.getId(), camara.getId());
+        List<Lote> lotesFiltrados = lotes.stream()
+                                .filter(lotef -> lotef.getCodigo().equals(item.getCdLote()))
+                                .toList();
+        Lote lote = lotesFiltrados.get(0);
+         movimiento.setLote(lote);
         movimiento.setHormas(item.getHormas());
         movimiento.setKgs(item.getKgs());
         movimiento.setCdOperador(request.getCdOperador());
@@ -99,7 +103,7 @@ public class RemitoService {
 
         private void actualizarStock(Lote lote, Double hormas, Double kgs) {
         double deltaHormas = hormas != null ? -hormas : 0.0;
-        double deltaKgs = kgs != null ? -kgs : 0.0;
+        double deltaKgs = -hormas * lote.getKgsXHorma(); //ajustar los kgs a lo q representaria cada horma sin la merma
 
         Stock stock = stockRepository
                 .findByLote_IdAndActivoTrue(lote.getId());

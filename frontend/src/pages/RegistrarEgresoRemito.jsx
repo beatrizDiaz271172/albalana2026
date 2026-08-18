@@ -165,7 +165,8 @@ const RegistrarEgresoRemito = () => {
     // Validación contra el stock restante de HORMAS
     if (loteSeleccionado && hormasIngresadas > maxHormasRestantes) {
       const msjAgregado = hormasYaAgregadas > 0 ? ` (ya tenés ${hormasYaAgregadas} agregadas en la lista)` : '';
-      alert(`La cantidad de hormas ingresada (${hormasIngresadas}) supera el stock restante disponible para este lote que es: ${maxHormasRestantes}${msjAgregado}.`);
+      alert(`La cantidad de hormas ingresada (${hormasIngresadas}) 
+        supera el stock restante disponible para este lote que es: ${maxHormasRestantes}${msjAgregado}.`);
       return;
     }
 
@@ -452,7 +453,7 @@ const RegistrarEgresoRemito = () => {
                       </option>
                       {lotes.map((l) => (
                         <option key={l.id} value={l.codigo}>
-                          {l.codigo} - Hormas: {l.hormas} - Kgs: {l.kgs}
+                          {l.codigo} - Hormas: {l.hormas} - Kgs X Horma: {l.kgsXHorma}
                         </option>
                       ))}
                     </select>

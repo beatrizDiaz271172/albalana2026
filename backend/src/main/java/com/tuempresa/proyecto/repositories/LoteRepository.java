@@ -12,10 +12,10 @@ import java.util.Optional;
 public interface LoteRepository extends JpaRepository<Lote, Long> {
     
     // Método para buscar lotes por código exacto
-    Lote findByCodigo(String codigo);
+   // Lote findByCodigoAndActivoTrue(String codigo);
 
     // Método para traer solo los lotes activos
     List<Lote> findByActivoTrue();
 
-     List<Lote> findByProducto_IdAndCamara_Id( Long idProducto, Long idCamara);
+     List<Lote> findByProducto_IdAndCamara_IdAndActivoTrue( Long idProducto, Long idCamara);
 }

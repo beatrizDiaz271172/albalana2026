@@ -15,8 +15,8 @@ const Dashboard = () => {
     { title: "Maduración lotes", icon: "⏳", color: "#1e5338" },
     { title: "Mermas", icon: "📉", color: "#d9534f" },
     { title: "Remitos", icon: "📦", color: "#2e3880" },
-    { title: "Ajuste de stock", icon: "⚖️", color: "#7a3e9d", path: "/AjusteStock" },
-    { title: "Transferencia", icon: "🔄", color: "#2e3880" },
+    { title: "Ajuste de stock", icon: "⚖️", color: "#7a3e9d", path: "/ajusteStock" },
+    { title: "Transferencia", icon: "🔄", color: "#2e3880" , path: "/transferenciaEntreCamaras"},
     { title: "Campañas", icon: "📅", color: "#7a3e9d" },
     { title: "Definiciones", icon: "⚙️", color: "#1e5338" },
     { title: "Imprimir / PDF", icon: "🖨️", color: "#d9534f" }

@@ -45,7 +45,7 @@ public class LoteController {
     // Corregido: Consulta directa al repositorio y retorno de la lista filtrada
     @GetMapping("/{idProducto}/{idCamara}")
     public ResponseEntity<List<Lote>> obtenerPorProductoYCamara(@PathVariable Long idProducto, @PathVariable Long idCamara) {
-        List<Lote> lotesFiltrados = loteRepository.findByProducto_IdAndCamara_Id(idProducto, idCamara);
+        List<Lote> lotesFiltrados = loteRepository.findByProducto_IdAndCamara_IdAndActivoTrue(idProducto, idCamara);
         lotesFiltrados.forEach(lote -> {
             Stock stock = stockRepository.findByLote_IdAndActivoTrue(lote.getId());
             if (stock != null){

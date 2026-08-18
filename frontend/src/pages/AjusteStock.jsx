@@ -28,93 +28,84 @@ const AjusteStock = () => {
 
   const [cargando, setCargando] = useState(false);
 
-  // Obtener lotes desde la BD
-  useEffect(() => {
-    const obtenerLotes = async () => {
-      try {
-        const token = localStorage.getItem('userToken');
-        const response = await fetch(API_BASE + '/lotes', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (response.ok) {
-          const data = await response.json();
-          const lotesOrdenados = data.sort((a, b) => 
-            (a.codigo || '').localeCompare(b.codigo || '')
-          );
-          setLotes(lotesOrdenados);
-        }
-      } catch (error) {
-        console.error('Error al cargar Lotes:', error);
-      }
-    };
-    obtenerLotes();
-  }, []);
+  const authHeaders = () => {
+    const token = localStorage.getItem('userToken');
+    return { 'Authorization': `Bearer ${token}` };
+  };
 
-  // Obtener cámaras desde la BD
+  // 1. useEffect inicial - Obtener cámaras, productos y operadores
   useEffect(() => {
-    const obtenerCamaras = async () => {
+    const obtenerDatos = async () => {
       try {
-        const token = localStorage.getItem('userToken');
-        const response = await fetch(API_BASE + '/camaras', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (response.ok) {
-          const data = await response.json();
+        const [resCam, resProd, resOp] = await Promise.all([
+          fetch(API_BASE + '/camaras', { headers: authHeaders() }),
+          fetch(API_BASE + '/productos', { headers: authHeaders() }),
+          fetch(API_BASE + '/operadores', { headers: authHeaders() })
+        ]);
+
+        if (resCam.ok) {
+          const data = await resCam.json();
           const ordenados = data.sort((a, b) => 
             (a.nombre || '').localeCompare(b.nombre || '')
           );
           setCamara(ordenados);
         }
-      } catch (error) {
-        console.error('Error al cargar cámaras:', error);
-      }
-    };
-    obtenerCamaras();
-  }, []);
 
-  // Obtener productos desde la BD
-  useEffect(() => {
-    const obtenerProductos = async () => {
-      try {
-        const token = localStorage.getItem('userToken');
-        const response = await fetch(API_BASE + '/productos', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (response.ok) {
-          const data = await response.json();
+        if (resProd.ok) {
+          const data = await resProd.json();
           setProducto(data);
         }
+
+        if (resOp.ok) {
+          const data = await resOp.json();
+          setOperadores(data);
+        }
       } catch (error) {
-        console.error('Error al cargar Productos:', error);
+        console.error('Error al cargar datos iniciales:', error);
       }
     };
-    obtenerProductos();
+
+    obtenerDatos();
   }, []);
 
-  // Obtener operadores desde la BD
+  // 2. useEffect secundario - Cargar lotes filtrados según Producto y Cámara seleccionados
   useEffect(() => {
-    const obtenerOperadores = async () => {
+    const idProducto = formData.cdProducto;
+    const idCamara = formData.cdCamara;
+
+    // Si no están ambos seleccionados, limpiar lotes
+    if (!idProducto || !idCamara) {
+      setLotes([]);
+      return;
+    }
+
+    const cargarLotesFiltrados = async () => {
       try {
-        const token = localStorage.getItem('userToken');
-        const res = await fetch(API_BASE + '/operadores', {
-          headers: { 'Authorization': `Bearer ${token}` }
+        const res = await fetch(`${API_BASE}/lotes/${idProducto}/${idCamara}`, { 
+          headers: authHeaders() 
         });
         if (res.ok) {
           const data = await res.json();
-          setOperadores(data);
+          setLotes(data.sort((a, b) => (a.codigo || '').localeCompare(b.codigo || '')));
         }
-      } catch (err) {
-        console.error('Error al cargar operadores:', err);
+      } catch (error) {
+        console.error('Error al cargar lotes filtrados:', error);
       }
     };
-    obtenerOperadores();
-  }, []);
+
+    cargarLotesFiltrados();
+  }, [formData.cdProducto, formData.cdCamara]);
+
+  // Variable para habilitar/deshabilitar el combo de lotes
+  const loteHabilitado = Boolean(formData.cdProducto && formData.cdCamara);
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'number' ? (value === '' ? '' : Number(value)) : value
+      [name]: type === 'number' ? (value === '' ? '' : Number(value)) : value,
+      // Resetear el lote si cambia producto o cámara
+      ...(name === 'cdProducto' || name === 'cdCamara' ? { cdLote: '' } : {})
     }));
   };
 
@@ -239,7 +230,7 @@ const AjusteStock = () => {
                 </select>
               </div>
 
-              {/* Lote (Agregado solicitado) */}
+              {/* Lote - AHORA CON LÓGICA FILTRADA */}
               <div className="form-group">
                 <label htmlFor="cdLote">Lote</label>
                 <select
@@ -247,12 +238,15 @@ const AjusteStock = () => {
                   name="cdLote"
                   value={formData.cdLote}
                   onChange={handleChange}
+                  disabled={!loteHabilitado}
                   required
                 >
-                  <option value="">— Seleccionar —</option>
+                  <option value="">
+                    {loteHabilitado ? '— Seleccionar —' : '— Seleccioná producto y cámara primero —'}
+                  </option>
                   {lotes.map((lote) => (
                     <option key={lote.id} value={lote.codigo}>
-                      {lote.codigo}
+                      {lote.codigo} - Hormas: {lote.hormas} - Kgs X Horma: {lote.kgsXHorma}
                     </option>
                   ))}
                 </select>
