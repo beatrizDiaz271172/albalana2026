@@ -109,14 +109,17 @@ const TransferenciaEntreCamaras = () => {
 
     if (!idProducto || !idCamaraOrigen) {
       setCamarasDestino([]);
-      setFormData(prev => ({ ...prev, cdCamaraDestino: '' }));
+      // Evitamos sobrescribir innecesariamente si ya está vacío
+      if (formData.cdCamaraDestino !== '') {
+        setFormData(prev => ({ ...prev, cdCamaraDestino: '' }));
+      }
       return;
     }
 
-    // Filtrar las cámaras: mostrar todas excepto la origen
-    const filtradas = camaras.filter(cam => cam.id !== idCamaraOrigen);
+    // ACÁ EL FIX: Convertimos a String para asegurar que el filtro funcione
+    const filtradas = camaras.filter(cam => String(cam.id) !== String(idCamaraOrigen));
     setCamarasDestino(filtradas);
-    setFormData(prev => ({ ...prev, cdCamaraDestino: '' }));
+    
   }, [formData.cdProducto, formData.cdCamara, camaras]);
 
   // Variables para habilitar/deshabilitar combos

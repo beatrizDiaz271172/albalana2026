@@ -9,6 +9,9 @@ import com.tuempresa.proyecto.repositories.ProductoRepository;
 import com.tuempresa.proyecto.repositories.StockRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.*;
 import java.util.List;
 
@@ -49,24 +52,27 @@ public class MovimientoService {
         nuevoLote.setProducto(producto);
         nuevoLote.setCamara(camara);
         nuevoLote.setFechaElaboracion(fechaElab);
-        nuevoLote.setKgsXHorma(kgs/hormas);
+        BigDecimal res= BigDecimal.valueOf(kgs/hormas).setScale(2, RoundingMode.HALF_UP);;
+        nuevoLote.setKgsXHorma(res.doubleValue());
 
         return loteRepository.save(nuevoLote);
     }
   
     @Transactional
     public Movimiento guardarMovimiento(MovimientoRequest request) {
+        boolean esAjuste =  request.getCdTipoMov()== TIPO_MOV_AJUSTE;
+        boolean esTransferencia =  request.getCdTipoMov()== TIPO_MOV_TRANSFERENCIA;
         Movimiento movimiento = new Movimiento();
 
         movimiento.setCdTipoMov(request.getCdTipoMov());
-       // movimiento.setFechaElaboracion(request.getFechaElaboracion());
 
         long idProducto = request.getCdProducto();
         Producto producto = productoRepository.getReferenceById(idProducto);
         //movimiento.setProducto(producto);
         
         String codigo = request.getCdLote();
-        long idCamara= request.getCdCamara();        
+        
+        long idCamara=request.getCdCamara();
         Camara camara = camaraRepository.getReferenceById(idCamara);
         List<Lote> lotes =loteRepository.findByProducto_IdAndCamara_IdAndActivoTrue(idProducto, idCamara);
         List<Lote> lotesFiltrados = lotes.stream()
@@ -77,29 +83,24 @@ public class MovimientoService {
         if (lotesFiltrados.size()>0)
             loteAnt = lotesFiltrados.get(0);
         
-        boolean esAjuste =  request.getCdTipoMov()== TIPO_MOV_AJUSTE;
-        boolean esTransferencia =  request.getCdTipoMov()== TIPO_MOV_TRANSFERENCIA;
+      
         Lote lote = null;
         if (esAjuste){
-            lotes =loteRepository.findByProducto_IdAndCamara_IdAndActivoTrue(idProducto, idCamara);
-            lotesFiltrados = lotes.stream()
-                                .filter(lotef -> lotef.getCodigo().equals(codigo))
-                                .toList();
-
-            lote = lotesFiltrados.get(0);
+            lote = loteAnt;
             Double kgsXHorma = request.getKgs() / request.getHormas();
+            BigDecimal res = BigDecimal.valueOf(kgsXHorma).setScale(2, RoundingMode.HALF_UP);;
+            kgsXHorma = res.doubleValue();
+
             lote.setKgsXHorma(kgsXHorma);
             lote = loteRepository.save(lote);
-        } else if (esTransferencia){
-
-            long idCamaraD= request.getCdCamaraDestino();        
-            Camara camaraD = camaraRepository.getReferenceById(idCamaraD);
-            lote = crearYGuardarLote(codigo, producto, camaraD, loteAnt.getFechaElaboracion(), request.getHormas(), request.getKgs()); 
         } else {
+            if (esTransferencia){
+                idCamara=request.getCdCamaraDestino();
+                camara = camaraRepository.getReferenceById(idCamara);
+            }
             lote = crearYGuardarLote(codigo, producto, camara, request.getFechaElaboracion(), request.getHormas(), request.getKgs()); 
         }
-        movimiento.setLote(lote);
-        
+        movimiento.setLote(lote);        
         movimiento.setHormas(request.getHormas());
         movimiento.setKgs(request.getKgs());
         movimiento.setLtsLeche(request.getLtsLeche());
@@ -114,7 +115,6 @@ public class MovimientoService {
         Movimiento movimientoGuardado = movimientoRepository.save(movimiento);
 
         // Actualiza el stock (por cámara y producto) según el movimiento registrado
-        //actualizarStock(producto, camara, request.getCdTipoMov(), request.getHormas(), request.getKgs());
         actualizarStock(lote, request.getCdTipoMov(), request.getHormas(), request.getKgs(), loteAnt);
 
         return movimientoGuardado;
@@ -146,7 +146,10 @@ public class MovimientoService {
             double kgsActuales = stockAnt.getKgs() != null ? stockAnt.getKgs() : 0.0;
 
             stockAnt.setHormas(hormasActuales - deltaHormas);
-            stockAnt.setKgs(kgsActuales - (kgs * loteAnt.getKgsXHorma()));
+            
+            
+            double kgDeHormas = hormas * loteAnt.getKgsXHorma();
+            stockAnt.setKgs(kgsActuales - kgDeHormas);
             stockAnt.setFechaEmision(LocalDateTime.now());
             stockRepository.save(stockAnt);
         }

@@ -45,7 +45,7 @@ public class StockController {
             @PathVariable Long idProducto, 
             @PathVariable Long idCamara) {
         
-        List<Stock> stockFiltrado = stockRepository.findByLote_Producto_IdAndLote_Camara_Id(idProducto, idCamara);
+        List<Stock> stockFiltrado = stockRepository.findByLote_Producto_IdAndLote_Camara_IdAndActivoTrue(idProducto, idCamara);
         return ResponseEntity.ok(stockFiltrado);
     }
 }
