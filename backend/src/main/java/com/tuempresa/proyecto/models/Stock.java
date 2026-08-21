@@ -1,11 +1,3 @@
-/* 
-      {
-    
-    "camara": "Camara 1",
-    "hormas": 10,
-    "kgs": 30.0,
-    "timestamp_editado": "2026-05-29T13:36:02.737938"
-  },*/
 package com.tuempresa.proyecto.models;
 
 import jakarta.persistence.*;

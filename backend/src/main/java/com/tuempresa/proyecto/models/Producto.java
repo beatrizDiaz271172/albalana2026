@@ -19,4 +19,23 @@ public class Producto {
     private Long id;
 
     private String nombre; 
+
+    private String codigo; 
+
+     @Column(name = "maduracion_dias")
+    private Long maduracionDias;
+
+    @Column(name = "consumo_opt_dias")
+    private Long consumoOptDias;
+
+    @Column(name = "stock_minimo")
+    private Long stockMinimo;
+
+    public Producto(String nombre, String codigo, Long maduracionDias, Long consumoOptDias, Long stockMinimo){
+        this.nombre=nombre;
+        this.codigo=codigo;
+        this.maduracionDias=maduracionDias;
+        this.consumoOptDias=consumoOptDias;
+        this.stockMinimo=stockMinimo;
+    }
 }

@@ -116,7 +116,6 @@ const TransferenciaEntreCamaras = () => {
       return;
     }
 
-    // ACÁ EL FIX: Convertimos a String para asegurar que el filtro funcione
     const filtradas = camaras.filter(cam => String(cam.id) !== String(idCamaraOrigen));
     setCamarasDestino(filtradas);
     
@@ -128,7 +127,7 @@ const TransferenciaEntreCamaras = () => {
 
   // Obtener máximos permitidos del lote seleccionado
   const obtenerMaximos = () => {
-    if (!formData.cdLote || !lotes) return { hormas: null, kgs: null };
+    if (!formData.cdLote || !lotes) return { hormas: null, kgs: null, kgsXHorma: null };
     
     const lote = lotes.find(l => l.codigo === formData.cdLote);
     if (lote) {
@@ -138,10 +137,15 @@ const TransferenciaEntreCamaras = () => {
         kgsXHorma: lote.kgsXHorma || null
       };
     }
-    return { hormas: null, kgs: null };
+    return { hormas: null, kgs: null, kgsXHorma: null };
   };
 
   const maximos = obtenerMaximos();
+  
+  // NUEVO: Calculamos los Kgs máximos permitidos según las hormas ingresadas en el input
+  const maxKgsCalculado = (formData.hormas && maximos.kgsXHorma) 
+    ? formData.hormas * maximos.kgsXHorma 
+    : 0;
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
@@ -177,6 +181,7 @@ const TransferenciaEntreCamaras = () => {
     if (!formData.cdLote) errores.cdLote = 'Debe seleccionar un lote';
     if (!formData.cdOperador) errores.cdOperador = 'Debe seleccionar un operario';
     
+    // Validación de Hormas
     if (formData.hormas === '' || formData.hormas === null) {
       errores.hormas = 'Las hormas son requeridas';
     } else if (maximos.hormas !== null && formData.hormas > maximos.hormas) {
@@ -184,11 +189,12 @@ const TransferenciaEntreCamaras = () => {
     } else if (formData.hormas <= 0) {
       errores.hormas = 'Las hormas deben ser mayor a 0';
     }
-    const ctKgsC= formData.kgs * maximos.kgsXHorma;
+    
+    // Validación de Kgs (CORREGIDA)
     if (formData.kgs === '' || formData.kgs === null) {
       errores.kgs = 'Los Kgs son requeridos';
-    } else if (maximos.kgs !== null && formData.kgs > ctKgsC) {
-      errores.kgs = `No puede transferir más de ${ctKgsC.toFixed(2)} kgs (disponibles en el lote)`;
+    } else if (maxKgsCalculado > 0 && formData.kgs > maxKgsCalculado) {
+      errores.kgs = `No puede transferir más de ${maxKgsCalculado.toFixed(2)} kgs (calculado por hormas)`;
     } else if (formData.kgs <= 0) {
       errores.kgs = 'Los Kgs deben ser mayor a 0';
     }
@@ -445,13 +451,13 @@ const TransferenciaEntreCamaras = () => {
                 )}
               </div>
 
-              {/* Kgs a transferir */}
+              {/* Kgs a transferir (CORREGIDO) */}
               <div className="form-group">
                 <label htmlFor="kgs">
                   Kgs
-                  {maximos.kgs !== null && (
+                  {maxKgsCalculado > 0 && (
                     <span style={{ fontSize: '0.85rem', color: '#666', marginLeft: '5px' }}>
-                      (Máx: {maximos.kgs.toFixed(2)})
+                      (Disponible: {maxKgsCalculado.toFixed(2)})
                     </span>
                   )}
                 </label>
@@ -461,10 +467,11 @@ const TransferenciaEntreCamaras = () => {
                   id="kgs"
                   name="kgs"
                   min="0"
-                  max={maximos.kgs || undefined}
+                  max={maxKgsCalculado || undefined}
                   value={formData.kgs}
                   onChange={handleChange}
                   placeholder="Ingrese cantidad"
+                  disabled={!formData.hormas || formData.hormas <= 0}
                   required
                 />
                 {erroresValidacion.kgs && (

@@ -1,28 +1,9 @@
-/* 
-      {
-    "id": "MOV-0001",
-    "tipo": "INGRESO",
-    "timestamp": "2026-05-26T14:10:43.661119",
-    "fecha": "26/05/2026",
-    "producto": "Peco. Reserva",
-    "lote": "PR01",
-    "camara": "Camara 1",
-    "hormas": 10,
-    "kgs": 30.0,
-    "lts_leche": 0.0,
-    "fermento": "",
-    "obs": "",
-    "operador": "Loro",
-    "cliente": "",
-    "motivo": "",
-    "timestamp_editado": "2026-05-29T13:36:02.737938"
-  },*/
 package com.tuempresa.proyecto.models;
 
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.*;
 
 @Entity
 @Table(name = "movimientos")
@@ -69,5 +50,5 @@ public class Movimiento {
     private LocalDateTime fechaAlta;
 
     @Column(name = "fecha_editado")
-    private LocalDateTime fechaEditado;
+    private LocalDate fechaEditado;
 }

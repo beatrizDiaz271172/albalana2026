@@ -9,16 +9,16 @@ const Dashboard = () => {
 
   const menuOptions = [
     { title: "Registrar ingreso", icon: "👤", color: "#1e5338", path: "/registrarIngreso" },
-    { title: "Registrar egreso", icon: "👤", color: "#d9534f", path: "/registrarEgresoRemito" }, // 👈 se agrega la ruta 'path'
-    { title: "Stock actual", icon: "📦", color: "#2e3880" },
-    { title: "Movimientos", icon: "📋", color: "#7a3e9d" },
-    { title: "Maduración lotes", icon: "⏳", color: "#1e5338" },
+    { title: "Registrar egreso", icon: "👤", color: "#d9534f", path: "/registrarEgresoRemito" }, 
+    { title: "Stock actual", icon: "📦", color: "#2e3880", path: "/stockProductoCamaras" },
+    { title: "Movimientos", icon: "📋", color: "#7a3e9d", path: "/historialMovimientos" },
+    { title: "Maduración lotes", icon: "⏳", color: "#1e5338", path: "/estadoMaduracionLoteCamara" },
     { title: "Mermas", icon: "📉", color: "#d9534f" },
-    { title: "Remitos", icon: "📦", color: "#2e3880" },
+    { title: "Remitos", icon: "📦", color: "#2e3880", path: "/remitoCliente" },
     { title: "Ajuste de stock", icon: "⚖️", color: "#7a3e9d", path: "/ajusteStock" },
     { title: "Transferencia", icon: "🔄", color: "#2e3880" , path: "/transferenciaEntreCamaras"},
     { title: "Campañas", icon: "📅", color: "#7a3e9d" },
-    { title: "Definiciones", icon: "⚙️", color: "#1e5338" },
+    { title: "Definiciones", icon: "⚙️", color: "#1e5338", path: "/definicionesSistema" },
     { title: "Imprimir / PDF", icon: "🖨️", color: "#d9534f" }
   ];
 

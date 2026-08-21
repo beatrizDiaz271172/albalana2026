@@ -112,6 +112,7 @@ public class MovimientoService {
 
         // Se asigna la fecha y hora de creación de forma automática
         movimiento.setFechaAlta(LocalDateTime.now());
+        movimiento.setFechaEditado(request.getFechaElaboracion());
         Movimiento movimientoGuardado = movimientoRepository.save(movimiento);
 
         // Actualiza el stock (por cámara y producto) según el movimiento registrado

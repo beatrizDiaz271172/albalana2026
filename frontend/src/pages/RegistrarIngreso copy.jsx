@@ -12,7 +12,6 @@ const RegistrarIngreso = () => {
   const [producto, setProducto] = useState([]);
   const [operadores, setOperadores] = useState([]);
   const [lotes, setLotes] = useState([]);
-  const [siguienteNumeroLote, setSiguienteNumeroLote] = useState('');
 
   const [formData, setFormData] = useState({
     cdTipoMov: 1, // Representa el tipo de movimiento INGRESO=1
@@ -32,35 +31,29 @@ const RegistrarIngreso = () => {
 
   const [cargando, setCargando] = useState(false);
 
-  useEffect(() => {
-    const obtenerLotes = async () => {
-      try {
-        const token = localStorage.getItem('userToken');
-        const response = await fetch('http://192.168.0.32:8081/api/lotes', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (response.ok) {
+useEffect(() => {
+  const obtenerLotes = async () => {
+    try {
+      const token = localStorage.getItem('userToken');
+ 
+      console.log('🔑 TOKEN ENVIADO A LOTES:', token);
+      const response = await fetch('http://192.168.0.32:8081/api/lotes', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
           const data = await response.json();
-          setLotes(data);
-
-          // Calcular el siguiente número de lote (max(id) + 1)
-          if (data.length > 0) {
-            const maxId = Math.max(...data.map(l => Number(l.id) || 0));
-            const nuevoNro = maxId + 1;
-            setSiguienteNumeroLote(nuevoNro);
-            // Asignar automáticamente al formData
-            setFormData(prev => ({ ...prev, cdLote: 'LOTE-' +nuevoNro }));
-          } else {
-            setSiguienteNumeroLote(1);
-            setFormData(prev => ({ ...prev, cdLote: 'LOTE-1' }));
-          }
+          const lotesOrdenados = data.sort((a, b) => 
+              (a.codigo || '').localeCompare(b.codigo || ''));
+          setLotes(lotesOrdenados);
+          console.log('DATOS RECIBIDOS DE LOTES:', lotesOrdenados);
+          setLotes(lotesOrdenados);
         }
       } catch (error) {
         console.error('Error al cargar Lotes :', error);
       }
     };
-    obtenerLotes();
-  }, []);
+  obtenerLotes();
+}, []);
 
   // Obtener cámaras desde la BD
   useEffect(() => {
@@ -76,6 +69,7 @@ const RegistrarIngreso = () => {
           const data = await response.json();
           const ordenados = data.sort((a, b) => 
               (a.nombre || '').localeCompare(b.nombre || ''));
+          console.log('DATOS RECIBIDOS DE CAMARAS:', ordenados);
           setCamara(ordenados);
         }
       } catch (error) {
@@ -98,6 +92,7 @@ const RegistrarIngreso = () => {
         });
         if (response.ok) {
           const data = await response.json();
+          console.log('DATOS RECIBIDOS DE PRODUCTOS:', data);
           setProducto(data);
         }
       } catch (error) {
@@ -118,6 +113,7 @@ const RegistrarIngreso = () => {
         });
         if (res.ok) {
           const data = await res.json();
+          console.log('DATOS RECIBIDOS DE OPERADORES:', data);
           setOperadores(data);
         }
       } catch (err) {
@@ -225,39 +221,52 @@ const RegistrarIngreso = () => {
                   required
                 >
                   <option value="">-- Seleccionar --</option>
-                  {producto.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.nombre}
-                    </option>
-                  ))}
+                  {producto.map((item, idx) => {
+                    const id = item.id;
+                    const nombre = item.nombre;
+                    return (
+                      <option key={id} value={id}>
+                        {nombre}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 
-              {/* N° de lote automático */}
               <div className="form-group">
-                <label>N° de lote</label>
-                <div style={{ padding: '8px', background: '#f5f5f5', borderRadius: '4px', fontWeight: 'bold', border: '1px solid #ccc' }}>
-                  LOTE-{siguienteNumeroLote || '...'}
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="cdCamara">Cámara</label>
-                <select
-                  id="cdCamara"
-                  name="cdCamara"
-                  value={formData.cdCamara}
+                <label htmlFor="cdLote">N° de lote</label>
+                <input
+                  type="text"
+                  id="cdLote"
+                  name="cdLote"
+                  min="0"
+                  value={formData.cdLote}
                   onChange={handleChange}
                   required
-                >
-                  <option value="">-- Seleccionar --</option>
-                  {camara.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.nombre}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                />
+            </div>
+
+<div className="form-group">
+  <label htmlFor="cdCamara">Cámara</label>
+  <select
+    id="cdCamara"
+    name="cdCamara"
+    value={formData.cdCamara}
+    onChange={handleChange}
+    required
+  >
+    <option value="">-- Seleccionar --</option>
+    {camara.map((item, idx) => {
+      const id = item.id;
+      return (
+        <option key={id} value={id}>
+          { item.nombre}
+        </option>
+      );
+    })}
+  </select>
+</div>
+
 
               {/* Hormas */}
               <div className="form-group">
@@ -327,11 +336,15 @@ const RegistrarIngreso = () => {
                   required
                 >
                   <option value="">-- Seleccionar --</option>
-                  {operadores.map((op) => (
-                    <option key={op.id} value={op.id}>
-                      {op.nombre}
-                    </option>
-                  ))}
+                  {operadores.map((op, idx) => {
+                    const id = op.id;
+                    const nombre = op.nombre;
+                    return (
+                      <option key={id} value={id}>
+                        {nombre}
+                      </option>
+                    );
+                  })}
                 </select>
               </div>
 

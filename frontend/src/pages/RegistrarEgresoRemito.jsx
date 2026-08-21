@@ -138,7 +138,7 @@ const RegistrarEgresoRemito = () => {
   //const maxKgsDisponibles = loteSeleccionado ? Number(loteSeleccionado.kgs) : 0;
   //const maxKgsRestantes = Math.max(0, maxKgsDisponibles - kgsYaAgregados);
   const ctKgsXHorma = loteSeleccionado ? Number(loteSeleccionado.kgsXHorma) : 0;
-  const maxKgsRestantes = maxHormasRestantes * ctKgsXHorma;
+  const maxKgsRestantes = itemActual.hormas * ctKgsXHorma;
 
 
   const handleAgregarItem = () => {
@@ -485,22 +485,33 @@ const RegistrarEgresoRemito = () => {
                 <div className="form-group-egreso">
                   <label htmlFor="itemKgs">
                     Kgs
-                    {loteSeleccionado && (
+                    {itemActual.hormas && itemActual.hormas > 0 && loteSeleccionado && (
                       <span style={{ fontSize: '0.85em', color: maxKgsRestantes === 0 ? '#d9534f' : '#666', marginLeft: '6px' }}>
-                        (Disponible: {maxKgsRestantes} kg)
+                        (Disponible: {maxKgsRestantes.toFixed(2)} kg = {itemActual.hormas} hormas × {ctKgsXHorma} kg/horma)
                       </span>
                     )}
                   </label>
                   <input
-                    type="number"
-                    id="itemKgs"
-                    name="kgs"
-                    step="0.01"
-                    min="0"
-                    max={loteSeleccionado ? maxKgsRestantes : undefined}
-                    value={itemActual.kgs}
-                    onChange={handleChangeItem}
-                  />
+  type="number"
+  id="itemKgs"
+  name="kgs"
+  step="0.01"
+  min="0"
+  max={loteSeleccionado ? maxKgsRestantes : undefined}
+  value={itemActual.kgs}
+  onChange={handleChangeItem}
+  disabled={!itemActual.hormas || itemActual.hormas <= 0}
+/>
+{itemActual.kgs > maxKgsRestantes && (
+  <span className="ayuda-texto" style={{ color: '#d9534f' }}>
+    ❌ No podés cargar más de {maxKgsRestantes.toFixed(2)} kg
+  </span>
+)}
+{(!itemActual.hormas || itemActual.hormas <= 0) && (
+  <span className="ayuda-texto" style={{ color: '#d9534f' }}>
+    ⚠️ Cargá hormas primero para habilitar Kgs
+  </span>
+)}
                 </div>
 
                 <button type="button" className="btn-agregar-item" onClick={handleAgregarItem}>

@@ -1,0 +1,429 @@
+/* ============================================================
+   PÁGINA ESTADO MADURACIÓN
+   ============================================================ */
+
+.maduracion-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* NAVBAR */
+.navbar-maduracion {
+  background: linear-gradient(135deg, #2c5f3f 0%, #1e4620 100%);
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-brand-maduracion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.brand-icon {
+  font-size: 1.5rem;
+}
+
+.brand-title {
+  letter-spacing: 0.5px;
+}
+
+.btn-menu-maduracion {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.btn-menu-maduracion:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.05);
+}
+
+/* CONTENEDOR PRINCIPAL */
+.maduracion-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ACCIONES DE NAVEGACIÓN */
+.nav-actions-maduracion {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.btn-nav-top-maduracion {
+  background: white;
+  border: 2px solid #2c5f3f;
+  color: #2c5f3f;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+.btn-nav-top-maduracion:hover {
+  background: #2c5f3f;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(44, 95, 63, 0.2);
+}
+
+/* TÍTULO */
+.screen-title-maduracion {
+  font-size: 2rem;
+  color: #1e4620;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title-icon {
+  font-size: 2.2rem;
+}
+
+/* TARJETA */
+.card-maduracion {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+
+/* CONTENEDOR DE TABLA */
+.tabla-container {
+  padding: 0;
+}
+
+/* TABLA PRINCIPAL */
+.tabla-maduracion {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.tabla-maduracion thead {
+  background: linear-gradient(135deg, #2c5f3f 0%, #1e4620 100%);
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tabla-maduracion th {
+  padding: 16px 12px;
+  text-align: left;
+  font-weight: 600;
+  border: none;
+  white-space: nowrap;
+}
+
+.tabla-maduracion tbody tr {
+  border-bottom: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.tabla-maduracion tbody tr:hover {
+  background: #f9f9f9;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.tabla-maduracion tbody tr.fila-maduro {
+  background: #f0f9f0;
+}
+
+.tabla-maduracion tbody tr.fila-maduro:hover {
+  background: #e8f5e8;
+}
+
+.tabla-maduracion td {
+  padding: 14px 12px;
+  color: #333;
+  vertical-align: middle;
+}
+
+/* CELDAS ESPECÍFICAS */
+.celda-lote {
+  font-weight: 600;
+  color: #1e4620;
+  min-width: 100px;
+}
+
+.celda-producto {
+  color: #555;
+  min-width: 150px;
+}
+
+.celda-fecha {
+  color: #666;
+  font-size: 0.85rem;
+  min-width: 120px;
+}
+
+.celda-camara {
+  min-width: 120px;
+}
+
+.celda-hormas {
+  text-align: center;
+  font-weight: 600;
+  color: #2c5f3f;
+  min-width: 70px;
+}
+
+.celda-dias {
+  text-align: center;
+  min-width: 70px;
+}
+
+.celda-minimo {
+  text-align: center;
+  min-width: 70px;
+}
+
+.celda-progreso {
+  min-width: 220px;
+}
+
+.celda-estado {
+  text-align: center;
+  min-width: 120px;
+}
+
+/* BADGES DE CÁMARA */
+.badge-camara {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.badge-camara.activa {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.badge-camara.inactiva {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* BARRA DE PROGRESO */
+.progreso-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.progreso-barra {
+  width: 100%;
+  height: 24px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.progreso-relleno {
+  height: 100%;
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 6px;
+  font-size: 0.7rem;
+  color: white;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.progreso-texto {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.dias-maduracion {
+  font-size: 0.7rem;
+  color: #999;
+  text-align: center;
+}
+
+/* BADGES DE ESTADO */
+.badge-estado {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.badge-estado.maduro {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.badge-estado.en-maduracion {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+}
+
+/* RESUMEN */
+.resumen-maduracion {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.resumen-item {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.resumen-numero {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c5f3f;
+}
+
+.resumen-label {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+/* COLORES DE PROGRESO */
+.color-inicio {
+  background: #ffc107 !important;
+}
+
+.color-intermedio {
+  background: #17a2b8 !important;
+}
+
+.color-avanzado {
+  background: #28a745 !important;
+}
+
+.color-maduro {
+  background: #5cb85c !important;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .tabla-maduracion {
+    font-size: 0.85rem;
+  }
+
+  .tabla-maduracion th,
+  .tabla-maduracion td {
+    padding: 12px 8px;
+  }
+
+  .celda-progreso {
+    min-width: 180px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-maduracion {
+    padding: 12px 15px;
+  }
+
+  .screen-title-maduracion {
+    font-size: 1.5rem;
+  }
+
+  .maduracion-container {
+    padding: 12px;
+  }
+
+  .card-maduracion {
+    padding: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tabla-maduracion {
+    font-size: 0.75rem;
+    min-width: 900px;
+  }
+
+  .tabla-maduracion th,
+  .tabla-maduracion td {
+    padding: 10px 6px;
+  }
+
+  .progreso-container {
+    gap: 4px;
+  }
+
+  .progreso-barra {
+    height: 20px;
+  }
+
+  .badge-camara,
+  .badge-estado {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+  }
+
+  .resumen-maduracion {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tabla-maduracion {
+    font-size: 0.7rem;
+    min-width: 800px;
+  }
+
+  .tabla-maduracion th,
+  .tabla-maduracion td {
+    padding: 8px 4px;
+  }
+
+  .screen-title-maduracion {
+    font-size: 1.2rem;
+  }
+}
