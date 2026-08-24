@@ -1,6 +1,8 @@
 package com.tuempresa.proyecto.controllers;
 
+import com.tuempresa.proyecto.dtos.ProductoRequest;
 import com.tuempresa.proyecto.dtos.UsuarioRequest;
+import com.tuempresa.proyecto.models.Producto;
 import com.tuempresa.proyecto.models.Usuario;
 import com.tuempresa.proyecto.services.UsuarioService;
 import org.springframework.http.HttpStatus;
@@ -29,4 +31,6 @@ public class UsuarioController {
         Usuario nuevoUsuario = usuarioService.guardarUsuario(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoUsuario);
     }
+
+   
 }

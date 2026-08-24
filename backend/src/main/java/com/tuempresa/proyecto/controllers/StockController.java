@@ -48,4 +48,5 @@ public class StockController {
         List<Stock> stockFiltrado = stockRepository.findByLote_Producto_IdAndLote_Camara_IdAndActivoTrue(idProducto, idCamara);
         return ResponseEntity.ok(stockFiltrado);
     }
+    
 }

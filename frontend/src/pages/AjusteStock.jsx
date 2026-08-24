@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './RegistrarIngreso'; // Asegurate de crear/renombrar tu CSS correspondiente
+import './RegistrarIngreso'; 
 const API_BASE = 'http://192.168.0.32:8081/api';
 
 const AjusteStock = () => {
