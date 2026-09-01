@@ -8,15 +8,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductoRequest {
+public class CamaraRequest {
 
     private Long id;
     private String nombre; 
-    private String codigo; 
-    private Long maduracionDias;
-    private Long consumoOptDias;
-    private Long stockMinimo;
-    private Long preMaduracionDias;
-    private Long postMaduracionDias;
-    private Long diasSinMov;
 }

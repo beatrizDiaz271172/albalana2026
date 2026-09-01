@@ -192,17 +192,21 @@
 .celda-id {
   font-weight: 600;
   color: #2c5f3f;
-  min-width: 60px;
+  min-width: 40px;
   text-align: center;
 }
 
 .celda-nombre {
-  min-width: 150px;
+  min-width: 130px;
   font-weight: 500;
 }
 
 .celda-codigo {
-  min-width: 120px;
+  width: 70px; /* Ancho fijo */
+  max-width: 70px;
+  white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Pone puntos suspensivos (...) si el texto es muy largo */
 }
 
 .celda-codigo code {
@@ -216,7 +220,8 @@
 
 .celda-numero {
   text-align: center;
-  min-width: 120px;
+  width: 80px;
+  min-width: 80px;
   font-weight: 500;
 }
 

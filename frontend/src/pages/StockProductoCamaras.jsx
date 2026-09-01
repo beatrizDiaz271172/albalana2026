@@ -53,10 +53,11 @@ const StockActualProductoCama = () => {
     }, []);
 
     // Procesamiento y agrupación de datos por Producto y Cámara
+    // Procesamiento, filtrado y ordenamiento de datos por Producto y Cámara
     const datosTabla = React.useMemo(() => {
         const map = {};
 
-        // 1. Inicializar con todos los productos para asegurar que aparezcan en la tabla
+        // 1. Inicializar con todos los productos
         productos.forEach(prod => {
             map[prod.id] = {
                 id: prod.id,
@@ -67,8 +68,7 @@ const StockActualProductoCama = () => {
             };
         });
 
-        // 2. Filtrar y acumular stock según las reglas de negocio solicitadas:
-        // Stock.activo = true && Stock.lote.activo = true && Stock.lote.camara.activo = true
+        // 2. Acumular stock según las reglas de negocio
         stocks.forEach(stock => {
             const lote = stock.lote;
             const camara = lote?.camara;
@@ -86,7 +86,6 @@ const StockActualProductoCama = () => {
                 const prodId = producto.id;
                 const camId = camara.id;
 
-                // Si un producto con stock no estaba en la lista general, lo agregamos dinámicamente
                 if (!map[prodId]) {
                     map[prodId] = {
                         id: prodId,
@@ -101,17 +100,19 @@ const StockActualProductoCama = () => {
                     map[prodId].camarasData[camId] = { hormas: 0, kgs: 0 };
                 }
 
-                // Sumar valores por cámara
                 map[prodId].camarasData[camId].hormas += (stock.hormas || 0);
                 map[prodId].camarasData[camId].kgs += (stock.kgs || 0);
 
-                // Totales globales por producto
                 map[prodId].totalH += (stock.hormas || 0);
                 map[prodId].totalKg += (stock.kgs || 0);
             }
         });
 
-        return Object.values(map);
+        // 3. Filtrar (solo totalH > 0) y Ordenar alfabéticamente por nombre del producto
+        return Object.values(map)
+            .filter(prod => prod.totalH > 0)
+            .sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+
     }, [stocks, productos]);
 
     return (

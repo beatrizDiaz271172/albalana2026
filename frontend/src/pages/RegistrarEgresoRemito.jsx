@@ -10,7 +10,7 @@ const RegistrarEgresoRemito = () => {
 
   // --- Datos de referencia (combos) ---
   const [productos, setProductos] = useState([]);
-  const [camaras, setCamaras] = useState([]);
+  const [camaras, setCamaras] = useState([]); // Cámaras filtradas según el producto
   const [operadores, setOperadores] = useState([]);
   const [lotes, setLotes] = useState([]);
   const [clientes, setClientes] = useState([]);
@@ -42,19 +42,17 @@ const RegistrarEgresoRemito = () => {
     return { 'Authorization': `Bearer ${token}` };
   };
 
-  // 1. useEffect inicial (Carga productos, cámaras, operadores y clientes)
+  // 1. useEffect inicial (Carga productos, operadores y clientes - Eliminamos camaras de acá porque ahora dependen del producto)
   useEffect(() => {
     const cargarDatos = async () => {
       try {
-        const [resProd, resCam, resOp, resCli] = await Promise.all([
+        const [resProd, resOp, resCli] = await Promise.all([
           fetch(`${API_BASE}/productos`, { headers: authHeaders() }),
-          fetch(`${API_BASE}/camaras`, { headers: authHeaders() }),
           fetch(`${API_BASE}/operadores`, { headers: authHeaders() }),
           fetch(`${API_BASE}/clientes`, { headers: authHeaders() }),
         ]);
 
         if (resProd.ok) setProductos(await resProd.json());
-        if (resCam.ok) setCamaras((await resCam.json()).sort((a, b) => (a.nombre || '').localeCompare(b.nombre || '')));
         if (resOp.ok) setOperadores(await resOp.json());
         if (resCli.ok) setClientes(await resCli.json());
       } catch (error) {
@@ -65,7 +63,42 @@ const RegistrarEgresoRemito = () => {
     cargarDatos();
   }, []);
 
-  // 2. useEffect secundario (Carga lotes según Producto y Cámara seleccionados)
+  // 2. NUEVO useEffect: Cargar cámaras según el Producto seleccionado
+  useEffect(() => {
+    const idProducto = itemActual.cdProducto;
+
+    if (!idProducto) {
+      setCamaras([]);
+      setItemActual(prev => ({ ...prev, cdCamara: '', cdLote: '', hormas: 1, kgs: 0 }));
+      return;
+    }
+
+    const cargarCamarasPorProducto = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/camaras/producto/${idProducto}`, { 
+          headers: authHeaders() 
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const ordenados = data.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
+          setCamaras(ordenados);
+
+          // Opcional: Si solo hay una cámara con stock para este producto, la autoseleccionamos
+          if (ordenados.length === 1) {
+            setItemActual(prev => ({ ...prev, cdCamara: ordenados[0].id }));
+          } else {
+            setItemActual(prev => ({ ...prev, cdCamara: '' }));
+          }
+        }
+      } catch (error) {
+        console.error('Error al cargar cámaras por producto:', error);
+      }
+    };
+
+    cargarCamarasPorProducto();
+  }, [itemActual.cdProducto]);
+
+  // 3. useEffect secundario (Carga lotes según Producto y Cámara seleccionados)
   useEffect(() => {
     const idProducto = itemActual.cdProducto;
     const idCamara = itemActual.cdCamara;
@@ -109,7 +142,11 @@ const RegistrarEgresoRemito = () => {
     const { name, value, type } = e.target;
     setItemActual((prev) => ({
       ...prev,
-      [name]: type === 'number' ? (value === '' ? '' : Number(value)) : value
+      [name]: type === 'number' ? (value === '' ? '' : Number(value)) : value,
+      // Si cambia el producto manualmente, limpiamos la cámara, lote, etc.
+      ...(name === 'cdProducto' ? { cdCamara: '', cdLote: '', hormas: 1, kgs: 0 } : {}),
+      // Si cambia la cámara, limpiamos el lote
+      ...(name === 'cdCamara' ? { cdLote: '', hormas: 1, kgs: 0 } : {})
     }));
   };
 
@@ -117,6 +154,9 @@ const RegistrarEgresoRemito = () => {
   const productoSeleccionado = productos.find((p) => String(p.id) === String(itemActual.cdProducto));
   const camaraSeleccionada = camaras.find((c) => String(c.id) === String(itemActual.cdCamara));
   const loteSeleccionado = lotes.find((l) => String(l.codigo) === String(itemActual.cdLote) || String(l.id) === String(itemActual.cdLote));
+  
+  // Variables para habilitar combos
+  const camaraHabilitada = Boolean(itemActual.cdProducto);
   const loteHabilitado = Boolean(itemActual.cdProducto && itemActual.cdCamara);
 
   // Suma de hormas y kgs agregados en la lista actual para este mismo Producto + Cámara + Lote
@@ -134,12 +174,8 @@ const RegistrarEgresoRemito = () => {
   const maxHormasDisponibles = loteSeleccionado ? Number(loteSeleccionado.hormas) : 0;
   const maxHormasRestantes = Math.max(0, maxHormasDisponibles - hormasYaAgregadas);
 
-  // Disponibilidad en vivo para Kgs
-  //const maxKgsDisponibles = loteSeleccionado ? Number(loteSeleccionado.kgs) : 0;
-  //const maxKgsRestantes = Math.max(0, maxKgsDisponibles - kgsYaAgregados);
   const ctKgsXHorma = loteSeleccionado ? Number(loteSeleccionado.kgsXHorma) : 0;
   const maxKgsRestantes = itemActual.hormas * ctKgsXHorma;
-
 
   const handleAgregarItem = () => {
     const loteFinal = itemActual.loteManual?.trim() || itemActual.cdLote;
@@ -162,15 +198,12 @@ const RegistrarEgresoRemito = () => {
       return;
     }
 
-    // Validación contra el stock restante de HORMAS
     if (loteSeleccionado && hormasIngresadas > maxHormasRestantes) {
       const msjAgregado = hormasYaAgregadas > 0 ? ` (ya tenés ${hormasYaAgregadas} agregadas en la lista)` : '';
-      alert(`La cantidad de hormas ingresada (${hormasIngresadas}) 
-        supera el stock restante disponible para este lote que es: ${maxHormasRestantes}${msjAgregado}.`);
+      alert(`La cantidad de hormas ingresada (${hormasIngresadas}) supera el stock restante disponible para este lote que es: ${maxHormasRestantes}${msjAgregado}.`);
       return;
     }
 
-    // Validación contra el stock restante de KGS
     if (loteSeleccionado && kgsIngresados > maxKgsRestantes) {
       const msjAgregado = kgsYaAgregados > 0 ? ` (ya tenés ${kgsYaAgregados} kg agregados en la lista)` : '';
       alert(`La cantidad de kg ingresada (${kgsIngresados}) supera el stock restante disponible para este lote que es: ${maxKgsRestantes} kg${msjAgregado}.`);
@@ -179,12 +212,7 @@ const RegistrarEgresoRemito = () => {
 
     const ctKgsPermitidos = ctKgsXHorma * hormasIngresadas;
     if (loteSeleccionado && kgsIngresados > ctKgsPermitidos) {
-      alert(`La cantidad de Kilos ingresados(${kgsIngresados}) supera el maximo de kilos para la cantidad de hormas cargadas: ${hormasIngresadas}.`);
-      return;
-    }
-
-    if (!itemActual.hormas && !itemActual.kgs) {
-      alert('Ingresá hormas/cuñas o kgs para el ítem.');
+      alert(`La cantidad de Kilos ingresados (${kgsIngresados}) supera el máximo de kilos para la cantidad de hormas cargadas: ${hormasIngresadas}.`);
       return;
     }
 
@@ -429,8 +457,11 @@ const RegistrarEgresoRemito = () => {
                       name="cdCamara"
                       value={itemActual.cdCamara}
                       onChange={handleChangeItem}
+                      disabled={!camaraHabilitada}
                     >
-                      <option value="">— Seleccionar —</option>
+                      <option value="">
+                        {camaraHabilitada ? '— Seleccionar —' : '— Seleccioná un producto primero —'}
+                      </option>
                       {camaras.map((c) => (
                         <option key={c.id} value={c.id}>{c.nombre}</option>
                       ))}
@@ -492,26 +523,26 @@ const RegistrarEgresoRemito = () => {
                     )}
                   </label>
                   <input
-  type="number"
-  id="itemKgs"
-  name="kgs"
-  step="0.01"
-  min="0"
-  max={loteSeleccionado ? maxKgsRestantes : undefined}
-  value={itemActual.kgs}
-  onChange={handleChangeItem}
-  disabled={!itemActual.hormas || itemActual.hormas <= 0}
-/>
-{itemActual.kgs > maxKgsRestantes && (
-  <span className="ayuda-texto" style={{ color: '#d9534f' }}>
-    ❌ No podés cargar más de {maxKgsRestantes.toFixed(2)} kg
-  </span>
-)}
-{(!itemActual.hormas || itemActual.hormas <= 0) && (
-  <span className="ayuda-texto" style={{ color: '#d9534f' }}>
-    ⚠️ Cargá hormas primero para habilitar Kgs
-  </span>
-)}
+                    type="number"
+                    id="itemKgs"
+                    name="kgs"
+                    step="0.01"
+                    min="0"
+                    max={loteSeleccionado ? maxKgsRestantes : undefined}
+                    value={itemActual.kgs}
+                    onChange={handleChangeItem}
+                    disabled={!itemActual.hormas || itemActual.hormas <= 0}
+                  />
+                  {itemActual.kgs > maxKgsRestantes && (
+                    <span className="ayuda-texto" style={{ color: '#d9534f' }}>
+                      ❌ No podés cargar más de {maxKgsRestantes.toFixed(2)} kg
+                    </span>
+                  )}
+                  {(!itemActual.hormas || itemActual.hormas <= 0) && (
+                    <span className="ayuda-texto" style={{ color: '#d9534f' }}>
+                      ⚠️ Cargá hormas primero para habilitar Kgs
+                    </span>
+                  )}
                 </div>
 
                 <button type="button" className="btn-agregar-item" onClick={handleAgregarItem}>

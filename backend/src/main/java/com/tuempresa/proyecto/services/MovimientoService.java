@@ -60,8 +60,10 @@ public class MovimientoService {
   
     @Transactional
     public Movimiento guardarMovimiento(MovimientoRequest request) {
-        boolean esAjuste =  request.getCdTipoMov()== TIPO_MOV_AJUSTE;
-        boolean esTransferencia =  request.getCdTipoMov()== TIPO_MOV_TRANSFERENCIA;
+        long tipoMov =  request.getCdTipoMov();
+        boolean esIngreso = tipoMov == TIPO_MOV_INGRESO;
+        boolean esAjuste =  tipoMov == TIPO_MOV_AJUSTE;
+        boolean esTransferencia =  tipoMov == TIPO_MOV_TRANSFERENCIA;
         Movimiento movimiento = new Movimiento();
 
         movimiento.setCdTipoMov(request.getCdTipoMov());
@@ -79,26 +81,31 @@ public class MovimientoService {
                                 .filter(lotef -> lotef.getCodigo().equals(codigo))
                                 .toList();
 
-        Lote loteAnt = null;
+        Lote loteOrigen = null;
         if (lotesFiltrados.size()>0)
-            loteAnt = lotesFiltrados.get(0);
+            loteOrigen = lotesFiltrados.get(0);
         
-      
         Lote lote = null;
-        if (esAjuste){
-            lote = loteAnt;
-            Double kgsXHorma = request.getKgs() / request.getHormas();
-            BigDecimal res = BigDecimal.valueOf(kgsXHorma).setScale(2, RoundingMode.HALF_UP);;
-            kgsXHorma = res.doubleValue();
 
-            lote.setKgsXHorma(kgsXHorma);
-            lote = loteRepository.save(lote);
-        } else {
-            if (esTransferencia){
-                idCamara=request.getCdCamaraDestino();
-                camara = camaraRepository.getReferenceById(idCamara);
+        if (esTransferencia){ //Ver si existe el codigo de Lote para Producto y Camara Destino 
+            idCamara=request.getCdCamaraDestino();
+            camara = camaraRepository.getReferenceById(idCamara);
+            List<Lote> lotesDest =loteRepository.findByProducto_IdAndCamara_IdAndActivoTrue(idProducto, idCamara);
+            List<Lote> lotesFiltradosDest = lotesDest.stream()
+                                .filter(lotef -> lotef.getCodigo().equals(codigo))
+                                .toList();
+
+            if (lotesFiltradosDest.size()==0){
+                lote = crearYGuardarLote(codigo, producto, camara, loteOrigen.getFechaElaboracion(), request.getHormas(), request.getKgs());
+            } else {
+                lote = lotesFiltradosDest.get(0);
             }
+        }
+        if (esIngreso){
             lote = crearYGuardarLote(codigo, producto, camara, request.getFechaElaboracion(), request.getHormas(), request.getKgs()); 
+        }
+        if (esAjuste){
+            lote = loteOrigen;
         }
         movimiento.setLote(lote);        
         movimiento.setHormas(request.getHormas());
@@ -116,7 +123,7 @@ public class MovimientoService {
         Movimiento movimientoGuardado = movimientoRepository.save(movimiento);
 
         // Actualiza el stock (por cámara y producto) según el movimiento registrado
-        actualizarStock(lote, request.getCdTipoMov(), request.getHormas(), request.getKgs(), loteAnt);
+        actualizarStock(lote, tipoMov , request.getHormas(), request.getKgs(), loteOrigen);
 
         return movimientoGuardado;
     }
@@ -136,18 +143,17 @@ public class MovimientoService {
          Stock stock = stockRepository
                 .findByLote_IdAndActivoTrue(lote.getId());;
         if (esAjuste) {
-            if (stock != null){
+           /*  if (stock != null){
                stock.setActivo(false);
                stockRepository.save(stock);
                stock = null;
-            }
+            }*/
         } else if (esTransferencia){
             Stock stockAnt = stockRepository.findByLote_IdAndActivoTrue(loteAnt.getId());;
             double hormasActuales = stockAnt.getHormas() != null ? stockAnt.getHormas() : 0.0;
             double kgsActuales = stockAnt.getKgs() != null ? stockAnt.getKgs() : 0.0;
 
             stockAnt.setHormas(hormasActuales - deltaHormas);
-            
             
             double kgDeHormas = hormas * loteAnt.getKgsXHorma();
             stockAnt.setKgs(kgsActuales - kgDeHormas);
@@ -163,13 +169,12 @@ public class MovimientoService {
         double hormasActuales = stock.getHormas() != null ? stock.getHormas() : 0.0;
         double kgsActuales = stock.getKgs() != null ? stock.getKgs() : 0.0;
 
-        if (esTransferencia){
-            stock.setHormas(deltaHormas);
-            stock.setKgs(deltaKgs);
-        } else if (esIngreso){
+        if (esTransferencia || esIngreso){
             stock.setHormas(hormasActuales + deltaHormas);
             stock.setKgs(kgsActuales + deltaKgs);
-        } else if (esAjuste){
+        }
+        
+        if (esAjuste){
             stock.setHormas( deltaHormas);
             stock.setKgs(deltaKgs);
         }

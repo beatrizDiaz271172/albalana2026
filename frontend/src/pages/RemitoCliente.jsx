@@ -225,17 +225,6 @@ const RemitoCliente = () => {
               />
             </div>
 
-            {/* Botón de limpiar */}
-            <div>
-              <button 
-                onClick={limpiarFiltros}
-                style={{ backgroundColor: '#e0e0e0', color: '#333', border: 'none', padding: '9px 15px', borderRadius: '4px', fontWeight: '500', cursor: 'pointer', width: '100%' }}
-                title="Limpiar filtros"
-              >
-                ✕ Limpiar filtros
-              </button>
-            </div>
-
           </div>
         </div>
 
@@ -275,13 +264,13 @@ const RemitoCliente = () => {
                       <td style={tdStyle}>{remito.totalKgs.toFixed(1)}</td>
                       <td style={tdStyle}>{remito.operadorNombre}</td>
                       <td style={tdStyle}>
-                        <button 
-                          onClick={() => navigate(`/remito/${remito.id}`)} 
+                      <button 
+                          onClick={() => navigate(`/remitos/${remito.id}/items`)} 
                           style={actionBtnStyle('#4caf50')} 
                           title="Ver"
                         >
-                          Ver
-                        </button>
+                        Ver
+                      </button>
                         <button 
                           style={actionBtnStyle('#ff9800')} 
                           title="Editar"

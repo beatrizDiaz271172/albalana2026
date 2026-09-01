@@ -15,7 +15,7 @@ const AjusteStock = () => {
   const [lotes, setLotes] = useState([]);
 
   const [formData, setFormData] = useState({
-    cdTipoMov: 3, // Representa el tipo de movimiento AJUSTE=3 (Ajustalo según tu BD)
+    cdTipoMov: 3, // Representa el tipo de movimiento AJUSTE=3
     fechaAjuste: hoy,
     cdProducto: '',
     cdCamara: '',
@@ -33,23 +33,14 @@ const AjusteStock = () => {
     return { 'Authorization': `Bearer ${token}` };
   };
 
-  // 1. useEffect inicial - Obtener cámaras, productos y operadores
+  // 1. useEffect inicial - Obtener productos y operadores
   useEffect(() => {
-    const obtenerDatos = async () => {
+    const obtenerDatosIniciales = async () => {
       try {
-        const [resCam, resProd, resOp] = await Promise.all([
-          fetch(API_BASE + '/camaras', { headers: authHeaders() }),
+        const [resProd, resOp] = await Promise.all([
           fetch(API_BASE + '/productos', { headers: authHeaders() }),
           fetch(API_BASE + '/operadores', { headers: authHeaders() })
         ]);
-
-        if (resCam.ok) {
-          const data = await resCam.json();
-          const ordenados = data.sort((a, b) => 
-            (a.nombre || '').localeCompare(b.nombre || '')
-          );
-          setCamara(ordenados);
-        }
 
         if (resProd.ok) {
           const data = await resProd.json();
@@ -65,15 +56,43 @@ const AjusteStock = () => {
       }
     };
 
-    obtenerDatos();
+    obtenerDatosIniciales();
   }, []);
 
-  // 2. useEffect secundario - Cargar lotes filtrados según Producto y Cámara seleccionados
+  // 2. useEffect para cargar cámaras filtradas según el Producto seleccionado
+  useEffect(() => {
+    const idProducto = formData.cdProducto;
+
+    if (!idProducto) {
+      setCamara([]);
+      return;
+    }
+
+    const cargarCamarasPorProducto = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/camaras/producto/${idProducto}`, { 
+          headers: authHeaders() 
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const ordenados = data.sort((a, b) => 
+            (a.nombre || '').localeCompare(b.nombre || '')
+          );
+          setCamara(ordenados);
+        }
+      } catch (error) {
+        console.error('Error al cargar cámaras filtradas:', error);
+      }
+    };
+
+    cargarCamarasPorProducto();
+  }, [formData.cdProducto]);
+
+  // 3. useEffect para cargar lotes filtrados según Producto y Cámara seleccionados
   useEffect(() => {
     const idProducto = formData.cdProducto;
     const idCamara = formData.cdCamara;
 
-    // Si no están ambos seleccionados, limpiar lotes
     if (!idProducto || !idCamara) {
       setLotes([]);
       return;
@@ -96,7 +115,29 @@ const AjusteStock = () => {
     cargarLotesFiltrados();
   }, [formData.cdProducto, formData.cdCamara]);
 
-  // Variable para habilitar/deshabilitar el combo de lotes
+  // 4. useEffect para recalcular automáticamente los Kgs cuando cambian las hormas o se selecciona otro lote
+  useEffect(() => {
+    if (!formData.cdLote) {
+      setFormData(prev => ({ ...prev, kgs: 0.0 }));
+      return;
+    }
+
+    // Buscamos el objeto lote seleccionado en la lista (asumiendo que option value es lote.codigo)
+    const loteSeleccionado = lotes.find(l => l.codigo === formData.cdLote);
+
+    if (loteSeleccionado && loteSeleccionado.kgsXHorma !== undefined) {
+      const hormasNum = Number(formData.hormas) || 0;
+      const kgsCalculados = hormasNum * Number(loteSeleccionado.kgsXHorma);
+      
+      setFormData(prev => ({
+        ...prev,
+        kgs: Number(kgsCalculados.toFixed(2)) // Redondeamos a 2 decimales
+      }));
+    }
+  }, [formData.hormas, formData.cdLote, lotes]);
+
+  // Variables para habilitar/deshabilitar los combos en cascada
+  const camaraHabilitada = Boolean(formData.cdProducto);
   const loteHabilitado = Boolean(formData.cdProducto && formData.cdCamara);
 
   const handleChange = (e) => {
@@ -104,8 +145,8 @@ const AjusteStock = () => {
     setFormData((prev) => ({
       ...prev,
       [name]: type === 'number' ? (value === '' ? '' : Number(value)) : value,
-      // Resetear el lote si cambia producto o cámara
-      ...(name === 'cdProducto' || name === 'cdCamara' ? { cdLote: '' } : {})
+      ...(name === 'cdProducto' ? { cdCamara: '', cdLote: '' } : {}),
+      ...(name === 'cdCamara' ? { cdLote: '' } : {})
     }));
   };
 
@@ -211,7 +252,7 @@ const AjusteStock = () => {
                 </select>
               </div>
 
-              {/* Cámara */}
+              {/* Cámara - FILTRADA POR PRODUCTO */}
               <div className="form-group">
                 <label htmlFor="cdCamara">Cámara</label>
                 <select
@@ -219,9 +260,12 @@ const AjusteStock = () => {
                   name="cdCamara"
                   value={formData.cdCamara}
                   onChange={handleChange}
+                  disabled={!camaraHabilitada}
                   required
                 >
-                  <option value="">— Seleccionar —</option>
+                  <option value="">
+                    {camaraHabilitada ? '— Seleccionar —' : '— Seleccioná un producto primero —'}
+                  </option>
                   {camara.map((item) => (
                     <option key={item.id} value={item.id}>
                       {item.nombre}
@@ -230,7 +274,7 @@ const AjusteStock = () => {
                 </select>
               </div>
 
-              {/* Lote - AHORA CON LÓGICA FILTRADA */}
+              {/* Lote - FILTRADO POR PRODUCTO Y CÁMARA */}
               <div className="form-group">
                 <label htmlFor="cdLote">Lote</label>
                 <select
@@ -271,7 +315,7 @@ const AjusteStock = () => {
                 </select>
               </div>
 
-              {/* Div vacío para mantener la grilla alineada si usas grid-template-columns: 1fr 1fr */}
+              {/* Div vacío para mantener la grilla alineada */}
               <div className="form-group hidden-desktop"></div>
 
               {/* Hormas Reales */}
@@ -289,17 +333,17 @@ const AjusteStock = () => {
                 />
               </div>
 
-              {/* Kgs Reales */}
+              {/* Kgs Reales (Calculado y solo lectura) */}
               <div className="form-group">
-                <label htmlFor="kgs">Kgs REALES (nuevo valor)</label>
+                <label htmlFor="kgs">Kgs REALES (nuevo valor - Calculado)</label>
                 <input
                   type="number"
                   step="0.01"
                   id="kgs"
                   name="kgs"
-                  min="0"
                   value={formData.kgs}
-                  onChange={handleChange}
+                  readOnly
+                  style={{ backgroundColor: '#f0f0f0', cursor: 'not-allowed' }}
                   required
                 />
               </div>

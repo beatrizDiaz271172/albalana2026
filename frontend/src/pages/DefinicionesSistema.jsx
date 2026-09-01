@@ -18,7 +18,10 @@ const DefinicionesSistema = () => {
     codigo: '',
     maduracionDias: '',
     consumoOptDias: '',
-    stockMinimo: ''
+    stockMinimo: '',
+    preMaduracionDias: '',
+    postMaduracionDias: '',
+    diasSinMov: ''
   });
 
   const authHeaders = () => {
@@ -40,7 +43,16 @@ const DefinicionesSistema = () => {
 
       if (response.ok) {
         const dataProductos = await response.json();
-        setProductos(Array.isArray(dataProductos) ? dataProductos : []);
+        const listaArray = Array.isArray(dataProductos) ? dataProductos : [];
+
+        // Ordenar alfabéticamente por nombre (ignorando mayúsculas/minúsculas y acentos)
+        listaArray.sort((a, b) => {
+          const nombreA = a.nombre ? a.nombre.toLowerCase() : '';
+          const nombreB = b.nombre ? b.nombre.toLowerCase() : '';
+          return nombreA.localeCompare(nombreB, 'es', { sensitivity: 'base' });
+        });
+
+        setProductos(listaArray);
       }
     } catch (error) {
       console.error('Error al cargar productos:', error);
@@ -56,12 +68,11 @@ const DefinicionesSistema = () => {
     if (!formData.nombre || formData.nombre.trim() === '') {
       nuevosErrores.nombre = 'El nombre es requerido';
     } else {
-      // Validar que el nombre no esté duplicado
       const nombreTrimmed = formData.nombre.trim().toLowerCase();
       const nombreDuplicado = productos.some(
         (prod) =>
           prod.nombre.toLowerCase() === nombreTrimmed &&
-          prod.id !== editando // Si estamos editando, no validar contra sí mismo
+          prod.id !== editando
       );
 
       if (nombreDuplicado) {
@@ -73,16 +84,36 @@ const DefinicionesSistema = () => {
       nuevosErrores.codigo = 'El código es requerido';
     }
 
-    if (!formData.maduracionDias || formData.maduracionDias <= 0) {
+    const maduracion = Number(formData.maduracionDias);
+    if (!formData.maduracionDias || maduracion <= 0) {
       nuevosErrores.maduracionDias = 'La maduración debe ser mayor a 0';
     }
 
-    if (!formData.consumoOptDias || formData.consumoOptDias <= 0) {
+    const preMaduracion = Number(formData.preMaduracionDias);
+    if (formData.preMaduracionDias === '' || preMaduracion <= 0) {
+      nuevosErrores.preMaduracionDias = 'La pre-maduración es requerida y debe ser mayor a 0';
+    } else if (maduracion > 0 && preMaduracion >= maduracion) {
+      nuevosErrores.preMaduracionDias = 'Debe ser menor que los días de maduración';
+    }
+
+    const postMaduracion = Number(formData.postMaduracionDias);
+    if (formData.postMaduracionDias === '' || postMaduracion <= 0) {
+      nuevosErrores.postMaduracionDias = 'La post-maduración es requerida y debe ser mayor a 0';
+    }
+
+    const consumoOpt = Number(formData.consumoOptDias);
+    if (!formData.consumoOptDias || consumoOpt <= 0) {
       nuevosErrores.consumoOptDias = 'El consumo óptimo debe ser mayor a 0';
     }
 
-    if (!formData.stockMinimo || formData.stockMinimo < 0) {
+    const stockMin = Number(formData.stockMinimo);
+    if (formData.stockMinimo === '' || stockMin < 0) {
       nuevosErrores.stockMinimo = 'El stock mínimo debe ser 0 o mayor';
+    }
+
+    const diasSinMovVal = Number(formData.diasSinMov);
+    if (formData.diasSinMov === '' || diasSinMovVal <= 0) {
+      nuevosErrores.diasSinMov = 'Los días sin movimiento son requeridos y deben ser mayores a 0';
     }
 
     setErrores(nuevosErrores);
@@ -95,7 +126,6 @@ const DefinicionesSistema = () => {
       ...prev,
       [name]: value
     }));
-    // Limpiar error del campo cuando el usuario empieza a escribir
     if (errores[name]) {
       setErrores((prev) => ({
         ...prev,
@@ -104,24 +134,46 @@ const DefinicionesSistema = () => {
     }
   };
 
-  const handleAbrirModal = (producto = null) => {
+  const [bloquearIdentificadores, setBloquearIdentificadores] = useState(false);
+
+  const handleAbrirModal = async (producto = null) => {
     if (producto) {
       setEditando(producto.id);
+      
+      // Ejemplo: Validar si el producto tiene lotes asociados 
+      // (puedes ajustar esta condición según cómo recibas o consultes la información de lotes)
+      try {
+        const resLotes = await fetch(`${API_BASE}/lotes/producto/${producto.id}`, { headers: authHeaders() });
+        if (resLotes.ok) {
+          const lotesAsociados = await resLotes.json();
+          setBloquearIdentificadores(Array.isArray(lotesAsociados) && lotesAsociados.length > 0);
+        }
+      } catch (e) {
+        setBloquearIdentificadores(false);
+      }
+
       setFormData({
         nombre: producto.nombre || '',
         codigo: producto.codigo || '',
-        maduracionDias: producto.maduracionDias || '',
-        consumoOptDias: producto.consumoOptDias || '',
-        stockMinimo: producto.stockMinimo || ''
+        maduracionDias: producto.maduracionDias ?? '',
+        consumoOptDias: producto.consumoOptDias ?? '',
+        stockMinimo: producto.stockMinimo ?? '',
+        preMaduracionDias: producto.preMaduracionDias ?? '',
+        postMaduracionDias: producto.postMaduracionDias ?? '',
+        diasSinMov: producto.diasSinMov ?? ''
       });
     } else {
       setEditando(null);
+      setBloquearIdentificadores(false);
       setFormData({
         nombre: '',
         codigo: '',
         maduracionDias: '',
         consumoOptDias: '',
-        stockMinimo: ''
+        stockMinimo: '',
+        preMaduracionDias: '',
+        postMaduracionDias: '',
+        diasSinMov: ''
       });
     }
     setErrores({});
@@ -136,7 +188,10 @@ const DefinicionesSistema = () => {
       codigo: '',
       maduracionDias: '',
       consumoOptDias: '',
-      stockMinimo: ''
+      stockMinimo: '',
+      preMaduracionDias: '',
+      postMaduracionDias: '',
+      diasSinMov: ''
     });
     setErrores({});
   };
@@ -151,7 +206,10 @@ const DefinicionesSistema = () => {
       codigo: formData.codigo.trim(),
       maduracionDias: Number(formData.maduracionDias),
       consumoOptDias: Number(formData.consumoOptDias),
-      stockMinimo: Number(formData.stockMinimo)
+      stockMinimo: Number(formData.stockMinimo),
+      preMaduracionDias: Number(formData.preMaduracionDias),
+      postMaduracionDias: Number(formData.postMaduracionDias),
+      diasSinMov: Number(formData.diasSinMov)
     };
 
     try {
@@ -230,7 +288,7 @@ const DefinicionesSistema = () => {
         {/* Título principal */}
         <div className="header-def">
           <h2 className="screen-title-def">
-            <span className="title-icon">⚙️</span> Definiciones del sistema
+            <span className="title-icon">⚙️</span> Mantenimiento de Productos
           </h2>
           <button className="btn-agregar" onClick={() => handleAbrirModal()}>
             ➕ Agregar producto
@@ -255,8 +313,11 @@ const DefinicionesSistema = () => {
                   <th>Nombre</th>
                   <th>Código</th>
                   <th>Maduración (días)</th>
+                  <th>Pre-Maduración</th>
+                  <th>Post-Maduración</th>
                   <th>Consumo Ópt. (días)</th>
                   <th>Stock Mín.</th>
+                  <th>Días sin Mov.</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
@@ -276,10 +337,19 @@ const DefinicionesSistema = () => {
                       {producto.maduracionDias}
                     </td>
                     <td className="celda-numero">
+                      {producto.preMaduracionDias ?? '-'}
+                    </td>
+                    <td className="celda-numero">
+                      {producto.postMaduracionDias ?? '-'}
+                    </td>
+                    <td className="celda-numero">
                       {producto.consumoOptDias}
                     </td>
                     <td className="celda-numero">
                       {producto.stockMinimo}
+                    </td>
+                    <td className="celda-numero">
+                      {producto.diasSinMov ?? '-'}
                     </td>
                     <td className="celda-acciones">
                       <button
@@ -319,9 +389,11 @@ const DefinicionesSistema = () => {
             </div>
 
             <div className="modal-body">
-              {/* Nombre */}
+             {/* Nombre */}
               <div className="form-group-def">
-                <label htmlFor="nombre">Nombre *</label>
+                <label htmlFor="nombre">
+                  Nombre * {bloquearIdentificadores && <small style={{color: '#e67e22'}}>(Bloqueado por tener lotes asociados)</small>}
+                </label>
                 <input
                   type="text"
                   id="nombre"
@@ -329,7 +401,9 @@ const DefinicionesSistema = () => {
                   value={formData.nombre}
                   onChange={handleInputChange}
                   placeholder="Ej: Queso Fresco"
-                  className={errores.nombre ? 'input-error' : ''}
+                  readOnly={bloquearIdentificadores}
+                  className={`${errores.nombre ? 'input-error' : ''} ${bloquearIdentificadores ? 'input-readonly' : ''}`}
+                  style={bloquearIdentificadores ? { backgroundColor: '#e9ecef', cursor: 'not-allowed' } : {}}
                 />
                 {errores.nombre && (
                   <span className="error-msg">{errores.nombre}</span>
@@ -371,6 +445,42 @@ const DefinicionesSistema = () => {
                 )}
               </div>
 
+              {/* Pre-Maduración (días) */}
+              <div className="form-group-def">
+                <label htmlFor="preMaduracionDias">Pre-Maduración (días) *</label>
+                <input
+                  type="number"
+                  id="preMaduracionDias"
+                  name="preMaduracionDias"
+                  min="1"
+                  value={formData.preMaduracionDias}
+                  onChange={handleInputChange}
+                  placeholder="Ej: 7"
+                  className={errores.preMaduracionDias ? 'input-error' : ''}
+                />
+                {errores.preMaduracionDias && (
+                  <span className="error-msg">{errores.preMaduracionDias}</span>
+                )}
+              </div>
+
+              {/* Post-Maduración (días) */}
+              <div className="form-group-def">
+                <label htmlFor="postMaduracionDias">Post-Maduración (días) *</label>
+                <input
+                  type="number"
+                  id="postMaduracionDias"
+                  name="postMaduracionDias"
+                  min="1"
+                  value={formData.postMaduracionDias}
+                  onChange={handleInputChange}
+                  placeholder="Ej: 30"
+                  className={errores.postMaduracionDias ? 'input-error' : ''}
+                />
+                {errores.postMaduracionDias && (
+                  <span className="error-msg">{errores.postMaduracionDias}</span>
+                )}
+              </div>
+
               {/* Consumo Óptimo (días) */}
               <div className="form-group-def">
                 <label htmlFor="consumoOptDias">Consumo Óptimo (días) *</label>
@@ -404,6 +514,24 @@ const DefinicionesSistema = () => {
                 />
                 {errores.stockMinimo && (
                   <span className="error-msg">{errores.stockMinimo}</span>
+                )}
+              </div>
+
+              {/* Días sin Movimiento */}
+              <div className="form-group-def">
+                <label htmlFor="diasSinMov">Días sin Movimiento *</label>
+                <input
+                  type="number"
+                  id="diasSinMov"
+                  name="diasSinMov"
+                  min="1"
+                  value={formData.diasSinMov}
+                  onChange={handleInputChange}
+                  placeholder="Ej: 30"
+                  className={errores.diasSinMov ? 'input-error' : ''}
+                />
+                {errores.diasSinMov && (
+                  <span className="error-msg">{errores.diasSinMov}</span>
                 )}
               </div>
             </div>

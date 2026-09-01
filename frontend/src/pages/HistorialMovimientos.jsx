@@ -84,9 +84,15 @@ const HistorialMovimientos = () => {
     if (!fechaISO) return '-';
     const fecha = new Date(fechaISO);
     return fecha.toLocaleDateString('es-AR', {
-      day: '2-digit', month: '2-digit', year: 'numeric'
+      day: '2-digit', month: '2-digit', year: 'numeric' 
     });
   };
+
+  const formatearFechaDisplay = (fechaISO) => {
+  if (!fechaISO) return '';
+  const [año, mes, dia] = fechaISO.split('-');
+  return `${dia}/${mes}/${año}`;
+ };
 
   // Filtrado local y ordenamiento: 1º por nombre de producto, 2º por fechaAlta
   const movimientosFiltrados = movimientos.filter(mov => {
@@ -252,7 +258,7 @@ const HistorialMovimientos = () => {
                       <tr key={mov.id}>
                         <td>{mov.lote?.codigo || '-'}</td>
                         <td>{formatearFecha(mov.fechaAlta)}</td>
-                        <td>{formatearFecha(mov.fechaEditado)}</td>
+                        <td>{formatearFechaDisplay(mov.lote.fechaElaboracion)}</td>
                         <td>
                           <span className={tipo.clase}>{tipo.texto}</span>
                         </td>

@@ -9,12 +9,11 @@ const TransferenciaEntreCamaras = () => {
   // Fecha actual por defecto en formato ISO (YYYY-MM-DD)
   const hoy = new Date().toISOString().split('T')[0];
 
-  const [camarasOrigen, setCamarasOrigen] = useState([]);
+  const [camaras, setCamaras] = useState([]);
   const [productos, setProductos] = useState([]);
   const [operadores, setOperadores] = useState([]);
   const [lotes, setLotes] = useState([]);
   const [camarasDestino, setCamarasDestino] = useState([]);
-  const [camaras, setCamaras] = useState([]);
 
   const [formData, setFormData] = useState({
     cdTipoMov: 4, // Representa el tipo de movimiento TRANSFERENCIA=4
@@ -24,8 +23,8 @@ const TransferenciaEntreCamaras = () => {
     cdCamaraDestino: '',
     cdLote: '',
     cdOperador: '',
-    hormas: '',
-    kgs: '',
+    hormas: 0.0,
+    kgs: 0.0,
     observaciones: ''
   });
 
@@ -38,15 +37,23 @@ const TransferenciaEntreCamaras = () => {
     return { 'Authorization': `Bearer ${token}` };
   };
 
-  // 1. useEffect inicial - Obtener productos, operadores y cámaras generales
+  // 1. useEffect inicial - Obtener cámaras, productos y operadores
   useEffect(() => {
     const obtenerDatos = async () => {
       try {
-        const [resProd, resOp, resCam] = await Promise.all([
-          fetch(API_BASE + '/productos', { headers: authHeaders() }),
-          fetch(API_BASE + '/operadores', { headers: authHeaders() }),
+        const [resCam, resProd, resOp] = await Promise.all([
           fetch(API_BASE + '/camaras', { headers: authHeaders() }),
+          fetch(API_BASE + '/productos', { headers: authHeaders() }),
+          fetch(API_BASE + '/operadores', { headers: authHeaders() })
         ]);
+
+        if (resCam.ok) {
+          const data = await resCam.json();
+          const ordenados = data.sort((a, b) => 
+            (a.nombre || '').localeCompare(b.nombre || '')
+          );
+          setCamaras(ordenados);
+        }
 
         if (resProd.ok) {
           const data = await resProd.json();
@@ -57,11 +64,6 @@ const TransferenciaEntreCamaras = () => {
           const data = await resOp.json();
           setOperadores(data);
         }
-
-        if (resCam.ok) {
-          const data = await resCam.json();
-          setCamaras(data);
-        }
       } catch (error) {
         console.error('Error al cargar datos iniciales:', error);
       }
@@ -70,45 +72,16 @@ const TransferenciaEntreCamaras = () => {
     obtenerDatos();
   }, []);
 
-  // 2. useEffect - Cargar cámaras de origen según el Producto seleccionado
-  useEffect(() => {
-    const idProducto = formData.cdProducto;
-
-    if (!idProducto) {
-      setCamarasOrigen([]);
-      setFormData(prev => ({ ...prev, cdCamara: '', cdCamaraDestino: '', cdLote: '', hormas: '', kgs: '' }));
-      return;
-    }
-
-    const cargarCamarasOrigenPorProducto = async () => {
-      try {
-        const res = await fetch(`${API_BASE}/camaras/producto/${idProducto}`, { 
-          headers: authHeaders() 
-        });
-        if (res.ok) {
-          const data = await res.json();
-          const ordenados = data.sort((a, b) => 
-            (a.nombre || '').localeCompare(b.nombre || '')
-          );
-          setCamarasOrigen(ordenados);
-        }
-      } catch (error) {
-        console.error('Error al cargar cámaras de origen:', error);
-      }
-    };
-
-    cargarCamarasOrigenPorProducto();
-  }, [formData.cdProducto]);
-
-  // 3. useEffect - Cargar lotes filtrados según Producto y Cámara Origen seleccionados
+  // 2. useEffect - Cargar lotes filtrados según Producto y Cámara Origen seleccionados
   useEffect(() => {
     const idProducto = formData.cdProducto;
     const idCamaraOrigen = formData.cdCamara;
 
+    // Si no están ambos seleccionados, limpiar lotes
     if (!idProducto || !idCamaraOrigen) {
       setLotes([]);
       setLoteSeleccionado(null);
-      setFormData(prev => ({ ...prev, cdLote: '', hormas: '', kgs: '' }));
+      setFormData(prev => ({ ...prev, cdLote: '' }));
       return;
     }
 
@@ -129,12 +102,14 @@ const TransferenciaEntreCamaras = () => {
     cargarLotesFiltrados();
   }, [formData.cdProducto, formData.cdCamara]);
 
-  // 4. useEffect - Cargar cámaras destino (todas excepto la cámara origen seleccionada)
+  // 3. useEffect - Cargar cámaras destino (todas excepto la origen)
   useEffect(() => {
+    const idProducto = formData.cdProducto;
     const idCamaraOrigen = formData.cdCamara;
 
-    if (!idCamaraOrigen) {
+    if (!idProducto || !idCamaraOrigen) {
       setCamarasDestino([]);
+      // Evitamos sobrescribir innecesariamente si ya está vacío
       if (formData.cdCamaraDestino !== '') {
         setFormData(prev => ({ ...prev, cdCamaraDestino: '' }));
       }
@@ -144,10 +119,9 @@ const TransferenciaEntreCamaras = () => {
     const filtradas = camaras.filter(cam => String(cam.id) !== String(idCamaraOrigen));
     setCamarasDestino(filtradas);
     
-  }, [formData.cdCamara, camaras]);
+  }, [formData.cdProducto, formData.cdCamara, camaras]);
 
   // Variables para habilitar/deshabilitar combos
-  const camaraOrigenHabilitada = Boolean(formData.cdProducto);
   const loteHabilitado = Boolean(formData.cdProducto && formData.cdCamara);
   const camaraDestinoHabilitado = Boolean(formData.cdProducto && formData.cdCamara);
 
@@ -167,6 +141,11 @@ const TransferenciaEntreCamaras = () => {
   };
 
   const maximos = obtenerMaximos();
+  
+  // NUEVO: Calculamos los Kgs máximos permitidos según las hormas ingresadas en el input
+  const maxKgsCalculado = (formData.hormas && maximos.kgsXHorma) 
+    ? formData.hormas * maximos.kgsXHorma 
+    : 0;
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
@@ -178,36 +157,19 @@ const TransferenciaEntreCamaras = () => {
       newValue = value === '' ? '' : Number(value);
     }
 
-    // Actualizamos el estado base
-    let nuevosDatos = {
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: newValue,
-      ...(name === 'cdProducto' ? { cdCamara: '', cdCamaraDestino: '', cdLote: '', hormas: '', kgs: '' } : {}),
-      ...(name === 'cdCamara' ? { cdCamaraDestino: '', cdLote: '', hormas: '', kgs: '' } : {})
-    };
+      // Resetear campos dependientes
+      ...(name === 'cdProducto' || name === 'cdCamara' ? { cdLote: '', cdCamaraDestino: '' } : {}),
+      ...(name === 'cdCamara' ? { cdCamaraDestino: '' } : {})
+    }));
 
-    // Si se selecciona un lote, guardamos el objeto seleccionado y calculamos Kgs si ya hay hormas
+    // Si se selecciona un lote, obtener sus datos
     if (name === 'cdLote') {
       const lote = lotes.find(l => l.codigo === value);
       setLoteSeleccionado(lote || null);
-      
-      if (lote && nuevosDatos.hormas) {
-        nuevosDatos.kgs = Number((nuevosDatos.hormas * lote.kgsXHorma).toFixed(2));
-      } else {
-        nuevosDatos.kgs = '';
-      }
     }
-
-    // Si cambian las hormas, calculamos automáticamente los Kgs en base a kgsXHorma del lote seleccionado
-    if (name === 'hormas') {
-      if (loteSeleccionado && loteSeleccionado.kgsXHorma && newValue !== '') {
-        nuevosDatos.kgs = Number((newValue * loteSeleccionado.kgsXHorma).toFixed(2));
-      } else {
-        nuevosDatos.kgs = '';
-      }
-    }
-
-    setFormData(nuevosDatos);
   };
 
   const validarFormulario = () => {
@@ -228,9 +190,13 @@ const TransferenciaEntreCamaras = () => {
       errores.hormas = 'Las hormas deben ser mayor a 0';
     }
     
-    // Validación de Kgs
-    if (formData.kgs === '' || formData.kgs === null || formData.kgs <= 0) {
-      errores.kgs = 'Los Kgs calculados deben ser mayores a 0';
+    // Validación de Kgs (CORREGIDA)
+    if (formData.kgs === '' || formData.kgs === null) {
+      errores.kgs = 'Los Kgs son requeridos';
+    } else if (maxKgsCalculado > 0 && formData.kgs > maxKgsCalculado) {
+      errores.kgs = `No puede transferir más de ${maxKgsCalculado.toFixed(2)} kgs (calculado por hormas)`;
+    } else if (formData.kgs <= 0) {
+      errores.kgs = 'Los Kgs deben ser mayor a 0';
     }
 
     if (!formData.observaciones.trim()) {
@@ -362,13 +328,10 @@ const TransferenciaEntreCamaras = () => {
                   name="cdCamara"
                   value={formData.cdCamara}
                   onChange={handleChange}
-                  disabled={!camaraOrigenHabilitada}
                   required
                 >
-                  <option value="">
-                    {camaraOrigenHabilitada ? '— Seleccionar —' : '— Seleccioná un producto primero —'}
-                  </option>
-                  {camarasOrigen.map((item) => (
+                  <option value="">— Seleccionar —</option>
+                  {camaras.map((item) => (
                     <option key={item.id} value={item.id}>
                       {item.nombre}
                     </option>
@@ -479,7 +442,6 @@ const TransferenciaEntreCamaras = () => {
                   value={formData.hormas}
                   onChange={handleChange}
                   placeholder="Ingrese cantidad"
-                  disabled={!formData.cdLote}
                   required
                 />
                 {erroresValidacion.hormas && (
@@ -489,18 +451,27 @@ const TransferenciaEntreCamaras = () => {
                 )}
               </div>
 
-              {/* Kgs a transferir (Solo Lectura - Calculado Automáticamente) */}
+              {/* Kgs a transferir (CORREGIDO) */}
               <div className="form-group">
-                <label htmlFor="kgs">Kgs (Calculado)</label>
+                <label htmlFor="kgs">
+                  Kgs
+                  {maxKgsCalculado > 0 && (
+                    <span style={{ fontSize: '0.85rem', color: '#666', marginLeft: '5px' }}>
+                      (Disponible: {maxKgsCalculado.toFixed(2)})
+                    </span>
+                  )}
+                </label>
                 <input
                   type="number"
                   step="0.01"
                   id="kgs"
                   name="kgs"
+                  min="0"
+                  max={maxKgsCalculado || undefined}
                   value={formData.kgs}
-                  placeholder="Automático"
-                  readOnly
-                  style={{ backgroundColor: '#e9ecef', cursor: 'not-allowed' }}
+                  onChange={handleChange}
+                  placeholder="Ingrese cantidad"
+                  disabled={!formData.hormas || formData.hormas <= 0}
                   required
                 />
                 {erroresValidacion.kgs && (

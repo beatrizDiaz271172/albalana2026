@@ -15,34 +15,39 @@ const EstadoMaduracionLoteCamara = () => {
     const token = localStorage.getItem('userToken');
     return { 'Authorization': `Bearer ${token}` };
   };
+  const formatearFechaDisplay = (fechaISO) => {
+      if (!fechaISO) return '';
+          const [año, mes, dia] = fechaISO.split('-');
+          return `${dia}/${mes}/${año}`;
+      };
 
   // 1. Cargar stocks al montar
-  useEffect(() => {
-    const cargarStocks = async () => {
-      setCargando(true);
-      try {
-        const response = await fetch(`${API_BASE}/stock`, { 
-          headers: authHeaders() 
-        });
+useEffect(() => {
+  const cargarDatos = async () => {
+    setCargando(true);
+    try {
+      // 1. Agregamos la petición de mermas al Promise.all
+      const [resStock] = await Promise.all([
+        fetch(`${API_BASE}/stock`, { headers: authHeaders() }) // 👈 Nueva petición
+      ]);
 
-        if (response.ok) {
-          const dataStocks = await response.json();
-          setStocks(Array.isArray(dataStocks) ? dataStocks : []);
-        }
-      } catch (error) {
-        console.error('Error al cargar stocks:', error);
-      } finally {
-        setCargando(false);
-      }
-    };
+      // 2. Procesamos las respuestas si el servidor respondió correctamente
+      if (resStock.ok) setStocks(await resStock.json()); // 👈 Guardamos el estado de mermas
+      
+    } catch (error) {
+      console.error('Error al cargar datos:', error);
+    } finally {
+      setCargando(false);
+    }
+  };
 
-    cargarStocks();
-  }, []);
+  cargarDatos();
+}, []);
 
   // 2. Procesar stocks y agregar detalles de maduración
   useEffect(() => {
     if (stocks.length > 0) {
-      const stocksCalculados = stocks
+       const stocksCalculados = stocks
         .filter((stock) => stock.activo === true) // Solo stocks activos
         .map((stock) => {
           // Obtener fechaElaboracion
@@ -55,27 +60,29 @@ const EstadoMaduracionLoteCamara = () => {
 
           // Calcular porcentaje de maduración
           const diasMaduracion = stock.lote?.producto?.maduracionDias || 1;
+          const diasPreMaduracion = stock.lote?.producto?.preMaduracionDias ||7;
+         // alert("Dias Pre Maduracion: " + diasPreMaduracion);
           const porcentajeMaduracion = Math.min(100, (diasTranscurridos / diasMaduracion) * 100);
 
           // Obtener stock mínimo
           const stockMinimo = stock.lote?.producto?.stockMinimo || 0;
 
-          // Validar que cámara sea activa
-          const camaraActiva = stock.lote?.camara?.activo === true;
+
 
           return {
             ...stock,
             loteCode: stock.lote?.codigo || 'N/A',
             productoNombre: stock.lote?.producto?.nombre || 'N/A',
             fechaElaboracion: stock.lote?.fechaElaboracion || '',
-            camaraNombre: camaraActiva ? (stock.lote?.camara?.nombre || 'N/A') : 'N/A',
-            camaraActiva,
+            camaraNombre: stock.lote?.camara?.nombre || 'N/A',
             hormas: stock.hormas || 0,
             diasTranscurridos,
             stockMinimo,
             porcentajeMaduracion,
             diasMaduracion,
-            maduroCompleto: diasTranscurridos >= diasMaduracion
+            maduroCompleto: diasTranscurridos >= diasMaduracion,
+            diasPasaron: diasMaduracion - diasTranscurridos,
+            preMaduro: 0 < diasMaduracion - diasTranscurridos && diasMaduracion - diasTranscurridos <= diasPreMaduracion
           };
         })
         .sort((a, b) => {
@@ -177,14 +184,12 @@ const EstadoMaduracionLoteCamara = () => {
 
                     {/* Fecha Elaboración */}
                     <td className="celda-fecha">
-                      {formatearFecha(stock.fechaElaboracion)}
+                      {formatearFechaDisplay(stock.fechaElaboracion)}
                     </td>
 
                     {/* Cámara */}
                     <td className="celda-camara">
-                      <span className={`badge-camara ${stock.camaraActiva ? 'activa' : 'inactiva'}`}>
-                        {stock.camaraNombre}
-                      </span>
+                      <strong>{stock.camaraNombre}</strong>                  
                     </td>
 
                     {/* Hormas (H) */}
@@ -223,14 +228,19 @@ const EstadoMaduracionLoteCamara = () => {
                       </span>
                     </td>
 
-                    {/* Estado */}
-                    <td className="celda-estado">
-                      {stock.maduroCompleto ? (
-                        <span className="badge-estado maduro">✓ Maduro</span>
-                      ) : (
-                        <span className="badge-estado en-maduracion">En maduración</span>
-                      )}
-                    </td>
+                   {/* Estado */}
+<td className="celda-estado">
+  {stock.maduroCompleto ? (
+    <span className="badge-estado maduro">✓ Maduro</span>
+  ) : (
+    stock.preMaduro ? (
+      <span className="badge-estado maduro">⚡ Prox a estar Listo</span>
+    ) : (
+      <span className="badge-estado en-maduracion">En maduración</span>
+    )
+  )}
+</td>
+                    
                   </tr>
                 ))}
               </tbody>

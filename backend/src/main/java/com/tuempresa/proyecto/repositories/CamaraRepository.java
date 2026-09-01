@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CamaraRepository extends JpaRepository<Camara, Long> {
-
+boolean existsByNombreIgnoreCase(String nombre);
 }

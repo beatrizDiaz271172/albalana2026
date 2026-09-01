@@ -19,4 +19,8 @@ public class Camara {
     private Long id;
 
     private String nombre; 
+
+    public Camara(String nombre){
+        this.nombre = nombre;
+    }
 }

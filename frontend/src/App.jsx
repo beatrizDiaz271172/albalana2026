@@ -11,6 +11,10 @@ import StockProductoCamaras from './pages/StockProductoCamaras';
 import RemitoCliente from './pages/RemitoCliente';
 import EstadoMaduracionLoteCamara from './pages/EstadoMaduracionLoteCamara';
 import DefinicionesSistema from './pages/DefinicionesSistema';
+import DefinicionesSistOpc from './pages/DefinicionesSistOpc';
+import ConsultarItemsRemito from './pages/ConsultarItemsRemito';
+import MermasYPesoProm from './pages/MermasYPesoProm';
+import DefinicionesSistemaCamara from './pages/DefinicionesSistemaCamara';
 
 export default function App() {
   return (
@@ -27,7 +31,14 @@ export default function App() {
         <Route path="/stockProductoCamaras" element={<StockProductoCamaras />} />   
         <Route path="/remitoCliente" element={<RemitoCliente />} />
         <Route path="/estadoMaduracionLoteCamara" element={<EstadoMaduracionLoteCamara />} />
+        <Route path="/definicionesSistOpc" element={<DefinicionesSistOpc />} />
         <Route path="/definicionesSistema" element={<DefinicionesSistema />} />
+        <Route path="/lotes/producto/:idProducto" element={<DefinicionesSistema />} />
+        <Route path="/definicionesSistemaCamara" element={<DefinicionesSistemaCamara />} />
+        <Route path="/camaras/:idCamara" element={<DefinicionesSistemaCamara />} />
+        <Route path="/mermasYPesoProm" element={<MermasYPesoProm />} />
+        <Route path="/remitos/:remitoId/items" element={<ConsultarItemsRemito />} />
+        <Route path="/productos/mermas" element={<MermasYPesoProm />} />
       </Routes>
     </BrowserRouter>
   );

@@ -48,7 +48,7 @@ public class LoteController {
         List<Lote> lotesFiltrados = loteRepository.findByProducto_IdAndCamara_IdAndActivoTrue(idProducto, idCamara);
         lotesFiltrados.forEach(lote -> {
             Stock stock = stockRepository.findByLote_IdAndActivoTrue(lote.getId());
-            if (stock != null){
+            if (stock != null && stock.getHormas()>0){
                 lote.setHormas(stock.getHormas());
                 lote.setKgs(stock.getKgs());
             }
@@ -56,4 +56,10 @@ public class LoteController {
         
         return ResponseEntity.ok(lotesFiltrados);
     }
+    @GetMapping("/producto/{idProducto}")
+        public ResponseEntity<List<Lote>> obtenerPorProducto(@PathVariable Long idProducto) {
+        List<Lote> lotesFiltrados = loteRepository.findByProducto_Id(idProducto);
+        return ResponseEntity.ok(lotesFiltrados);
+    }
+  
 }

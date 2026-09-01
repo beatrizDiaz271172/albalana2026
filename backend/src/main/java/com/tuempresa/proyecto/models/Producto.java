@@ -22,8 +22,17 @@ public class Producto {
 
     private String codigo; 
 
-     @Column(name = "maduracion_dias")
+    @Column(name = "maduracion_dias")
     private Long maduracionDias;
+
+   @Column(name = "pre_maduracion_dias")
+    private Long preMaduracionDias;
+
+    @Column(name = "post_maduracion_dias")
+    private Long postMaduracionDias;
+
+    @Column(name = "dias_sin_mov")
+    private Long diasSinMov;
 
     @Column(name = "consumo_opt_dias")
     private Long consumoOptDias;
@@ -31,11 +40,14 @@ public class Producto {
     @Column(name = "stock_minimo")
     private Long stockMinimo;
 
-    public Producto(String nombre, String codigo, Long maduracionDias, Long consumoOptDias, Long stockMinimo){
+    public Producto(String nombre, String codigo, Long maduracionDias, Long consumoOptDias, Long stockMinimo, Long diassinMov, Long preMaduracionDias, Long postMaduracionDias){
         this.nombre=nombre;
         this.codigo=codigo;
         this.maduracionDias=maduracionDias;
         this.consumoOptDias=consumoOptDias;
         this.stockMinimo=stockMinimo;
+        this.preMaduracionDias=preMaduracionDias;
+        this.postMaduracionDias=postMaduracionDias;
+        this.diasSinMov=diassinMov;
     }
 }

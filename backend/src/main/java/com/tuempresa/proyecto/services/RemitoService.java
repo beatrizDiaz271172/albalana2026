@@ -117,4 +117,10 @@ public class RemitoService {
 
         stockRepository.save(stock);
     }
+
+    
+    public List<Movimiento> obtenerItemsRemito(Long remitoId) {
+        List<Movimiento> movimientos= movimientoRepository.findByRemito_Id(remitoId);
+        return movimientos;
+    }
 }
