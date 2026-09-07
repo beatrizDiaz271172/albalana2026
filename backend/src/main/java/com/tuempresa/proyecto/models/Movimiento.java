@@ -51,4 +51,16 @@ public class Movimiento {
 
     @Column(name = "fecha_editado")
     private LocalDate fechaEditado;
+
+    @Column(name = "dias_maduracion_rem")
+    private Long diasMaduracionRem;
+
+    @Column(name = "dias_maduracion_prod")
+    private Long diasMaduracionProd;
+
+    @Column(name = "fecha_consumo_preferente")
+    private LocalDate fechaConsumoPreferente;
+
+    @Column(name = "activo")
+    private Boolean activo = true;
 }

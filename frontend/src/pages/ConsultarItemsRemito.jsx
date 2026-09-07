@@ -1,125 +1,661 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import './RemitoCliente.css'; // Reutilizamos los estilos o puedes usar estilos propios
+import './ConsultarItemsRemito.css';
 
 const API_BASE = 'http://192.168.0.32:8081/api';
 
 const ConsultarItemsRemito = () => {
   const navigate = useNavigate();
-  const { remitoId } = useParams(); // Captura el parámetro :remitoId de la URL
+  const { remitoId } = useParams();
 
   const [items, setItems] = useState([]);
-  const [cargando, setCargando] = useState(false);
+  const [remito, setRemito] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState('');
 
   const authHeaders = () => {
     const token = localStorage.getItem('userToken');
-    return { 'Authorization': `Bearer ${token}` };
+
+    return {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    };
   };
 
   useEffect(() => {
     if (!remitoId) return;
 
-    const cargarItemsRemito = async () => {
+    const cargarDatos = async () => {
       setCargando(true);
-      try {
-        const response = await fetch(`${API_BASE}/remitos/${remitoId}/items`, {
-          headers: authHeaders()
-        });
+      setError('');
 
-        if (response.ok) {
-          const data = await response.json();
-          setItems(Array.isArray(data) ? data : []);
-        } else {
-          console.error('Error al obtener los ítems del remito');
+      try {
+        // ---------------------------------------------------------
+        // ÍTEMS DEL REMITO
+        // ---------------------------------------------------------
+        const responseItems = await fetch(
+          `${API_BASE}/remitos/${remitoId}/items`,
+          {
+            headers: authHeaders()
+          }
+        );
+
+        if (!responseItems.ok) {
+          throw new Error('No se pudieron obtener los ítems del remito.');
         }
-      } catch (error) {
-        console.error('Error de red al cargar los ítems:', error);
+
+        debugger;
+        const dataItems = await responseItems.json();
+        console.log('ITEMS DEL REMITO:', dataItems);
+
+        setItems(Array.isArray(dataItems) ? dataItems : []);
+
+        // ---------------------------------------------------------
+        // DATOS GENERALES DEL REMITO
+        // ---------------------------------------------------------
+        // Si tu backend tiene este endpoint, se utilizan sus datos.
+        // Si no existe, la pantalla continúa funcionando con los
+        // datos disponibles en los ítems.
+        try {
+          const responseRemito = await fetch(
+            `${API_BASE}/remitos/${remitoId}`,
+            {
+              headers: authHeaders()
+            }
+          );
+
+          if (responseRemito.ok) {
+            const dataRemito = await responseRemito.json();
+            setRemito(dataRemito);
+          }
+        } catch (e) {
+          console.warn('No se pudieron cargar los datos generales del remito.');
+        }
+
+      } catch (err) {
+        console.error(err);
+        setError(err.message || 'Error al cargar el remito.');
       } finally {
         setCargando(false);
       }
     };
 
-    cargarItemsRemito();
+    cargarDatos();
   }, [remitoId]);
 
+  // =============================================================
+  // FUNCIONES AUXILIARES
+  // =============================================================
+
+
+  const formatearFecha = (fechaISO) => {
+      if (!fechaISO) return '';
+          const [año, mes, dia] = fechaISO.split('-');
+          return `${dia}/${mes}/${año}`;
+  };
+
+  const formatearFechaBea = (fecha) => {
+    if (!fecha) return '--/--/----';
+
+    try {
+      const fechaObj = new Date(fecha);
+
+      if (Number.isNaN(fechaObj.getTime())) {
+        return fecha;
+      }
+
+      return fechaObj.toLocaleDateString('es-AR');
+    } catch {
+      return fecha;
+    }
+  };
+
+  const obtenerNombreProducto = (item) => {
+    return (
+      item?.lote?.producto?.nombre ||
+      item?.producto?.nombre ||
+      item?.productoNombre ||
+      'Sin producto'
+    );
+  };
+
+  const obtenerCodigoLote = (item) => {
+    return (
+      item?.lote?.codigo ||
+      item?.loteCodigo ||
+      item?.codigoLote ||
+      'N/A'
+    );
+  };
+
+  const obtenerCamara = (item) => {
+    return (
+      item?.lote?.camara?.nombre ||
+      item?.camara?.nombre ||
+      item?.camaraNombre ||
+      'N/A'
+    );
+  };
+
+  const obtenerHormas = (item) => {
+    return Number(item?.hormas || 0);
+  };
+
+  const obtenerKilos = (item) => {
+    return Number(item?.kgs || item?.kilos || 0);
+  };
+
+  // =============================================================
+  // TOTAL
+  // =============================================================
+
+  const totalHormas = items.reduce(
+    (total, item) => total + obtenerHormas(item),
+    0
+  );
+
+  const totalKilos = items.reduce(
+    (total, item) => total + obtenerKilos(item),
+    0
+  );
+
+  // =============================================================
+  // DATOS GENERALES
+  // =============================================================
+
+  const numeroRemito = `MOV-${String(remitoId).padStart(4, '0')}`;
+
+  const cliente =
+    remito?.cliente?.nombre;
+
+  const operador =
+    remito?.operador?.nombre || 'N/A';
+
+  const fechaEgreso =
+    remito?.fechaEgreso;
+
+  // =============================================================
+  // IMPRIMIR
+  // =============================================================
+
+  const imprimirPDF = () => {
+    window.print();
+  };
+
+  // =============================================================
+  // RENDER
+  // =============================================================
+
   return (
-    <div className="remito-cliente-page">
-      {/* Navbar Superior */}
-      <header className="navbar-remito">
-        <div className="navbar-brand-remito">
-          <span className="brand-icon">🧀</span>
-          <span className="brand-title">Alba Lana</span>
+    <div className="remito-page">
+
+      {/* =====================================================
+          BARRA SUPERIOR
+      ====================================================== */}
+      <header className="remito-topbar">
+
+        <div className="remito-topbar-title">
+          <span className="remito-topbar-icon">🧀</span>
+          Remito {numeroRemito} — {cliente}
         </div>
-        <button className="btn-menu-remito">≡ Menú</button>
+
+        <div className="remito-topbar-actions">
+
+          <button
+            className="remito-btn-volver"
+            onClick={() => navigate(-1)}
+          >
+            ← Volver
+          </button>
+
+          <button
+            className="remito-btn-print"
+            onClick={imprimirPDF}
+          >
+            🖨 Imprimir / PDF
+          </button>
+
+        </div>
+
       </header>
 
-      <main className="remito-cliente-container" style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
-        {/* Navegación superior */}
-        <div className="nav-actions-remito" style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-          <button className="btn-nav-top-remito" onClick={() => navigate('/dashboard')} style={btnStyleLight}>
-            ← Inicio
-          </button>
-          <button className="btn-nav-top-remito" onClick={() => navigate(-1)} style={btnStyleLight}>
-            ↰ Volver
-          </button>
-        </div>
+      {/* =====================================================
+          DOCUMENTO
+      ====================================================== */}
+      <main className="remito-documento">
 
-        {/* Título principal */}
-        <h2 className="screen-title-remito" style={{ color: '#2e6b4d', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span>📋</span> Ítems del Remito REM-{remitoId}
-        </h2>
+        {/* ===================================================
+            ENCABEZADO
+        ==================================================== */}
+        <section className="remito-header">
 
-        {/* TABLA DE ÍTEMS */}
-        <div style={{ backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-          <div style={{ backgroundColor: '#2e6b4d', color: 'white', padding: '10px 15px', fontWeight: 'bold' }}>
-            Listado de Movimientos / Ítems
+          <div className="remito-empresa">
+
+            <h1>Alba Lana</h1>
+
+            <div>
+              Ruta Provincial N° 36, Km 91
+              Roberto J. Payro
+              | Magdalena Provincia de Bs. As.
+            </div>
+
+            <div>
+              Tel: (02221) 54-2006
+            </div>
+
+            <div>
+              SENASA N° RNPA
+            </div>
+
           </div>
-          
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem', backgroundColor: 'white' }}>
-              <thead>
-                <tr style={{ backgroundColor: '#f5f7f5', color: '#2e6b4d', borderBottom: '2px solid #e0e0e0' }}>
-                  <th style={thStyle}>Producto</th>
-                  <th style={thStyle}>Cámara</th>
-                  <th style={thStyle}>Lote</th>
-                  <th style={thStyle}>Hormas</th>
-                  <th style={thStyle}>Kgs</th>
-                </tr>
-              </thead>
-              <tbody>
-                {cargando ? (
+
+          <div className="remito-identificacion">
+
+            <span>N° REMITO</span>
+
+            <strong>{numeroRemito}</strong>
+
+            <small>
+              {formatearFecha(fechaEgreso)}
+            </small>
+
+          </div>
+
+        </section>
+
+        {/* ===================================================
+            LÍNEA VERDE
+        ==================================================== */}
+        <div className="remito-separador" />
+
+        {/* ===================================================
+            DATOS GENERALES
+        ==================================================== */}
+        <section className="remito-datos-grid">
+
+          <div className="remito-dato">
+
+            <span>CLIENTE</span>
+
+            <strong>{cliente}</strong>
+
+          </div>
+
+          <div className="remito-dato">
+
+            <span>FECHA DE EGRESO</span>
+
+            <strong>
+              {formatearFecha(fechaEgreso)}
+            </strong>
+
+          </div>
+
+          <div className="remito-dato">
+
+            <span>OPERARIO RESPONSABLE</span>
+
+            <strong>{operador}</strong>
+
+          </div>
+
+          <div className="remito-dato">
+
+            <span>TOTAL DEL REMITO</span>
+
+            <strong>
+              {totalHormas} hormas · {totalKilos.toFixed(1)} kg
+            </strong>
+
+          </div>
+
+        </section>
+
+        {/* ===================================================
+            DETALLE DE PRODUCTOS
+        ==================================================== */}
+        <section className="remito-seccion">
+
+          <h2>DETALLE DE PRODUCTOS</h2>
+
+          {cargando ? (
+
+            <div className="remito-cargando">
+              Cargando remito...
+            </div>
+
+          ) : error ? (
+
+            <div className="remito-error">
+              {error}
+            </div>
+
+          ) : (
+
+            <div className="remito-tabla-wrapper">
+
+              <table className="remito-tabla">
+
+                <thead>
+
                   <tr>
-                    <td colSpan="5" style={{ textAlign: 'center', padding: '20px' }}>Cargando ítems...</td>
+                    <th>Producto</th>
+                    <th>Lote</th>
+                    <th>Cámara</th>
+                    <th>Hormas</th>
+                    <th>Kgs</th>
+                    <th>Madurez al egreso</th>
+                    <th>Consumir antes de</th>
                   </tr>
-                ) : items.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" style={{ textAlign: 'center', padding: '20px', color: '#888' }}>
-                      No se encontraron ítems para este remito.
-                    </td>
-                  </tr>
-                ) : (
-                  items.map((item, index) => (
-                    <tr key={item.id || index} style={{ borderBottom: '1px solid #f0f0f0' }}>
-                      <td style={tdStyle}>{item.lote.producto?.nombre || 'N/A'}</td>
-                      <td style={tdStyle}>{item.lote.camara?.nombre || 'N/A'}</td>
-                      <td style={tdStyle}>{item.lote?.codigo || 'N/A'}</td>
-                      <td style={tdStyle}>{item.hormas ?? 0}</td>
-                      <td style={tdStyle}>{item.kgs ? Number(item.kgs).toFixed(1) : '0.0'}</td>
+
+                </thead>
+
+                <tbody>
+
+                  {items.length === 0 ? (
+
+                    <tr>
+                      <td
+                        colSpan="7"
+                        className="remito-vacio"
+                      >
+                        No se encontraron ítems para este remito.
+                      </td>
                     </tr>
-                  ))
+
+                  ) : (
+
+                    items.map((item, index) => {
+
+                      const kilos = obtenerKilos(item);
+
+                      /*
+                       * Intentamos diferentes nombres de propiedades
+                       * para que sea compatible con tu backend.
+                       */
+
+                      const diasMaduracion =
+                        item?.diasMaduracionRem;
+
+                      const diasMaduracionProd =
+                        item?.diasMaduracionProd;
+
+                      const fechaConsumo =
+                        item?.fechaConsumoPreferente;
+
+                      return (
+
+                        <tr
+                          key={item?.id || index}
+                        >
+
+                          <td className="producto-principal">
+                            {obtenerNombreProducto(item)}
+                          </td>
+
+                          <td>
+                            {obtenerCodigoLote(item)}
+                          </td>
+
+                          <td>
+                            {obtenerCamara(item)}
+                          </td>
+
+                          <td className="numero">
+                            {obtenerHormas(item)}
+                          </td>
+
+                          <td className="numero">
+                            {kilos.toFixed(2)}
+                          </td>
+
+                          <td className="madurez">
+
+                            <div className="madurez-contenedor">
+
+                              <div className="madurez-barra">
+
+                                <div
+                                  className="madurez-progreso"
+                                  style={{
+                                    width: diasMaduracion
+                                      ? `${Math.min(
+                                          Number(diasMaduracion) * 100 / Number(diasMaduracionProd),
+                                          100
+                                        )}%`
+                                      : '35%'
+                                  }}
+                                />
+
+                              </div>
+
+                              <span>
+                                {diasMaduracion !== null
+                                  ? `${diasMaduracion} días`
+                                  : 'En maduración'}
+                              </span>
+
+                            </div>
+
+                          </td>
+
+                          <td className="fecha-consumo">
+
+                            {fechaConsumo
+                              ? formatearFecha(fechaConsumo)
+                              : '--/--/----'}
+
+                          </td>
+
+                        </tr>
+
+                      );
+                    })
+
+                  )}
+
+                </tbody>
+
+                {/* =========================================
+                    TOTAL
+                ========================================== */}
+                {items.length > 0 && (
+
+                  <tfoot>
+
+                    <tr>
+
+                      <td
+                        colSpan="3"
+                        className="total-label"
+                      >
+                        TOTAL
+                      </td>
+
+                      <td className="numero total">
+                        {totalHormas}
+                      </td>
+
+                      <td className="numero total">
+                        {totalKilos.toFixed(2)}
+                      </td>
+
+                      <td colSpan="2" />
+
+                    </tr>
+
+                  </tfoot>
+
                 )}
-              </tbody>
-            </table>
+
+              </table>
+
+            </div>
+
+          )}
+
+        </section>
+
+        {/* ===================================================
+            DATOS DE ELABORACIÓN POR LOTE
+        ==================================================== */}
+        <section className="remito-seccion elaboracion">
+
+          <h2>DATOS DE ELABORACIÓN POR LOTE</h2>
+
+          {items.map((item, index) => { 
+            const lote = item?.lote;
+
+            if (!lote) return null;
+
+            const producto = obtenerNombreProducto(item);
+
+            const codigoLote = obtenerCodigoLote(item);
+
+            const camara = obtenerCamara(item);
+
+            debugger;
+            const fechaElaboracion =item.lote.fechaElaboracion;
+
+            const litrosLeche =
+              lote?.litrosLeche ||
+              lote?.litros ||
+              item?.litrosLeche;
+
+            debugger;
+            const faltanDias = item.diasMaduracionProd - item.diasMaduracionRem;
+
+            const fechaConsumo = item.fechaConsumoPreferente;
+
+            return (
+
+              <div
+                className="lote-card"
+                key={lote?.id || index}
+              >
+
+                {/* CABECERA DEL LOTE */}
+                <div className="lote-header">
+
+                  <strong>
+                    {producto}
+                  </strong>
+
+                  <span>
+                    {codigoLote}
+                    {' · '}
+                    {obtenerKilos(item).toFixed(2)} kg
+                    {' · '}
+                    {camara}
+                  </span>
+
+                </div>
+
+                <div className="lote-contenido">
+
+                  {/* COLUMNA 1 */}
+                  <div className="lote-columna">
+
+                    <span>FECHA DE ELABORACIÓN</span>
+
+                    <strong>
+                      {formatearFecha(fechaElaboracion)}
+                    </strong>
+
+                    <span>MADURACIÓN</span>
+
+                    <strong>
+                      {item.diasMaduracionProd
+                        ? `${item.diasMaduracionProd} días`
+                        : 'N/A'}
+                    </strong>
+
+                  </div>
+
+                  {/* COLUMNA 2 */}
+                  <div className="lote-columna">
+
+                    <span>LITROS DE LECHE</span>
+
+                    <strong>
+                      {litrosLeche
+                        ? `${litrosLeche} L`
+                        : 'N/A'}
+                    </strong>
+
+                    <span>DÍAS EN CÁMARA AL EGRESO</span>
+
+                    <strong>
+                      {
+                      item.diasMaduracionRem
+                        ? `${item.diasMaduracionRem} días`
+                        : 'N/A'}
+                    </strong>
+
+                  </div>
+
+                  {/* COLUMNA 3 */}
+                  <div className="lote-columna lote-columna-destacada">
+
+                    <span>
+                      CONSUMIR PREFERENTEMENTE ANTES DE
+                    </span>
+
+                    <strong>
+                      {formatearFecha(fechaConsumo)}
+                    </strong>
+
+                    <span>ESTADO AL EGRESO</span>
+
+                    <strong className="estado-maduracion">
+                      {faltanDias >0                 
+                        ? `En maduración, faltan ${faltanDias} días`
+                        : `Ya maduró hace ${(-1) * faltanDias} días`}
+                    </strong>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            );
+
+          })}
+
+        </section>
+
+        {/* ===================================================
+            FIRMAS
+        ==================================================== */}
+        <section className="remito-firmas">
+
+          <div className="firma">
+
+            <div className="firma-linea" />
+
+            <span>
+              Firma y aclaración — Alba Lana
+            </span>
+
           </div>
-        </div>
+
+          <div className="firma">
+
+            <div className="firma-linea" />
+
+            <span>
+              Firma y aclaración — {cliente}
+            </span>
+
+          </div>
+
+        </section>
+
       </main>
+
     </div>
   );
 };
-
-// Estilos auxiliares consistentes con tu otra pantalla
-const btnStyleLight = { backgroundColor: '#e0e0e0', color: '#333', border: 'none', padding: '8px 15px', borderRadius: '4px', fontWeight: '500', cursor: 'pointer' };
-const thStyle = { padding: '12px 16px', textAlign: 'left', fontWeight: '600', whiteSpace: 'nowrap' };
-const tdStyle = { padding: '12px 16px', color: '#444', verticalAlign: 'middle' };
 
 export default ConsultarItemsRemito;

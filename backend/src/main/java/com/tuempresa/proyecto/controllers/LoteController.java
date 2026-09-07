@@ -58,7 +58,7 @@ public class LoteController {
     }
     @GetMapping("/producto/{idProducto}")
         public ResponseEntity<List<Lote>> obtenerPorProducto(@PathVariable Long idProducto) {
-        List<Lote> lotesFiltrados = loteRepository.findByProducto_Id(idProducto);
+        List<Lote> lotesFiltrados = loteRepository.findByProducto_IdAndActivoTrue(idProducto);
         return ResponseEntity.ok(lotesFiltrados);
     }
   

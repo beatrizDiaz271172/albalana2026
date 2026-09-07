@@ -35,7 +35,7 @@ public class CamaraController {
 
     @GetMapping
     public ResponseEntity<List<Camara>> obtenerTodas() {
-        List<Camara> camaras = camaraRepository.findAll();
+        List<Camara> camaras = camaraRepository.findByActivoTrue();
         return ResponseEntity.ok(camaras);
     }
 

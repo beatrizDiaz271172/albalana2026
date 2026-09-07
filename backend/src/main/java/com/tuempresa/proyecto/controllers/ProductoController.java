@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tuempresa.proyecto.dtos.MovimientoRequest;
 import com.tuempresa.proyecto.dtos.ProductoRequest;
 import com.tuempresa.proyecto.models.MermasEstadisticas;
+import com.tuempresa.proyecto.models.Movimiento;
 import com.tuempresa.proyecto.models.Producto;
 import com.tuempresa.proyecto.services.ProductoService;
 
@@ -40,16 +42,19 @@ public class ProductoController {
         return ResponseEntity.ok(mermas);
     }
 
- 
-
     @PutMapping("/{id}")
     public ResponseEntity<Producto> updateProducto(
         @PathVariable Long id,
         @RequestBody ProductoRequest request) {
     Producto productoActualizado = productoService.actualizarProducto(id, request);
     return ResponseEntity.ok(productoActualizado);
-}
+    }
 
+    @PostMapping
+    public ResponseEntity<Producto> crearProducto(@RequestBody ProductoRequest request) {
+        Producto nuevoProducto = productoService.crearProducto(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoProducto);
+    }
 }
 
     

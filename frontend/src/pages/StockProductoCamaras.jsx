@@ -64,7 +64,8 @@ const StockActualProductoCama = () => {
                 nombre: prod.nombre,
                 camarasData: {}, // { camaraId: { hormas, kgs } }
                 totalH: 0,
-                totalKg: 0
+                totalKg: 0,
+                stockMin: prod.stockMinimo
             };
         });
 
@@ -92,7 +93,8 @@ const StockActualProductoCama = () => {
                         nombre: producto.nombre,
                         camarasData: {},
                         totalH: 0,
-                        totalKg: 0
+                        totalKg: 0,
+                        stockMin: producto.stockMin
                     };
                 }
 
@@ -108,9 +110,8 @@ const StockActualProductoCama = () => {
             }
         });
 
-        // 3. Filtrar (solo totalH > 0) y Ordenar alfabéticamente por nombre del producto
+        // 3. Ordenar alfabéticamente por nombre del producto
         return Object.values(map)
-            .filter(prod => prod.totalH > 0)
             .sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
 
     }, [stocks, productos]);
@@ -197,7 +198,7 @@ const StockActualProductoCama = () => {
                                                 {prod.totalKg.toFixed(1)}
                                             </td>
                                             <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                                                {/* Estado dejado en blanco según requerimiento */}
+                                                {prod.stockMin > prod.totalH ? '🔴' : '🟢'}
                                             </td>
                                         </tr>
                                     ))

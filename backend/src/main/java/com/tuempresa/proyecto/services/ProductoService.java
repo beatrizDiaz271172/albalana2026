@@ -23,16 +23,16 @@ public class ProductoService {
     }
 
     public List<Producto> obtenerTodos() {
-        List<Producto> productos= productoRepository.findAll();
+        List<Producto> productos= productoRepository.findByActivoTrue();
         return productos;
     }
 
-    public Producto guardarProducto(ProductoRequest request) {
+    public Producto crearProducto(ProductoRequest request) {
         Producto producto = new Producto(request.getNombre(), request.getCodigo(), request.getMaduracionDias(),
         request.getConsumoOptDias(), request.getStockMinimo(), request.getDiasSinMov(), request.getPreMaduracionDias(), request.getPostMaduracionDias());
         return productoRepository.save(producto);
     }
-    
+
     public Producto actualizarProducto(Long id, ProductoRequest request) {
     Producto producto = productoRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado con ID: " + id));
@@ -65,18 +65,16 @@ public class ProductoService {
 
     for (Producto producto : productos) {
         
-    List<Movimiento> movimientosEgreso = movimientoRepository.findByCdTipoMovAndLote_Producto_id(2, producto.getId());
+    List<Movimiento> movimientosEgreso = movimientoRepository.findByCdTipoMovAndLote_Producto_idAndActivoTrue(2, producto.getId());
     //Solo se obtienen estadisticas si existen movimientos de egreso para el producto
     if (movimientosEgreso.size()>0) {
-        MermasEstadisticas merma = new MermasEstadisticas();
-        merma.setProductoId(producto.getId());
-        merma.setProductoNombre(producto.getNombre());
+      
         
         double kgsXHormaTot = 0.0;
         long kgsXHormaTotCant = 0;
-        List<Movimiento> movimientosIngreso = movimientoRepository.findByCdTipoMovAndLote_Producto_id(1, producto.getId());
-        
-        for (Movimiento mov : movimientosIngreso) {
+        List<Movimiento> movimientosIngreso = movimientoRepository.findByCdTipoMovAndLote_Producto_idAndActivoTrue(1, producto.getId());
+      /*   
+        for (Movimiento mov : movimientosIngreso) {// bea
             if (mov.getLote() != null && mov.getLote().getKgsXHorma() != null) {
                 kgsXHormaTot += mov.getLote().getKgsXHorma();
                 kgsXHormaTotCant += 1;
@@ -87,50 +85,57 @@ public class ProductoService {
         if (kgsXHormaTotCant>0){
             Double cuenta = kgsXHormaTot / kgsXHormaTotCant;
             merma.setPesoKgsXHormaIngreso(cuenta);
-        }
+        }*/
 
-        double hormaTot = 0.0;
-        double kgsTot = 0.0;
         double hormaTotCant = 0.0;
+        //hashMap
+        Map<String, Double> hormaTotE = new HashMap<>();
+        Map<String, Double> kgsTotE = new HashMap<>();
         for (Movimiento mov : movimientosEgreso) {
             if (mov.getLote() != null && mov.getHormas() != null) {
-                hormaTot += mov.getHormas();
-                kgsTot += mov.getKgs();
+                hormaTotE.merge(mov.getLote().getCodigo(), mov.getHormas(), Double::sum);
+                kgsTotE.merge(mov.getLote().getCodigo(), mov.getKgs(), Double::sum);
                 hormaTotCant += 1;
             }
         }
-        if (hormaTotCant > 0) {
-            merma.setEgresoHormas(hormaTot);
-            merma.setEgresoKgs(kgsTot);
-            merma.setEgresoKgsPpio(hormaTot * merma.getPesoKgsXHormaIngreso());
-            merma.setMermaKgs(merma.getEgresoKgsPpio() - merma.getEgresoKgs());
-            double porc = (merma.getMermaKgs() * 100) / merma.getEgresoKgsPpio();
-            merma.setMermaKgsPorc(porc);
-
-            merma.setPesoKgsXHormaEgreso(kgsTot / merma.getEgresoHormas());
-        }
 
         List<Stock> stockList = stockRepository.findByLote_Producto_IdAndActivoTrue(producto.getId());
-        Double hormasStock = 0.00;
-
+        Map<String, Double> hormaStock = new HashMap<>();
+        Map<String, Double> kgsIporHorma = new HashMap<>();
         if (stockList.size() > 0){
             for (Stock stock : stockList) {
-                hormasStock += stock.getHormas();
+                hormaStock.merge(stock.getLote().getCodigo(), stock.getHormas(), Double::sum);
+                kgsIporHorma.merge(stock.getLote().getCodigo(), stock.getLote().getKgsXHorma(), Double::sum);
             }    
         } 
-        merma.setHormasStock(hormasStock);
 
-        merma.setKgsStockReal(hormasStock * merma.getPesoKgsXHormaEgreso());
-        merma.setKgsStockSinMerma(hormasStock * merma.getPesoKgsXHormaIngreso());
-        merma.setMermaStock(merma.getKgsStockSinMerma() - merma.getKgsStockReal());
-
-        mermasEstad.add(merma);
+        for (Map.Entry<String, Double> entry : hormaTotE.entrySet()) {
+            String cdLote = entry.getKey();
+            Double hormaE = entry.getValue();
+             MermasEstadisticas merma = new MermasEstadisticas();
+             merma.setProductoId(producto.getId());
+             merma.setProductoNombre(producto.getNombre());
+             merma.setCdCodigoLote(cdLote);
+             merma.setEgresoHormas(hormaE); 
+             Double kgs = kgsTotE.get(cdLote);
+             merma.setEgresoKgs(kgs);
+             Double kgsXHormaPpio = kgsIporHorma.get(cdLote);   
+             merma.setEgresoKgsPpio(hormaE * kgsXHormaPpio);
+             merma.setMermaKgs(merma.getEgresoKgsPpio() - merma.getEgresoKgs());    
+             double porc = (merma.getMermaKgs() * 100) / merma.getEgresoKgsPpio();
+             merma.setMermaKgsPorc(porc);
+             merma.setPesoKgsXHormaEgreso(merma.getEgresoKgs() / merma.getEgresoHormas());       
+             Double hormaSt = hormaStock.get(cdLote);
+             merma.setHormasStock(hormaSt);
+             merma.setKgsStockReal(hormaSt * merma.getPesoKgsXHormaEgreso());
+             merma.setKgsStockSinMerma(hormaSt * kgsXHormaPpio);
+             merma.setMermaStock(merma.getKgsStockSinMerma() - merma.getKgsStockReal());
+             merma.setPesoKgsXHormaIngreso(kgsXHormaPpio);
+             mermasEstad.add(merma);
+        };  
     }
-}
-
+    }
     return mermasEstad;
-    }
-
-
+  }
 
 }

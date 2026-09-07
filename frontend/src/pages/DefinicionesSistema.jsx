@@ -69,16 +69,18 @@ const DefinicionesSistema = () => {
       nuevosErrores.nombre = 'El nombre es requerido';
     } else {
       const nombreTrimmed = formData.nombre.trim().toLowerCase();
-      const nombreDuplicado = productos.some(
+      debugger;
+      if (productos.length>0){
+        const nombreDuplicado = productos.some(
         (prod) =>
           prod.nombre.toLowerCase() === nombreTrimmed &&
           prod.id !== editando
       );
-
       if (nombreDuplicado) {
         nuevosErrores.nombre = 'Este nombre de producto ya existe';
       }
-    }
+    }      
+  }
 
     if (!formData.codigo || formData.codigo.trim() === '') {
       nuevosErrores.codigo = 'El código es requerido';
@@ -217,7 +219,8 @@ const DefinicionesSistema = () => {
         ? `${API_BASE}/productos/${editando}` 
         : `${API_BASE}/productos`;
       
-      const method = editando ? 'PUT' : 'POST';
+      debugger;
+        const method = editando ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
         method,

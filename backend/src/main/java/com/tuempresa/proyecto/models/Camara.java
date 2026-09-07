@@ -20,7 +20,10 @@ public class Camara {
 
     private String nombre; 
 
+    private Boolean activo = true;
+
     public Camara(String nombre){
         this.nombre = nombre;
+        this.activo = true;
     }
 }

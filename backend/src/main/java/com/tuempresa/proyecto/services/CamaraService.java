@@ -21,7 +21,7 @@ public class CamaraService {
     }
 
 public List<Camara> obtenerPorProductoId(Long productoId) {
-    List<Lote> lotes = loteRepository.findByProducto_Id(productoId);
+    List<Lote> lotes = loteRepository.findByProducto_IdAndActivoTrue(productoId);
     
     // Usamos un Set para evitar cámaras duplicadas si varios lotes comparten la misma cámara
     Set<Camara> camarasUnicas = new HashSet<>();

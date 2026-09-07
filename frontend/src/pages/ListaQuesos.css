@@ -1,0 +1,152 @@
+
+/* ListaQuesos.css */
+
+.container {
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #edf4f0; 
+  padding: 24px;
+  min-height: 100vh;
+}
+
+.navBar {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.navButton {
+  background-color: #ffffff; 
+  color: #334e40; 
+  border: 1px solid #e1e8e4; 
+  padding: 6px 14px;
+  border-radius: 6px; 
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.titleContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.titleIcon {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+}
+
+.title {
+  color: #28503a; 
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.searchContainer {
+  margin-bottom: 20px;
+  max-width: 400px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid #c3d4cc;
+  font-size: 14px;
+  outline: none;
+  background-color: #fff;
+}
+
+.tableWrapper {
+  background-color: #fff;
+  border-radius: 12px; 
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.theadRow {
+  background-color: #2d6a4f; 
+}
+
+.th {
+  color: #ffffff;
+  padding: 14px 16px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.trEven {
+  background-color: #ffffff;
+  border-bottom: 1px solid #f2f6f3;
+}
+
+.trOdd {
+  background-color: #ffffff; 
+  border-bottom: 1px solid #f2f6f3;
+}
+
+.td {
+  padding: 14px 16px;
+  color: #495057;
+  font-size: 14px;
+  vertical-align: middle;
+  border: none; 
+}
+
+.tdCenter {
+  padding: 40px;
+  text-align: center;
+  color: #718096;
+}
+
+.productImg {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.noImg {
+  width: 45px;
+  height: 45px;
+  background-color: #f1f5f2;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justifyContent: center;
+  font-size: 11px;
+  border-radius: 6px;
+}
+
+.badgeOk {
+  background-color: #e6f7ed; 
+  color: #137333;
+  padding: 4px 14px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  display: inline-block;
+}
+
+.badgeBajo {
+  background-color: #fef3d6; 
+  color: #b06000;
+  padding: 4px 14px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  display: inline-block;
+}

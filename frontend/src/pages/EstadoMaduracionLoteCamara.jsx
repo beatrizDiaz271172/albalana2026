@@ -116,7 +116,8 @@ useEffect(() => {
   };
 
   return (
-    <div className="maduracion-page">
+
+<div className="maduracion-page">
       {/* Navbar Superior */}
       <header className="navbar-maduracion">
         <div className="navbar-brand-maduracion">

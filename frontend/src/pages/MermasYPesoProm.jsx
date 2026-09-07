@@ -148,6 +148,7 @@ const MermasEstadisticasTabla = () => {
                             <thead>
                                 <tr>
                                     <th style={thStyleLeft}>Producto</th>
+                                    <th style={thStyleLeft}>Lote</th>
                                     <th style={thStyle}>H.Egr</th>
                                     <th style={thStyle}>Kg.Ini*</th>
                                     <th style={thStyle}>Kg.Egr</th>
@@ -185,6 +186,9 @@ const MermasEstadisticasTabla = () => {
                                             <tr key={row.productoId || index} style={{ borderBottom: '1px solid #e5e7eb' }}>
                                                 <td style={tdStyleLeft}>
                                                     {row.productoNombre}
+                                                </td>
+                                                <td style={tdStyleLeft}>
+                                                    {row.cdCodigoLote}
                                                 </td>
                                                 <td style={tdStyle}>
                                                     {row.egresoHormas?.toFixed(1) || '—'}

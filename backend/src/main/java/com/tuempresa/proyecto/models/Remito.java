@@ -28,12 +28,18 @@ public class Remito {
     @JoinColumn(name = "cd_cliente")
     private Cliente cliente;
 
-    @Column(name = "cd_operador")
-    private Long cdOperador;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cd_operador")
+    private Operador operador;
+
+   // @Column(name = "cd_operador")
+   // private Long cd_operador;
 
     @Column(name = "observaciones", length = 1000)
     private String observaciones;
 
     @Column(name = "fecha_alta")
     private LocalDateTime fechaAlta;
+
+    
 }

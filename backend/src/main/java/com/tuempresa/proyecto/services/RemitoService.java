@@ -7,7 +7,9 @@ import com.tuempresa.proyecto.repositories.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +28,7 @@ public class RemitoService {
     private final CamaraRepository camaraRepository;
     private final StockRepository stockRepository;
     private final LoteRepository loteRepository;
+    private final OperadorRepository operadorRepository;
 
     public RemitoService(RemitoRepository remitoRepository,
                           ClienteRepository clienteRepository,
@@ -33,7 +36,8 @@ public class RemitoService {
                           ProductoRepository productoRepository,
                           CamaraRepository camaraRepository,
                           StockRepository stockRepository,
-                        LoteRepository loteRepository) {
+                          LoteRepository loteRepository,
+                          OperadorRepository operadorRepository) {
         this.remitoRepository = remitoRepository;
         this.clienteRepository = clienteRepository;
         this.movimientoRepository = movimientoRepository;
@@ -41,6 +45,7 @@ public class RemitoService {
         this.camaraRepository = camaraRepository;
         this.stockRepository = stockRepository;
         this.loteRepository = loteRepository;
+        this.operadorRepository = operadorRepository;
     }
 
     public List<Remito> obtenerTodos() {
@@ -51,7 +56,11 @@ public class RemitoService {
     public Remito guardarRemito(RemitoRequest request) {
         Remito remito = new Remito();
         remito.setFechaEgreso(request.getFechaEgreso());
-        remito.setCdOperador(request.getCdOperador());
+         if (request.getCdOperador() != null) {
+            Operador operador = operadorRepository.getById(request.getCdOperador());
+            remito.setOperador(operador);
+        }
+        
         remito.setObservaciones(request.getObservaciones());
         remito.setFechaAlta(LocalDateTime.now());
 
@@ -88,11 +97,19 @@ public class RemitoService {
                                 .filter(lotef -> lotef.getCodigo().equals(item.getCdLote()))
                                 .toList();
         Lote lote = lotesFiltrados.get(0);
-         movimiento.setLote(lote);
+        movimiento.setLote(lote);
         movimiento.setHormas(item.getHormas());
         movimiento.setKgs(item.getKgs());
         movimiento.setCdOperador(request.getCdOperador());
         movimiento.setObs(request.getObservaciones());
+        Long diasMadProd = producto.getMaduracionDias();
+        movimiento.setDiasMaduracionProd(diasMadProd);
+        LocalDate fechaEgreso = remito.getFechaEgreso();
+        LocalDate fechaElab = lote.getFechaElaboracion();
+        Long diasMaduracionRem = ChronoUnit.DAYS.between(fechaElab, fechaEgreso); 
+        movimiento.setDiasMaduracionRem(diasMaduracionRem);
+        LocalDate fechaConsumoPreferente = fechaElab.plusDays(diasMadProd);
+        movimiento.setFechaConsumoPreferente(fechaConsumoPreferente);
         movimiento.setRemito(remito);
         movimiento.setFechaAlta(LocalDateTime.now());
 
@@ -123,4 +140,9 @@ public class RemitoService {
         List<Movimiento> movimientos= movimientoRepository.findByRemito_Id(remitoId);
         return movimientos;
     }
+
+ public Remito obtenerEncabezadoRemito(Long remitoId) {
+    return remitoRepository.findById(remitoId)
+        .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Remito no encontrado con ID: " + remitoId));
+}
 }

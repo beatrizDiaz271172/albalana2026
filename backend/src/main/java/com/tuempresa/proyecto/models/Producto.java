@@ -39,6 +39,9 @@ public class Producto {
 
     @Column(name = "stock_minimo")
     private Long stockMinimo;
+    
+    @Column(name = "activo")
+    private Boolean activo = true;
 
     public Producto(String nombre, String codigo, Long maduracionDias, Long consumoOptDias, Long stockMinimo, Long diassinMov, Long preMaduracionDias, Long postMaduracionDias){
         this.nombre=nombre;
@@ -49,5 +52,6 @@ public class Producto {
         this.preMaduracionDias=preMaduracionDias;
         this.postMaduracionDias=postMaduracionDias;
         this.diasSinMov=diassinMov;
+        this.activo = true;
     }
 }

@@ -84,12 +84,12 @@ const RemitoCliente = () => {
         const totalKgs = movimientosDelRemito.reduce((acc, mov) => acc + (mov.kgs || 0), 0);
 
         // Operador: operador.nombre si operador.id = remito.cdOperador
-        const operador = operadores.find((op) => op.id === remito.cdOperador);
+        const operador = operadores.find((op) => op.id === remito.operador.id);
         const operadorNombre = operador?.nombre || 'N/A';
 
         return {
           ...remito,
-          nRemito: `REM-${remito.id}`,
+          nRemito:  `MOV-${String(remito.id).padStart(4, '0')}`,
           totalItems,
           totalHormas,
           totalKgs,

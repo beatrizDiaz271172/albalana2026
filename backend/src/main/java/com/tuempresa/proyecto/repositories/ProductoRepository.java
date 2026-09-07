@@ -1,7 +1,7 @@
 package com.tuempresa.proyecto.repositories;
+import java.util.List;
 
 import com.tuempresa.proyecto.models.Producto;
-import com.tuempresa.proyecto.models.Stock;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -11,5 +11,6 @@ import org.springframework.stereotype.Repository;
 
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
     boolean existsByNombreIgnoreCase(String nombre);
+    List<Producto> findByActivoTrue();
    
 }

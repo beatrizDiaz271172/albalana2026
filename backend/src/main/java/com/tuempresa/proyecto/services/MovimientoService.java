@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.*;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,6 +25,18 @@ public class MovimientoService {
     private static final long TIPO_MOV_EGRESO = 2L;
     private static final long TIPO_MOV_AJUSTE = 3L;
     private static final long TIPO_MOV_TRANSFERENCIA = 4L;
+
+    private static final int ALARMA_BAJA = 1;
+    private static final int ALARMA_MEDIA = 2;
+    private static final int ALARMA_ALTA = 3;
+    private static final int ALARMA_CRITICA = 4;
+
+    private static final int TIPO_ALARMA_SIN_MOV = 1;
+    private static final int TIPO_ALARMA_STOCK = 2;
+    private static final int TIPO_ALARMA_MADURACION = 4;
+    private static final int TIPO_ALARMA_CONSUMO_VENC = 3;
+
+
 
     private final MovimientoRepository movimientoRepository;
     private final CamaraRepository camaraRepository;
@@ -40,7 +54,7 @@ public class MovimientoService {
     }
 
     public List<Movimiento> obtenerTodos() {
-        List<Movimiento> movimientos= movimientoRepository.findAll();
+        List<Movimiento> movimientos= movimientoRepository.findByActivoTrue();
         return movimientos;
     }
 
@@ -182,4 +196,169 @@ public class MovimientoService {
 
         stockRepository.save(stock);
     }
+
+    public List<Alertas> obtenerAlertas(){
+        List<Producto> productos = productoRepository.findByActivoTrue();
+        List<Alertas> alertasMov = productosSinMovimiento(productos); //TIPO_ALARMA_SIN_MOV
+        List<Alertas> alertasStock = stockBajo(productos); // TIPO_ALARMA_STOCK
+        alertasMov.addAll(alertasStock);
+        List<Alertas> alertasMaduracion  = maduracionLotes(productos); //TIPO_ALARMA_MADURACION
+        alertasMov.addAll(alertasMaduracion);
+        List<Alertas> alertasConsumoOpt  = consumoOptimo(productos); // TIPO_ALARMA_CONSUMO_VENC
+        alertasMov.addAll(alertasConsumoOpt);
+        
+        return alertasMov;
+    }
+
+    private List<Alertas> consumoOptimo(List<Producto> productos){
+        List<Alertas> alertas = new ArrayList<>();
+        LocalDate fechaHoy = LocalDate.now();
+        for (Producto producto : productos) {
+            Long diasMaduracionProd = producto.getMaduracionDias();
+            Long consumoOptDias = producto.getConsumoOptDias();
+
+            List<Stock> stocks = stockRepository.findByLote_Producto_IdAndActivoTrue(producto.getId());
+            if (stocks.size()>0){
+                for (Stock stock : stocks) { 
+                  if (stock.getHormas()>0 && stock.getLote().getActivo()){
+                     LocalDate fechaElab = stock.getLote().getFechaElaboracion();
+                     Long diasDesdeElab = ChronoUnit.DAYS.between(fechaElab, fechaHoy);
+                     Long diasDif = diasDesdeElab - diasMaduracionProd;
+                     if (diasDif > 0){
+                      // Se paso de la Maduracion
+                        Alertas alerta = new Alertas();
+                        alerta.setProductoId(producto.getId());
+                        alerta.setProductoNombre(producto.getNombre());
+                        alerta.setLoteNombre(stock.getLote().getCodigo());
+                      if (diasDif > consumoOptDias){
+                        alerta.setDias(diasDif);
+                        alerta.setMensajeAlerta("VENCIDO, consumo óptimo superado, pasaron: " + diasDif + " días desde la maduración.");
+                        alerta.setNivelAlerta(ALARMA_CRITICA);
+                        alerta.setTipoAlerta(TIPO_ALARMA_MADURACION);
+                        alertas.add(alerta);
+                      }
+                      Long diasPorVencer = consumoOptDias - diasDif;
+                      if (diasPorVencer >0 && diasPorVencer <= 14){
+                        alerta.setDias(diasPorVencer);
+                        alerta.setMensajeAlerta(stock.getLote().getCodigo()
+                        + " vence en: " + diasPorVencer + " días.");
+                        alerta.setNivelAlerta(ALARMA_ALTA);
+                        alerta.setTipoAlerta(TIPO_ALARMA_MADURACION);
+                        alertas.add(alerta);
+                      }
+                    
+                     }
+                  }
+                }
+            }
+        }
+        return alertas;
+    }
+
+
+
+    private List<Alertas> maduracionLotes(List<Producto> productos){
+        List<Alertas> alertas = new ArrayList<>();
+        LocalDate fechaHoy = LocalDate.now();
+        for (Producto producto : productos) {
+            Long diasMaduracionProd = producto.getMaduracionDias();
+            Long diasPreMaduracion = producto.getPreMaduracionDias();
+            Long diasPostMaduracion = producto.getPostMaduracionDias();
+            List<Stock> stocks = stockRepository.findByLote_Producto_IdAndActivoTrue(producto.getId());
+            if (stocks.size()>0){
+                for (Stock stock : stocks) { 
+                  if (stock.getHormas()>0 && stock.getLote().getActivo()){
+                    LocalDate fechaElab = stock.getLote().getFechaElaboracion();
+                    Long diasDesdeElab = ChronoUnit.DAYS.between(fechaElab, fechaHoy);
+                    Long diasFaltanMad = diasMaduracionProd - diasDesdeElab;
+                    String loteStr = stock.getLote().getCodigo();
+                    if (diasFaltanMad >0  && diasFaltanMad <= diasPreMaduracion){
+                        Alertas alerta = new Alertas();
+                        alerta.setProductoId(producto.getId());
+                        alerta.setProductoNombre(producto.getNombre());
+                        alerta.setLoteNombre(stock.getLote().getCodigo());
+                        alerta.setDias(diasFaltanMad);
+                        alerta.setMensajeAlerta(loteStr + " faltan: " + diasFaltanMad + " días para madurar.");
+                        alerta.setNivelAlerta(ALARMA_MEDIA);
+                        alerta.setTipoAlerta(TIPO_ALARMA_MADURACION);
+                        alertas.add(alerta);
+                    } else if (diasFaltanMad <=0 && (-1) * diasFaltanMad > diasPostMaduracion ){
+                        Alertas alerta = new Alertas();
+                        alerta.setProductoId(producto.getId());
+                        alerta.setProductoNombre(producto.getNombre());
+                        alerta.setLoteNombre(stock.getLote().getCodigo());
+                        alerta.setDias(diasFaltanMad);                        
+                        alerta.setMensajeAlerta(loteStr + ": " + (-1) * diasFaltanMad + " días post-maduración.");
+                        alerta.setNivelAlerta(ALARMA_ALTA);
+                        alerta.setTipoAlerta(TIPO_ALARMA_MADURACION);
+                        alertas.add(alerta);
+                    }
+                  }
+                }
+            }
+        }
+        return alertas;
+    }
+
+    private List<Alertas> productosSinMovimiento(List<Producto> productos){
+        List<Alertas> alertas = new ArrayList<>();
+        LocalDateTime fechaHoy = LocalDateTime.now();
+        for (Producto producto : productos) {
+        List<Movimiento> movimientos = movimientoRepository.findByLote_Producto_idAndActivoTrueOrderByIdDesc(producto.getId());
+        if (movimientos.size()>0){
+            Movimiento mov = movimientos.get(0);
+            LocalDateTime fecha = mov.getFechaAlta();
+            Long diasDeDiferencia = ChronoUnit.DAYS.between(fecha, fechaHoy);
+            if (diasDeDiferencia > producto.getDiasSinMov()){
+                Alertas alerta = new Alertas();
+                alerta.setProductoId(producto.getId());
+                alerta.setProductoNombre(producto.getNombre());
+                alerta.setLoteNombre("");
+                alerta.setDias(diasDeDiferencia);
+                alerta.setMensajeAlerta("Sin Movimiento hace: " + diasDeDiferencia + " días");
+                alerta.setNivelAlerta(ALARMA_MEDIA);
+                alerta.setTipoAlerta(TIPO_ALARMA_SIN_MOV);
+                alertas.add(alerta);
+            }
+        }   
+        
+    }
+    return alertas;
+    }
+
+    private List<Alertas> stockBajo(List<Producto> productos){
+        List<Alertas> alertas = new ArrayList<>();
+         for (Producto producto : productos) {
+            List<Stock> stocks = stockRepository.findByLote_Producto_IdAndActivoTrue(producto.getId());
+            Double totalHormas = 0.00;
+            for (Stock stock : stocks) {
+                totalHormas += stock.getHormas();
+            }
+            Alertas alerta = null;;
+            if (totalHormas < 0) {
+                alerta = new Alertas();
+                alerta.setProductoId(producto.getId());
+                alerta.setProductoNombre(producto.getNombre());
+                alerta.setLoteNombre("");
+                alerta.setHormas(totalHormas);
+                alerta.setMensajeAlerta("STOCK NEGATIVO: " + totalHormas);
+                alerta.setNivelAlerta(ALARMA_CRITICA);
+                alerta.setTipoAlerta(TIPO_ALARMA_STOCK);
+            } else if(totalHormas < producto.getStockMinimo()){
+                alerta = new Alertas();
+                alerta.setProductoId(producto.getId());
+                alerta.setProductoNombre(producto.getNombre());
+                alerta.setLoteNombre("");
+                alerta.setHormas(totalHormas);
+                alerta.setMensajeAlerta("STOCK BAJO: " + totalHormas + "  (min: " + producto.getStockMinimo() + ")");
+                alerta.setNivelAlerta(ALARMA_ALTA);
+                alerta.setTipoAlerta(TIPO_ALARMA_STOCK);
+            }
+            if (alerta != null){
+                alertas.add(alerta);
+            }
+         }
+        return alertas;
+    }
 }
+

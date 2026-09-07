@@ -14,6 +14,8 @@ public class MermasEstadisticas {
     private Long productoId;
 
     private String productoNombre;
+    
+    private String cdCodigoLote; //codigo del Lote
 
     private Double egresoHormas;
     

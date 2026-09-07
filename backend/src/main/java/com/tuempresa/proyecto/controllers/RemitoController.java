@@ -27,7 +27,12 @@ public class RemitoController {
         return ResponseEntity.ok(remitoService.obtenerTodos());
     }
 
-    @GetMapping("/{remitoId}/items")
+    @GetMapping("/{remitoId}")
+    public ResponseEntity<Remito> buscarRemito(@PathVariable Long remitoId) {
+        return ResponseEntity.ok(remitoService.obtenerEncabezadoRemito(remitoId));
+    }
+
+       @GetMapping("/{remitoId}/items")
     public ResponseEntity<List<Movimiento>> listarItemsRemitos(@PathVariable Long remitoId) {
         return ResponseEntity.ok(remitoService.obtenerItemsRemito(remitoId));
     }

@@ -15,6 +15,7 @@ import DefinicionesSistOpc from './pages/DefinicionesSistOpc';
 import ConsultarItemsRemito from './pages/ConsultarItemsRemito';
 import MermasYPesoProm from './pages/MermasYPesoProm';
 import DefinicionesSistemaCamara from './pages/DefinicionesSistemaCamara';
+import ListaQuesos from './pages/ListaQuesos';
 
 export default function App() {
   return (
@@ -32,13 +33,21 @@ export default function App() {
         <Route path="/remitoCliente" element={<RemitoCliente />} />
         <Route path="/estadoMaduracionLoteCamara" element={<EstadoMaduracionLoteCamara />} />
         <Route path="/definicionesSistOpc" element={<DefinicionesSistOpc />} />
+
         <Route path="/definicionesSistema" element={<DefinicionesSistema />} />
         <Route path="/lotes/producto/:idProducto" element={<DefinicionesSistema />} />
+
         <Route path="/definicionesSistemaCamara" element={<DefinicionesSistemaCamara />} />
         <Route path="/camaras/:idCamara" element={<DefinicionesSistemaCamara />} />
+
         <Route path="/mermasYPesoProm" element={<MermasYPesoProm />} />
-        <Route path="/remitos/:remitoId/items" element={<ConsultarItemsRemito />} />
         <Route path="/productos/mermas" element={<MermasYPesoProm />} />
+        
+        <Route path="/remitos/:remitoId/items" element={<ConsultarItemsRemito />} />
+        <Route path="/remitos/:remitoId" element={<ConsultarItemsRemito />} />
+        
+        <Route path="/movimientos/alertas" element={<Dashboard />} />
+        <Route path="/listaQuesos" element={<ListaQuesos />} />
       </Routes>
     </BrowserRouter>
   );

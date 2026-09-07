@@ -417,3 +417,512 @@
     gap: 6px;
   }
 }
+
+/* ============================================================
+   PÁGINA
+============================================================ */
+
+.remito-page {
+  min-height: 100vh;
+  background: #ffffff;
+  color: #333;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+}
+
+/* ============================================================
+   BARRA SUPERIOR
+============================================================ */
+
+.remito-topbar {
+  height: 34px;
+  background: #276b4e;
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 12px;
+
+  box-sizing: border-box;
+}
+
+.remito-topbar-title {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.remito-topbar-icon {
+  margin-right: 5px;
+}
+
+.remito-topbar-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.remito-btn-volver,
+.remito-btn-print {
+  border: 0;
+  border-radius: 5px;
+  cursor: pointer;
+
+  height: 25px;
+  padding: 0 12px;
+
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.remito-btn-volver {
+  background: #4d846a;
+  color: white;
+}
+
+.remito-btn-print {
+  background: white;
+  color: #276b4e;
+}
+
+/* ============================================================
+   DOCUMENTO
+============================================================ */
+
+.remito-documento {
+  width: 680px;
+  max-width: calc(100% - 30px);
+
+  margin: 16px auto 25px auto;
+}
+
+/* ============================================================
+   ENCABEZADO
+============================================================ */
+
+.remito-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.remito-empresa h1 {
+  margin: 0 0 4px 0;
+
+  color: #276b4e;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.remito-empresa div {
+  color: #7a8580;
+  font-size: 8px;
+  line-height: 13px;
+}
+
+.remito-identificacion {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.remito-identificacion span {
+  font-size: 7px;
+  color: #7c8983;
+  letter-spacing: 1px;
+}
+
+.remito-identificacion strong {
+  color: #276b4e;
+  font-size: 17px;
+  letter-spacing: 1px;
+}
+
+.remito-identificacion small {
+  color: #666;
+  font-size: 8px;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   SEPARADOR
+============================================================ */
+
+.remito-separador {
+  height: 2px;
+  background: #276b4e;
+  margin: 10px 0;
+}
+
+/* ============================================================
+   DATOS GENERALES
+============================================================ */
+
+.remito-datos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 10px;
+}
+
+.remito-dato {
+  background: #f0f3f0;
+  border-radius: 5px;
+
+  min-height: 31px;
+  padding: 5px 8px;
+
+  box-sizing: border-box;
+}
+
+.remito-dato span {
+  display: block;
+
+  font-size: 6px;
+  color: #78847f;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.remito-dato strong {
+  display: block;
+
+  color: #283b33;
+  font-size: 9px;
+}
+
+/* ============================================================
+   SECCIONES
+============================================================ */
+
+.remito-seccion {
+  margin-top: 11px;
+}
+
+.remito-seccion h2 {
+  margin: 0;
+
+  padding: 0 0 4px 0;
+
+  border-bottom: 2px solid #83b59f;
+
+  color: #276b4e;
+
+  font-size: 8px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* ============================================================
+   TABLA
+============================================================ */
+
+.remito-tabla-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.remito-tabla {
+  width: 100%;
+  border-collapse: collapse;
+
+  font-size: 8px;
+}
+
+.remito-tabla thead {
+  background: #276b4e;
+  color: white;
+}
+
+.remito-tabla th {
+  padding: 4px 5px;
+
+  text-align: left;
+
+  font-size: 7px;
+  font-weight: bold;
+
+  white-space: nowrap;
+}
+
+.remito-tabla td {
+  padding: 5px;
+
+  border-bottom: 1px solid #e5e8e6;
+
+  color: #4f5955;
+  vertical-align: middle;
+}
+
+.remito-tabla td.numero {
+  text-align: center;
+}
+
+.remito-tabla .producto-principal {
+  color: #31463d;
+  font-weight: bold;
+}
+
+.remito-tabla .fecha-consumo {
+  color: #d23e3e;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.remito-tabla tfoot td {
+  border-bottom: 0;
+  padding-top: 5px;
+}
+
+.total-label {
+  font-weight: bold;
+  color: #263e34 !important;
+}
+
+.total {
+  font-weight: bold;
+  color: #263e34 !important;
+}
+
+/* ============================================================
+   MADUREZ
+============================================================ */
+
+.madurez-contenedor {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.madurez-barra {
+  width: 48px;
+  height: 6px;
+
+  background: #dfe5e1;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.madurez-progreso {
+  height: 100%;
+  background: #86c7a8;
+  border-radius: 5px;
+}
+
+.madurez-contenedor span {
+  color: #929a96;
+  font-size: 7px;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   DATOS DEL LOTE
+============================================================ */
+
+.elaboracion {
+  margin-top: 12px;
+}
+
+.lote-card {
+  border: 1px solid #e1e6e3;
+  border-radius: 5px;
+
+  margin-top: 6px;
+
+  overflow: hidden;
+}
+
+.lote-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 6px 8px 4px 8px;
+}
+
+.lote-header strong {
+  color: #276b4e;
+  font-size: 9px;
+}
+
+.lote-header span {
+  color: #858d89;
+  font-size: 7px;
+}
+
+.lote-contenido {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.25fr;
+}
+
+.lote-columna {
+  padding: 2px 8px 7px 8px;
+}
+
+.lote-columna span {
+  display: block;
+
+  color: #8a938f;
+  font-size: 6px;
+  margin-top: 3px;
+}
+
+.lote-columna strong {
+  display: block;
+
+  color: #33453d;
+  font-size: 8px;
+  margin-top: 1px;
+}
+
+.lote-columna-destacada {
+  border-left: 1px solid #e5e8e6;
+}
+
+.lote-columna-destacada strong:first-of-type {
+  color: #d23e3e;
+}
+
+.estado-maduracion {
+  color: #33453d !important;
+}
+
+/* ============================================================
+   CARGANDO / ERROR
+============================================================ */
+
+.remito-cargando,
+.remito-error,
+.remito-vacio {
+  padding: 20px;
+  text-align: center;
+  color: #777;
+}
+
+.remito-error {
+  color: #c0392b;
+}
+
+/* ============================================================
+   FIRMAS
+============================================================ */
+
+.remito-firmas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+
+  margin-top: 28px;
+}
+
+.firma {
+  text-align: center;
+}
+
+.firma-linea {
+  border-top: 1px solid #d6dbd8;
+  margin-bottom: 4px;
+}
+
+.firma span {
+  color: #858d89;
+  font-size: 7px;
+}
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 700px) {
+
+  .remito-documento {
+    width: calc(100% - 20px);
+    max-width: none;
+  }
+
+  .remito-topbar {
+    height: auto;
+    min-height: 42px;
+    padding: 5px 8px;
+  }
+
+  .remito-topbar-title {
+    font-size: 10px;
+  }
+
+  .remito-topbar-actions {
+    gap: 3px;
+  }
+
+  .remito-btn-volver,
+  .remito-btn-print {
+    padding: 0 7px;
+    font-size: 9px;
+  }
+
+  .remito-datos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lote-contenido {
+    grid-template-columns: 1fr;
+  }
+
+  .lote-columna-destacada {
+    border-left: 0;
+    border-top: 1px solid #e5e8e6;
+  }
+
+  .remito-firmas {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+}
+
+/* ============================================================
+   IMPRESIÓN / PDF
+============================================================ */
+
+@media print {
+
+  @page {
+    size: A4;
+    margin: 10mm;
+  }
+
+  body {
+    background: white !important;
+  }
+
+  .remito-page {
+    width: 100%;
+    min-height: auto;
+  }
+
+  .remito-topbar-actions {
+    display: none;
+  }
+
+  .remito-topbar {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .remito-documento {
+    width: 100%;
+    max-width: none;
+    margin: 10px 0;
+  }
+
+  .remito-tabla thead,
+  .remito-dato,
+  .madurez-progreso {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .lote-card {
+    break-inside: avoid;
+  }
+  
+}
