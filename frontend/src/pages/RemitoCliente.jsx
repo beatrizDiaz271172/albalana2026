@@ -148,12 +148,12 @@ const RemitoCliente = () => {
   };
 
   // Formatear fecha
-  const formatearFecha = (fecha) => {
-    if (!fecha) return '';
-    const date = new Date(fecha);
-    return date.toLocaleDateString('es-AR', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    const formatearFecha = (fechaISO) => {
+      if (!fechaISO) return '';
+          const [año, mes, dia] = fechaISO.split('-');
+          return `${dia}/${mes}/${año}`;
   };
-
+  
   return (
     <div className="remito-cliente-page">
       {/* Navbar Superior */}
@@ -239,7 +239,7 @@ const RemitoCliente = () => {
               <thead>
                 <tr style={{ backgroundColor: '#f5f7f5', color: '#2e6b4d', borderBottom: '2px solid #e0e0e0' }}>
                   <th style={thStyle}>Nº Remito</th>
-                  <th style={thStyle}>Fecha</th>
+                  <th style={thStyle}>Fecha Egreso</th>
                   <th style={thStyle}>Cliente</th>
                   <th style={thStyle}>Items</th>
                   <th style={thStyle}>Hormas</th>

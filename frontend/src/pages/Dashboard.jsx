@@ -255,7 +255,7 @@ const Dashboard = () => {
     { title: "Remitos", icon: "📦", color: "#2e3880", path: "/remitoCliente" },
     { title: "Ajuste de stock", icon: "⚖️", color: "#7a3e9d", path: "/ajusteStock" },
     { title: "Transferencia", icon: "🔄", color: "#2e3880", path: "/transferenciaEntreCamaras" },
-    { title: "Campañas", icon: "📅", color: "#7a3e9d" },
+    { title: "Campañas", icon: "📅", color: "#7a3e9d" , path: "/GestionCampañas"},
     { title: "Definiciones", icon: "⚙️", color: "#1e5338", path: "/definicionesSistOpc" },
     { title: "Imprimir / PDF-- CONSULTAR API", icon: "🖨️", color: "#d9534f", path: "/listaQuesos"}
   ];

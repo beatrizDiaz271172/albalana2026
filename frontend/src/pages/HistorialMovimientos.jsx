@@ -80,13 +80,12 @@ const HistorialMovimientos = () => {
     }
   };
 
-  const formatearFecha = (fechaISO) => {
-    if (!fechaISO) return '-';
-    const fecha = new Date(fechaISO);
-    return fecha.toLocaleDateString('es-AR', {
-      day: '2-digit', month: '2-digit', year: 'numeric' 
-    });
-  };
+const formatearFecha = (fechaISO) => {
+  if (!fechaISO) return '-';
+ // alert(fechaISO);
+  const [year, month, day] = fechaISO.split('T')[0].split('-');
+  return `${day}/${month}/${year}`;
+};
 
   const formatearFechaDisplay = (fechaISO) => {
   if (!fechaISO) return '';
@@ -238,7 +237,7 @@ const HistorialMovimientos = () => {
                   <th>kg</th>
                   <th>Cliente</th>
                   <th>Operador</th>
-                  <th>Acciones</th>
+                  <th>Observaciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -253,11 +252,12 @@ const HistorialMovimientos = () => {
                     const camaraNombre = mov.lote?.camara?.nombre || '-';
                     const clienteNombre = mov.cliente?.nombre || mov.remito?.cliente?.nombre || '-';
                     const operadorNombre = mov.operador?.nombre || mov.operador || mov.cdOperador || '-';
+                    const observaciones = mov.obs || '-';
 
                     return (
                       <tr key={mov.id}>
                         <td>{mov.lote?.codigo || '-'}</td>
-                        <td>{formatearFecha(mov.fechaAlta)}</td>
+                        <td>{formatearFecha(mov.fechaAlta)}</td> 
                         <td>{formatearFechaDisplay(mov.lote.fechaElaboracion)}</td>
                         <td>
                           <span className={tipo.clase}>{tipo.texto}</span>
@@ -268,10 +268,7 @@ const HistorialMovimientos = () => {
                         <td>{mov.kgs ? mov.kgs.toFixed(1) : '0.0'}</td>
                         <td>{clienteNombre}</td>
                         <td>{operadorNombre}</td>
-                        <td>
-                          <button style={actionBtnStyle('#4caf50')} title="Editar">✏️</button>
-                          <button style={actionBtnStyle('#f44336')} title="Eliminar">❌</button>
-                        </td>
+                        <td>{observaciones}</td>
                       </tr>
                     );
                   })

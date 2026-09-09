@@ -259,9 +259,58 @@
   cursor: not-allowed;
 }
 
+/* Main container para el formulario */
+.egreso-main {
+  background-color: #f2f5f3;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #333;
+  padding: 20px 16px 60px 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.egreso-main form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Botón volver */
+.btn-back {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.btn-back:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
 /* Adaptación Responsive */
 @media (max-width: 600px) {
   .grid-2 {
     grid-template-columns: 1fr;
+  }
+  
+  .navbar-egreso {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  
+  .navbar-egreso h1 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+  
+  .egreso-main {
+    padding: 16px 8px 60px 8px;
   }
 }

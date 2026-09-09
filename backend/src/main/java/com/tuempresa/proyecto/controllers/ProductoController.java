@@ -11,11 +11,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.tuempresa.proyecto.dtos.MovimientoRequest;
 import com.tuempresa.proyecto.dtos.ProductoRequest;
 import com.tuempresa.proyecto.models.MermasEstadisticas;
-import com.tuempresa.proyecto.models.Movimiento;
 import com.tuempresa.proyecto.models.Producto;
 import com.tuempresa.proyecto.services.ProductoService;
 

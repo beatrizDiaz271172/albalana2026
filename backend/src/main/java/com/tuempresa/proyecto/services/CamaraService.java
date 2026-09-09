@@ -15,8 +15,8 @@ public class CamaraService {
     private final CamaraRepository camaraRepository;
     private final LoteRepository loteRepository;
 
-    public CamaraService(CamaraRepository CamaraRepository, LoteRepository LoteRepository) {
-        this.camaraRepository = CamaraRepository;
+    public CamaraService(CamaraRepository camaraRepository, LoteRepository LoteRepository) {
+        this.camaraRepository = camaraRepository;
         this.loteRepository = LoteRepository;
     }
 

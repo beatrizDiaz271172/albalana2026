@@ -10,7 +10,7 @@ const RegistrarEgresoRemito = () => {
 
   // --- Datos de referencia (combos) ---
   const [productos, setProductos] = useState([]);
-  const [camaras, setCamaras] = useState([]); // Cámaras filtradas según el producto
+  const [camaras, setCamaras] = useState([]);
   const [operadores, setOperadores] = useState([]);
   const [lotes, setLotes] = useState([]);
   const [clientes, setClientes] = useState([]);
@@ -20,7 +20,7 @@ const RegistrarEgresoRemito = () => {
   const [cdOperador, setCdOperador] = useState('');
   const [clienteTexto, setClienteTexto] = useState('');
   const [cdCliente, setCdCliente] = useState('');
-  const [mostrarSugerencias, setMostrarSugerencias] = useState(false);
+  const [mostrarSugerenciasCliente, setMostrarSugerenciasCliente] = useState(false);
   const [observaciones, setObservaciones] = useState('');
 
   // --- Formulario del ítem a agregar ---
@@ -33,6 +33,10 @@ const RegistrarEgresoRemito = () => {
     kgs: 0
   });
 
+  // --- Autocomplete de Productos ---
+  const [productoTexto, setProductoTexto] = useState('');
+  const [mostrarSugerenciasProducto, setMostrarSugerenciasProducto] = useState(false);
+
   // --- Ítems ya agregados al remito ---
   const [items, setItems] = useState([]);
   const [cargando, setCargando] = useState(false);
@@ -42,7 +46,7 @@ const RegistrarEgresoRemito = () => {
     return { 'Authorization': `Bearer ${token}` };
   };
 
-  // 1. useEffect inicial (Carga productos, operadores y clientes - Eliminamos camaras de acá porque ahora dependen del producto)
+  // 1. useEffect inicial: Carga productos, operadores y clientes
   useEffect(() => {
     const cargarDatos = async () => {
       try {
@@ -63,7 +67,7 @@ const RegistrarEgresoRemito = () => {
     cargarDatos();
   }, []);
 
-  // 2. NUEVO useEffect: Cargar cámaras según el Producto seleccionado
+  // 2. useEffect: Cargar cámaras según el Producto seleccionado
   useEffect(() => {
     const idProducto = itemActual.cdProducto;
 
@@ -83,7 +87,6 @@ const RegistrarEgresoRemito = () => {
           const ordenados = data.sort((a, b) => (a.nombre || '').localeCompare(b.nombre || ''));
           setCamaras(ordenados);
 
-          // Opcional: Si solo hay una cámara con stock para este producto, la autoseleccionamos
           if (ordenados.length === 1) {
             setItemActual(prev => ({ ...prev, cdCamara: ordenados[0].id }));
           } else {
@@ -98,7 +101,7 @@ const RegistrarEgresoRemito = () => {
     cargarCamarasPorProducto();
   }, [itemActual.cdProducto]);
 
-  // 3. useEffect secundario (Carga lotes según Producto y Cámara seleccionados)
+  // 3. useEffect: Cargar lotes según Producto y Cámara seleccionados
   useEffect(() => {
     const idProducto = itemActual.cdProducto;
     const idCamara = itemActual.cdCamara;
@@ -125,17 +128,37 @@ const RegistrarEgresoRemito = () => {
     cargarLotesFiltrados();
   }, [itemActual.cdProducto, itemActual.cdCamara]);
 
-  // Sugerencias de cliente filtradas por lo tipeado
+  // --- Sugerencias de Productos filtradas por lo tipeado ---
+  const sugerenciasProductos = useMemo(() => {
+    if (!productoTexto) return [];
+    const texto = productoTexto.toLowerCase();
+    return productos.filter((p) => (p.nombre || '').toLowerCase().includes(texto)).slice(0, 8);
+  }, [productoTexto, productos]);
+
+  // --- Sugerencias de Clientes filtradas por lo tipeado ---
   const sugerenciasClientes = useMemo(() => {
     if (!clienteTexto) return [];
     const texto = clienteTexto.toLowerCase();
     return clientes.filter((c) => (c.nombre || '').toLowerCase().includes(texto)).slice(0, 8);
   }, [clienteTexto, clientes]);
 
+  const handleSeleccionarProducto = (producto) => {
+    setItemActual(prev => ({
+      ...prev,
+      cdProducto: producto.id,
+      cdCamara: '',
+      cdLote: '',
+      hormas: 1,
+      kgs: 0
+    }));
+    setProductoTexto(producto.nombre);
+    setMostrarSugerenciasProducto(false);
+  };
+
   const handleSeleccionarCliente = (cliente) => {
     setCdCliente(cliente.id);
     setClienteTexto(cliente.nombre);
-    setMostrarSugerencias(false);
+    setMostrarSugerenciasCliente(false);
   };
 
   const handleChangeItem = (e) => {
@@ -143,14 +166,11 @@ const RegistrarEgresoRemito = () => {
     setItemActual((prev) => ({
       ...prev,
       [name]: type === 'number' ? (value === '' ? '' : Number(value)) : value,
-      // Si cambia el producto manualmente, limpiamos la cámara, lote, etc.
-      ...(name === 'cdProducto' ? { cdCamara: '', cdLote: '', hormas: 1, kgs: 0 } : {}),
-      // Si cambia la cámara, limpiamos el lote
       ...(name === 'cdCamara' ? { cdLote: '', hormas: 1, kgs: 0 } : {})
     }));
   };
 
-  // --- Referencias, Objetos Seleccionados y Cálculo de Stock Restante (Hormas y Kgs) ---
+  // --- Referencias, Objetos Seleccionados y Cálculo de Stock Restante ---
   const productoSeleccionado = productos.find((p) => String(p.id) === String(itemActual.cdProducto));
   const camaraSeleccionada = camaras.find((c) => String(c.id) === String(itemActual.cdCamara));
   const loteSeleccionado = lotes.find((l) => String(l.codigo) === String(itemActual.cdLote) || String(l.id) === String(itemActual.cdLote));
@@ -204,15 +224,8 @@ const RegistrarEgresoRemito = () => {
       return;
     }
 
-    if (loteSeleccionado && kgsIngresados > maxKgsRestantes) {
-      const msjAgregado = kgsYaAgregados > 0 ? ` (ya tenés ${kgsYaAgregados} kg agregados en la lista)` : '';
-      alert(`La cantidad de kg ingresada (${kgsIngresados}) supera el stock restante disponible para este lote que es: ${maxKgsRestantes} kg${msjAgregado}.`);
-      return;
-    }
-
-    const ctKgsPermitidos = ctKgsXHorma * hormasIngresadas;
-    if (loteSeleccionado && kgsIngresados > ctKgsPermitidos) {
-      alert(`La cantidad de Kilos ingresados (${kgsIngresados}) supera el máximo de kilos para la cantidad de hormas cargadas: ${hormasIngresadas}.`);
+    if (itemActual.kgs > maxKgsRestantes) {
+      alert(`La cantidad de kgs ingresada (${kgsIngresados}) supera el máximo permitido: ${maxKgsRestantes.toFixed(2)} kg.`);
       return;
     }
 
@@ -223,101 +236,96 @@ const RegistrarEgresoRemito = () => {
       cdCamara: itemActual.cdCamara,
       camara: camaraSeleccionada?.nombre || '',
       cdLote: loteFinal,
-      hormas: itemActual.hormas === '' ? 0 : Number(itemActual.hormas),
-      kgs: itemActual.kgs === '' ? 0 : Number(itemActual.kgs)
+      hormas: hormasIngresadas,
+      kgs: kgsIngresados
     };
 
-    setItems((prev) => [...prev, nuevoItem]);
+    setItems([...items, nuevoItem]);
 
-    // Reset del subformulario de ítem
-    setItemActual((prev) => ({
-      ...prev,
+    // Limpiar formulario
+    setItemActual({
+      cdProducto: '',
+      cdCamara: '',
       cdLote: '',
       loteManual: '',
       hormas: 1,
       kgs: 0
-    }));
+    });
+    setProductoTexto('');
+    setCamaras([]);
+    setLotes([]);
   };
 
   const handleQuitarItem = (id) => {
-    setItems((prev) => prev.filter((it) => it.id !== id));
+    setItems(items.filter((it) => it.id !== id));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!cdOperador) {
+      alert('Seleccioná un operador.');
+      return;
+    }
+
+    if (!cdCliente) {
+      alert('Seleccioná un cliente.');
+      return;
+    }
+
     if (items.length === 0) {
-      alert('Agregá al menos un ítem al remito antes de guardarlo.');
+      alert('Agregá al menos un ítem al remito.');
       return;
     }
 
     setCargando(true);
 
-    const payload = {
-      fechaEgreso,
-      cdCliente: cdCliente || null,
-      cdOperador: cdOperador || null,
-      observaciones,
-      items: items.map((it) => ({
-        cdProducto: it.cdProducto,
-        cdCamara: it.cdCamara,
-        cdLote: it.cdLote,
-        hormas: it.hormas,
-        kgs: it.kgs
-      }))
-    };
-
     try {
-      const response = await fetch(`${API_BASE}/remitos`, {
+      const payload = {
+        fechaEgreso,
+        cdOperador: parseInt(cdOperador),
+        cdCliente: parseInt(cdCliente),
+        observaciones,
+        egresos: items.map((it) => ({
+          cdProducto: parseInt(it.cdProducto),
+          cdCamara: parseInt(it.cdCamara),
+          cdLote: String(it.cdLote),
+          hormas: Number(it.hormas),
+          kgs: Number(it.kgs)
+        }))
+      };
+
+      const res = await fetch(`${API_BASE}/remitos`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...authHeaders()
-        },
+        headers: { ...authHeaders(), 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
 
-      if (response.ok) {
-        alert('¡Remito de egreso registrado con éxito!');
+      if (res.ok) {
+        alert('✅ Remito guardado exitosamente.');
         navigate('/dashboard');
       } else {
-        const errData = await response.json().catch(() => ({}));
-        alert(`Error al registrar el remito: ${errData.mensaje || 'Ocurrió un error inesperado'}`);
+        const error = await res.text();
+        alert(`❌ Error al guardar: ${error}`);
       }
     } catch (error) {
-      alert('Error de conexión con el servidor: ' + error.message);
+      console.error('Error al guardar remito:', error);
+      alert('❌ Error de conexión al guardar el remito.');
     } finally {
       setCargando(false);
     }
   };
 
   return (
-    <div className="egreso-page">
-      {/* Navbar Superior */}
-      <header className="navbar-egreso">
-        <div className="navbar-brand-egreso">
-          <span className="brand-icon">🧀</span>
-          <span className="brand-title">Alba Lana</span>
-        </div>
-        <button className="btn-menu-egreso">≡ Menú</button>
-      </header>
+    <div className="egreso-container">
+      <nav className="navbar-egreso">
+        <h1>📤 Registrar Egreso (Remito)</h1>
+        <button className="btn-back" onClick={() => navigate('/')}>← Volver</button>
+      </nav>
 
-      <main className="egreso-container">
-        <div className="nav-actions-egreso">
-          <button className="btn-nav-top-egreso" onClick={() => navigate('/dashboard')}>
-            ← Inicio
-          </button>
-          <button className="btn-nav-top-egreso" onClick={() => navigate(-1)}>
-            ↰ Volver
-          </button>
-        </div>
-
-        <h2 className="screen-title-egreso">
-          <span className="title-icon">📤</span> Registrar egreso — Remito
-        </h2>
-
+      <main className="egreso-main">
         <form onSubmit={handleSubmit}>
-          {/* Datos del remito */}
+          {/* Cabecera del remito */}
           <div className="card-egreso">
             <div className="card-header-egreso">Datos del remito</div>
             <div className="card-body-egreso">
@@ -329,16 +337,14 @@ const RegistrarEgresoRemito = () => {
                     id="fechaEgreso"
                     value={fechaEgreso}
                     onChange={(e) => setFechaEgreso(e.target.value)}
-                    required
                   />
                 </div>
 
                 <div className="form-group-egreso">
-                  <label htmlFor="cdOperador">Operario</label>
+                  <label htmlFor="cdOperador">Operador</label>
                   <select
                     id="cdOperador"
                     value={cdOperador}
-                    required
                     onChange={(e) => setCdOperador(e.target.value)}
                   >
                     <option value="">— Seleccionar —</option>
@@ -349,43 +355,46 @@ const RegistrarEgresoRemito = () => {
                 </div>
               </div>
 
-              <div className="form-group-egreso" style={{ position: 'relative' }}>
-                <label htmlFor="cliente">Cliente</label>
-                <input
-                  type="text"
-                  id="cliente"
-                  required
-                  placeholder="Escribí para filtrar..."
-                  value={clienteTexto}
-                  onChange={(e) => {
-                    setClienteTexto(e.target.value);
-                    setCdCliente('');
-                    setMostrarSugerencias(true);
-                  }}
-                  onFocus={() => setMostrarSugerencias(true)}
-                  onBlur={() => setTimeout(() => setMostrarSugerencias(false), 150)}
-                  autoComplete="off"
-                />
-                {mostrarSugerencias && sugerenciasClientes.length > 0 && (
-                  <ul className="sugerencias-lista">
-                    {sugerenciasClientes.map((c) => (
-                      <li key={c.id} onMouseDown={() => handleSeleccionarCliente(c)}>
-                        {c.nombre}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
+              <div className="grid-2">
+                <div className="form-group-egreso">
+                  <label htmlFor="clienteInput">Cliente</label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type="text"
+                      id="clienteInput"
+                      placeholder="Escribe el nombre del cliente..."
+                      value={clienteTexto}
+                      onChange={(e) => {
+                        setClienteTexto(e.target.value);
+                        setCdCliente('');
+                        setMostrarSugerenciasCliente(true);
+                      }}
+                      onFocus={() => setMostrarSugerenciasCliente(true)}
+                      onBlur={() => setTimeout(() => setMostrarSugerenciasCliente(false), 150)}
+                      autoComplete="off"
+                    />
+                    {mostrarSugerenciasCliente && sugerenciasClientes.length > 0 && (
+                      <ul className="sugerencias-lista">
+                        {sugerenciasClientes.map((c) => (
+                          <li key={c.id} onMouseDown={() => handleSeleccionarCliente(c)}>
+                            {c.nombre}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
 
-              <div className="form-group-egreso">
-                <label htmlFor="observaciones">Observaciones del remito</label>
-                <textarea
-                  id="observaciones"
-                  rows="3"
-                  placeholder="Opcional"
-                  value={observaciones}
-                  onChange={(e) => setObservaciones(e.target.value)}
-                />
+                <div className="form-group-egreso">
+                  <label htmlFor="observaciones">Observaciones del remito</label>
+                  <textarea
+                    id="observaciones"
+                    rows="3"
+                    placeholder="Opcional"
+                    value={observaciones}
+                    onChange={(e) => setObservaciones(e.target.value)}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -436,18 +445,32 @@ const RegistrarEgresoRemito = () => {
 
                 <div className="grid-2">
                   <div className="form-group-egreso">
-                    <label htmlFor="itemProducto">Producto</label>
-                    <select
-                      id="itemProducto"
-                      name="cdProducto"
-                      value={itemActual.cdProducto}
-                      onChange={handleChangeItem}
-                    >
-                      <option value="">— Seleccionar —</option>
-                      {productos.map((p) => (
-                        <option key={p.id} value={p.id}>{p.nombre}</option>
-                      ))}
-                    </select>
+                    <label htmlFor="itemProductoInput">Producto</label>
+                    <div style={{ position: 'relative' }}>
+                      <input
+                        type="text"
+                        id="itemProductoInput"
+                        placeholder="Escribe el nombre del producto..."
+                        value={productoTexto}
+                        onChange={(e) => {
+                          setProductoTexto(e.target.value);
+                          setItemActual(prev => ({ ...prev, cdProducto: '' }));
+                          setMostrarSugerenciasProducto(true);
+                        }}
+                        onFocus={() => setMostrarSugerenciasProducto(true)}
+                        onBlur={() => setTimeout(() => setMostrarSugerenciasProducto(false), 150)}
+                        autoComplete="off"
+                      />
+                      {mostrarSugerenciasProducto && sugerenciasProductos.length > 0 && (
+                        <ul className="sugerencias-lista">
+                          {sugerenciasProductos.map((p) => (
+                            <li key={p.id} onMouseDown={() => handleSeleccionarProducto(p)}>
+                              {p.nombre}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
                   </div>
 
                   <div className="form-group-egreso">

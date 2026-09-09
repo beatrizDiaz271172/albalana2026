@@ -16,6 +16,7 @@ import ConsultarItemsRemito from './pages/ConsultarItemsRemito';
 import MermasYPesoProm from './pages/MermasYPesoProm';
 import DefinicionesSistemaCamara from './pages/DefinicionesSistemaCamara';
 import ListaQuesos from './pages/ListaQuesos';
+import GestionCampañas from './pages/GestionCampañas';
 
 export default function App() {
   return (
@@ -42,12 +43,16 @@ export default function App() {
 
         <Route path="/mermasYPesoProm" element={<MermasYPesoProm />} />
         <Route path="/productos/mermas" element={<MermasYPesoProm />} />
-        
+
         <Route path="/remitos/:remitoId/items" element={<ConsultarItemsRemito />} />
         <Route path="/remitos/:remitoId" element={<ConsultarItemsRemito />} />
         
         <Route path="/movimientos/alertas" element={<Dashboard />} />
         <Route path="/listaQuesos" element={<ListaQuesos />} />
+
+        <Route path="/gestionCampañas" element={<GestionCampañas />} />
+        
+ 
       </Routes>
     </BrowserRouter>
   );

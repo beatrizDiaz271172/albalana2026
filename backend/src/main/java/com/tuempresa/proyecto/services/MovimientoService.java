@@ -71,7 +71,16 @@ public class MovimientoService {
 
         return loteRepository.save(nuevoLote);
     }
-  
+ 
+    
+    @Transactional
+    public Movimiento cerrarMovimiento(Movimiento movimiento, Long campañaId) {
+        movimiento.setArchivadoId(0L);
+        movimiento.setActivo(false);
+        movimientoRepository.save(movimiento);
+        return movimiento;
+    }
+
     @Transactional
     public Movimiento guardarMovimiento(MovimientoRequest request) {
         long tipoMov =  request.getCdTipoMov();
@@ -80,7 +89,7 @@ public class MovimientoService {
         boolean esTransferencia =  tipoMov == TIPO_MOV_TRANSFERENCIA;
         Movimiento movimiento = new Movimiento();
 
-        movimiento.setCdTipoMov(request.getCdTipoMov());
+        movimiento.setCdTipoMov(tipoMov);
 
         long idProducto = request.getCdProducto();
         Producto producto = productoRepository.getReferenceById(idProducto);

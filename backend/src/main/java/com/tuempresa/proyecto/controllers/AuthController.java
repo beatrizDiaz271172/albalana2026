@@ -22,7 +22,6 @@ public class AuthController {
         if (respuesta.isExito()) {
             return ResponseEntity.ok(respuesta);
         } else {
-            
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
         }
     }

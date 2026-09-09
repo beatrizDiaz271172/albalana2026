@@ -63,4 +63,7 @@ public class Movimiento {
 
     @Column(name = "activo")
     private Boolean activo = true;
+
+    @Column(name = "archivado_id", nullable = true) 
+    private Long archivadoId;
 }

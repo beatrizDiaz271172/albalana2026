@@ -10,6 +10,7 @@ import java.util.Optional;
 @Repository
 public interface StockRepository extends JpaRepository<Stock, Long> {
 
+    List<Stock> findByActivoTrue();
     Stock findByLote_IdAndActivoTrue(Long loteId);
 
     // NUEVO: Busca el stock filtrando directamente a través de las entidades Lote -> Producto y Lote -> Cámara
