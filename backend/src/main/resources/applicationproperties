@@ -1,12 +1,12 @@
 # Puerto del servidor Spring Boot
 server.port=8081
 
-# Configuración de Conexión a PostgreSQL ACA CAMBIAR PARA CASOS DE DOCKER
-spring.datasource.url=jdbc:postgresql://localhost:5432/albalanadb
-#spring.datasource.url=jdbc:postgresql://host.docker.internal:5432/albalanadb
-spring.datasource.username=postgres
-spring.datasource.password=123
-spring.datasource.driver-class-name=org.postgresql.Driver
+# Configuración de Conexión a PostgreSQL ACA CAMBIAR PARA CASOS DE RAILWAY 
+spring.datasource.url=jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}
+spring.datasource.username=${PGUSER}
+spring.datasource.password=${PGPASSWORD}
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 
 # Configuración de JPA / Hibernate
 # ddl-auto opciones:
