@@ -63,3 +63,17 @@ pnpm-debug.log*
 # ==========================================
 .DS_Store
 Thumbs.db
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+frontend/.env.*.local
+
+# Backend
+backend/target/
+backend/.idea/
+
+# OS
+.DS_Store
+*.swp
