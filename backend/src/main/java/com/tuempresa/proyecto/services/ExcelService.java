@@ -19,8 +19,9 @@ public class ExcelService {
     private StockRepository stockRepository;
     private ProductoRepository productoRepository;
 
-    public ByteArrayInputStream generarExcelUsuarios() {
-        List<Movimiento> movimientos = movimientoRepository.findAll();
+      /*public ByteArrayInputStream generarExcelUsuarios() {
+        
+      List<Movimiento> movimientos = movimientoRepository.findAll();
 
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Campania");
@@ -45,5 +46,5 @@ public class ExcelService {
         } catch (IOException e) {
             throw new RuntimeException("Error al importar los datos a Excel: " + e.getMessage());
         }
-    }
+    }*/
 }
