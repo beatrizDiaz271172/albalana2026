@@ -24,7 +24,7 @@ logging.level.org.springframework.security=DEBUG
 
 spring.jackson.serialization.FAIL_ON_EMPTY_BEANS=false
 
-# Configuración de JWT
+# Configuración de JWT de RAILWAY
 jwt.secret=1s8B2fq2Hmt9BzVlNrSdAU9X0t0dN5/clAIA7vAjq2c=
 jwt.expiration-ms=86400000
 
