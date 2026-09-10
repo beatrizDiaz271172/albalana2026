@@ -16,11 +16,14 @@ public class CorsConfig {
                 registry.addMapping("/**") // Aplica a todos los endpoints del backend
                         .allowedOrigins(
                             "http://localhost:5173", 
-                            "http://192.168.0.32:5173" // Agregamos explícitamente tu IP local
+                            "http://192.168.0.32:5173", // Agregamos explícitamente tu IP local
+                            "ionic://localhost",               // Capacitor desarrollo
+                            "capacitor://localhost"            // Capacitor
                         )
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowedHeaders("*")
                         .allowCredentials(true);
+                
             }
         };
     }
