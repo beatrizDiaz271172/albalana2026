@@ -32,8 +32,4 @@ public class CorsConfig {
         };
     }
 }
-     "http://localhost:3000",
-                        "http://localhost:5173",
-                        "http://192.168.0.32:5173",
-                        "http://localhost",                              // Postman
-                        "https://albalana2026-production.up.railway.app"
+    
