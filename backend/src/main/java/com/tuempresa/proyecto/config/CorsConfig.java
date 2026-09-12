@@ -16,11 +16,11 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Aplica a todos los endpoints del backend
                         .allowedOrigins(
-                            "http://localhost:5173",           // Vite dev
-                        "http://192.168.0.32:5173",       // Vite IP local
-                        "http://localhost:3000",          // React dev (puerto alternativo)
-                        "http://localhost",               // Postman
-                        "http://127.0.0.1",               // Localhost sin puerto
+                             "http://localhost:3000",
+                        "http://localhost:5173",
+                        "http://192.168.0.32:5173",
+                        "http://localhost",                              // Postman
+                        "https://albalana2026-production.up.railway.app",    
                         "ionic://localhost",              // Capacitor
                         "capacitor://localhost"           // Capacitor          // Capacitor
                         )
@@ -32,3 +32,8 @@ public class CorsConfig {
         };
     }
 }
+     "http://localhost:3000",
+                        "http://localhost:5173",
+                        "http://192.168.0.32:5173",
+                        "http://localhost",                              // Postman
+                        "https://albalana2026-production.up.railway.app"
