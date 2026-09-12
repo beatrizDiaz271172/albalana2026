@@ -7,6 +7,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class CorsConfig {
+    
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {
@@ -15,10 +16,13 @@ public class CorsConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Aplica a todos los endpoints del backend
                         .allowedOrigins(
-                            "http://localhost:5173", 
-                            "http://192.168.0.32:5173", // Agregamos explícitamente tu IP local
-                            "ionic://localhost",               // Capacitor desarrollo
-                            "capacitor://localhost"            // Capacitor
+                            "http://localhost:5173",           // Vite dev
+                        "http://192.168.0.32:5173",       // Vite IP local
+                        "http://localhost:3000",          // React dev (puerto alternativo)
+                        "http://localhost",               // Postman
+                        "http://127.0.0.1",               // Localhost sin puerto
+                        "ionic://localhost",              // Capacitor
+                        "capacitor://localhost"           // Capacitor          // Capacitor
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowedHeaders("*")
