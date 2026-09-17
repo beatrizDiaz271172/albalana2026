@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
 debugger;
-const API_URL = import.meta.env.VITE_API_URL;
+const API_BASE = import.meta.env.VITE_API_URL;
 
 const Login = () => {
   const [usuario, setUsuario] = useState('');
@@ -15,7 +15,7 @@ const Login = () => {
     e.preventDefault();
     setError('');
     setCargando(true);
-
+debugger;
     try {
      const response = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
