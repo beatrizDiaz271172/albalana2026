@@ -20,9 +20,7 @@ public class CorsConfig {
                         "http://localhost:5173",
                         "http://192.168.0.32:5173",
                         "http://localhost",                              // Postman
-                        "https://albalana2026-production.up.railway.app",    
-                        "ionic://localhost",              // Capacitor
-                        "capacitor://localhost"           // Capacitor          // Capacitor
+                        "https://albalana2026-production.up.railway.app"    
                         )
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                         .allowedHeaders("*")

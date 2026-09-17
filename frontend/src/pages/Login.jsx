@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
+debugger;
 const API_URL = import.meta.env.VITE_API_URL;
 
 const Login = () => {
@@ -16,7 +17,7 @@ const Login = () => {
     setCargando(true);
 
     try {
-      const response = await fetch(API_URL+'/login', {
+     const response = await fetch(`${API_BASE}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

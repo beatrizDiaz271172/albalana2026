@@ -6,6 +6,7 @@ import com.tuempresa.proyecto.repositories.MovimientoRepository;
 import com.tuempresa.proyecto.repositories.CamaraRepository;
 import com.tuempresa.proyecto.repositories.LoteRepository;
 import com.tuempresa.proyecto.repositories.ProductoRepository;
+import com.tuempresa.proyecto.repositories.RemitoRepository;
 import com.tuempresa.proyecto.repositories.StockRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,14 +44,17 @@ public class MovimientoService {
     private final ProductoRepository productoRepository;
     private final LoteRepository loteRepository;
     private final StockRepository stockRepository;
+    private final RemitoRepository remitoRepository;
 
     public MovimientoService(MovimientoRepository movimientoRepository, CamaraRepository camaraRepository, 
-        ProductoRepository productoRepository, LoteRepository loteRepository, StockRepository stockRepository) {
+        ProductoRepository productoRepository, LoteRepository loteRepository, StockRepository stockRepository, 
+        RemitoRepository remitoRepository) {
         this.movimientoRepository = movimientoRepository;
         this.camaraRepository = camaraRepository;
         this.productoRepository = productoRepository;
         this.loteRepository = loteRepository;
         this.stockRepository = stockRepository;
+        this.remitoRepository = remitoRepository;
     }
 
     public List<Movimiento> obtenerTodos() {
@@ -75,9 +79,14 @@ public class MovimientoService {
     
     @Transactional
     public Movimiento cerrarMovimiento(Movimiento movimiento, Long campañaId) {
-        movimiento.setArchivadoId(0L);
+        movimiento.setArchivadoId(campañaId);
         movimiento.setActivo(false);
         movimientoRepository.save(movimiento);
+        if (movimiento.getCdTipoMov()==2){//Tiene un remito, movimiento de tipo Egreso
+            Remito rem = movimiento.getRemito();
+            rem.setArchivadoId(campañaId);
+            remitoRepository.save(rem);
+        }
         return movimiento;
     }
 

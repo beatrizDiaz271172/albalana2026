@@ -61,10 +61,10 @@ public class CampañaService {
         //Stock, poner en ArchivadosId el id de Campaña + en activo=false y por cada registro crear un Movimiento de tipo Ajuste    
         //Campaña, actualizarla con fecha fin y cantidades
         //Generar Excel con toda la info y luego mandar a Zip para descargar
-        
+       
+       
    
-    Campaña campaña = campañaRepository.findById(campañaId)
-        .orElseThrow(() -> new RuntimeException("Campaña no encontrada con ID: " +request.getId()));
+    Campaña campaña = campañaRepository.findByIdAndActivoTrue(campañaId);
     
     campaña.setFechaFin(LocalDate.now());
     campaña.setNombre(request.getNombre());
@@ -75,8 +75,8 @@ public class CampañaService {
     campaña.setActivo(false);
     campañaRepository.save(campaña);
     Campaña nuevaCampaña = new Campaña("", LocalDate.now(), LocalDate.now(), 0L, 0.00, 0.00);
-    return campañaRepository.save(nuevaCampaña);
-    
+    return campañaRepository.save(nuevaCampaña);    
 }
+
 
 }

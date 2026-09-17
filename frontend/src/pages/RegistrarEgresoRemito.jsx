@@ -24,6 +24,7 @@ const RegistrarEgresoRemito = () => {
   const [observaciones, setObservaciones] = useState('');
 
   // --- Formulario del ítem a agregar ---
+  
   const [itemActual, setItemActual] = useState({
     cdProducto: '',
     cdCamara: '',
@@ -286,7 +287,7 @@ const RegistrarEgresoRemito = () => {
         cdOperador: parseInt(cdOperador),
         cdCliente: parseInt(cdCliente),
         observaciones,
-        egresos: items.map((it) => ({
+        items: items.map((it) => ({
           cdProducto: parseInt(it.cdProducto),
           cdCamara: parseInt(it.cdCamara),
           cdLote: String(it.cdLote),
@@ -294,13 +295,14 @@ const RegistrarEgresoRemito = () => {
           kgs: Number(it.kgs)
         }))
       };
-
+      debugger;
+ console.log('Payload enviado:', JSON.stringify(payload, null, 2));
       const res = await fetch(`${API_BASE}/remitos`, {
         method: 'POST',
         headers: { ...authHeaders(), 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-
+    console.log('Status respuesta:', res.status);
       if (res.ok) {
         alert('✅ Remito guardado exitosamente.');
         navigate('/dashboard');

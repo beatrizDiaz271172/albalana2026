@@ -9,6 +9,7 @@ import java.util.List;
 
 @Repository
 public interface MovimientoRepository extends JpaRepository<Movimiento, Long> {
+  List<Movimiento> findByArchivadoIdAndActivoTrue(Long campaniaId);
   List<Movimiento> findByRemito_Id(Long remitoId);
   List<Movimiento> findByActivoTrue();
   List<Movimiento>findByCdTipoMovAndLote_Producto_idAndActivoTrue(Integer cdTipoMov, Long productoId);

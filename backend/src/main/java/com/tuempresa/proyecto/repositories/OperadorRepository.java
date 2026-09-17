@@ -5,10 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OperadorRepository extends JpaRepository<Operador, Long> {
     
-    // Método para obtener solo los operadores activos en los select del frontend
     List<Operador> findByActivoTrue();
+    Optional <Operador> findByIdAndActivoTrue(Long id);
 }

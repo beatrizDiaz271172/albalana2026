@@ -11,4 +11,5 @@ import java.util.ArrayList;
 @Repository
 public interface CampañaRepository extends JpaRepository<Campaña, Long> {
     ArrayList<Campaña> findByActivoTrue();
+    Campaña findByIdAndActivoTrue(Long id);
 }
