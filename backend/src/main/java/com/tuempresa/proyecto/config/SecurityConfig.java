@@ -39,7 +39,8 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // <-- Vital para que el navegador pase el preflight
             .requestMatchers("/api/auth/**").permitAll()
-            .anyRequest().authenticated()
+            .anyRequest().authenticated())           // Nuestro filtro corre antes del filtro estándar de usuario/contraseña
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
             
             /*  Configuración de las rutas
             .authorizeHttpRequests(auth -> auth
@@ -49,8 +50,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )*/
 
-            // Nuestro filtro corre antes del filtro estándar de usuario/contraseña
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+ 
 
         return http.build();
     }
