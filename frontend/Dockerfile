@@ -19,4 +19,4 @@ COPY --from=build /app/dist ./dist
 
 EXPOSE 8080
 
-CMD ["npx", "serve", "-s", "dist", "-l", "8080", "-H", "0.0.0.0"]
+CMD ["sh", "-c", "HOST=0.0.0.0 npx serve -s dist -l 8080"]
