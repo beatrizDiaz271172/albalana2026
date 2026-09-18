@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Campaña {
+public class Campania {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +39,7 @@ public class Campaña {
 
     private Boolean activo = true;
 
-       public Campaña(String nombre, LocalDate fechaIni, LocalDate fechaFin, Long cantMov, Double cantHormas, Double cantKilos){
+       public Campania(String nombre, LocalDate fechaIni, LocalDate fechaFin, Long cantMov, Double cantHormas, Double cantKilos){
         this.nombre = nombre;
         this.fechaInicio = fechaIni;
         this.fechaFin = fechaFin;
