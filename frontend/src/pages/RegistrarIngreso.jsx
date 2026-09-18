@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RegistrarIngreso.css';
-
+const API_BASE = import.meta.env.VITE_API_URL;
 const RegistrarIngreso = () => {
-  const navigate = useNavigate();
+const navigate = useNavigate();
 
   // Fecha actual por defecto en formato ISO (YYYY-MM-DD)
   const hoy = new Date().toISOString().split('T')[0];
@@ -36,7 +36,7 @@ const RegistrarIngreso = () => {
     const obtenerLotes = async () => {
       try {
         const token = localStorage.getItem('userToken');
-        const response = await fetch('http://192.168.0.32:8081/api/lotes', {
+        const response = await fetch(`${API_BASE}/lotes`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {
@@ -67,7 +67,7 @@ const RegistrarIngreso = () => {
     const obtenerCamaras = async () => {
       try {
         const token = localStorage.getItem('userToken');
-        const response = await fetch('http://192.168.0.32:8081/api/camaras', {
+        const response = await fetch(`${API_BASE}/camaras`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -91,7 +91,7 @@ const RegistrarIngreso = () => {
     const obtenerProductos = async () => {
       try {
         const token = localStorage.getItem('userToken');
-        const response = await fetch('http://192.168.0.32:8081/api/productos', {
+        const response = await fetch(`${API_BASE}/productos`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -113,7 +113,7 @@ const RegistrarIngreso = () => {
     const obtenerOperadores = async () => {
       try {
         const token = localStorage.getItem('userToken');
-        const res = await fetch('http://192.168.0.32:8081/api/operadores', {
+        const res = await fetch(`${API_BASE}/operadores`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -141,7 +141,7 @@ const RegistrarIngreso = () => {
 
     try {
       const token = localStorage.getItem('userToken');
-      const response = await fetch('http://192.168.0.32:8081/api/movimientos', {
+      const response = await fetch(`${API_BASE}/movimientos`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

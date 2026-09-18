@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './ConsultarItemsRemito.css';
 
-const API_BASE = 'http://192.168.0.32:8081/api';
+const API_BASE = import.meta.env.VITE_API_URL;
 
 const ConsultarItemsRemito = () => {
   const navigate = useNavigate();

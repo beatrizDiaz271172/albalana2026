@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import CerrarCampaña from './CerrarCampaña';
 import './GestionCampañas.css';
 
-const API_BASE = 'http://192.168.0.32:8081/api';
+const API_BASE = import.meta.env.VITE_API_URL;
 
 const GestionCampañas = () => {
   const navigate = useNavigate();

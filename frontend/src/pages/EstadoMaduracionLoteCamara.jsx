@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './EstadoMaduracionLoteCamara.css';
 
-const API_BASE = 'http://192.168.0.32:8081/api';
+const API_BASE = import.meta.env.VITE_API_URL;
 
 const EstadoMaduracionLoteCamara = () => {
   const navigate = useNavigate();
