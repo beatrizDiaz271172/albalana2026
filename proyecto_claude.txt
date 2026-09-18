@@ -1,7 +1,7 @@
 Estructura del Proyecto 
 ======================= 
 Listado de rutas de carpetas para el volumen 240 GB Solido
-El n�mero de serie del volumen es 0000000C 2A96:30AB
+El n�mero de serie del volumen es 0000000C 2A96:30AB
 C:.
 |   docker-compose.yml
 |   empaquetar.bat
@@ -175,7 +175,7 @@ C:.
     |   nginx.conf
     |   package-lock.json
     |   package.json
-    |   SUBIR LA Aplicaci�n de phytonAlbalana.txt
+    |   SUBIR LA Aplicaci�n de phytonAlbalana.txt
     |   vite.config.js
     |   
     |   |   .package-lock.json
@@ -5444,7 +5444,7 @@ const Dashboard = () => {
     { title: "Remitos", icon: "📦", color: "#2e3880" },
     { title: "Ajuste de stock", icon: "⚖️", color: "#7a3e9d" },
     { title: "Transferencia", icon: "🔄", color: "#2e3880" },
-    { title: "Campañas", icon: "📅", color: "#7a3e9d" },
+    { title: "Campanias", icon: "📅", color: "#7a3e9d" },
     { title: "Definiciones", icon: "⚙️", color: "#1e5338" },
     { title: "Imprimir / PDF", icon: "🖨️", color: "#d9534f" }
   ];

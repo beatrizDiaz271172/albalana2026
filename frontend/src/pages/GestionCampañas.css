@@ -1,8 +1,8 @@
 /* ============================================================
-   ESTILOS GENERALES DE LA VISTA DE CAMPAÑAS
+   ESTILOS GENERALES DE LA VISTA DE CampaniaS
    ============================================================ */
 
-.campaña-page {
+.Campania-page {
   background-color: #eef2f5;
   min-height: 100vh;
   padding: 30px 20px;
@@ -12,7 +12,7 @@
 }
 
 /* Barra superior */
-.campaña-topbar {
+.Campania-topbar {
   width: 100%;
   max-width: 1350px;
   display: flex;
@@ -21,12 +21,12 @@
   margin-bottom: 25px;
 }
 
-.campaña-topbar-actions {
+.Campania-topbar-actions {
   display: flex;
   gap: 15px;
 }
 
-.campaña-btn-volver {
+.Campania-btn-volver {
   background: transparent;
   border: none;
   color: #2c5f3f;
@@ -38,12 +38,12 @@
   transition: background 0.2s;
 }
 
-.campaña-btn-volver:hover {
+.Campania-btn-volver:hover {
   background: rgba(44, 95, 63, 0.1);
 }
 
 /* Documento principal */
-.campaña-documento {
+.Campania-documento {
   width: 100%;
   max-width: 1350px;
   background: white;
@@ -52,26 +52,26 @@
   box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
 }
 
-.campaña-titulo-seccion {
+.Campania-titulo-seccion {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 35px;
 }
 
-.campaña-icono {
+.Campania-icono {
   font-size: 1.8rem;
 }
 
-.campaña-titulo-seccion h1 {
+.Campania-titulo-seccion h1 {
   font-size: 1.8rem;
   color: #1e293b;
   margin: 0;
   font-weight: 700;
 }
 
-/* Tarjetas de campañas */
-.campaña-card {
+/* Tarjetas de Campanias */
+.Campania-card {
   border-radius: 10px;
   border: 1px solid #cbd5e1;
   margin-bottom: 30px;
@@ -79,35 +79,35 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.campaña-card-header {
+.Campania-card-header {
   padding: 16px 24px;
   color: white;
   font-size: 1.2rem;
   font-weight: 600;
 }
 
-.campaña-card-header.azul {
+.Campania-card-header.azul {
   background-color: #1d4ed8;
 }
 
-.campaña-card-header.verde {
+.Campania-card-header.verde {
   background-color: #2c5f3f;
 }
 
-.campaña-card-body {
+.Campania-card-body {
   padding: 30px;
   background: #ffffff;
 }
 
 /* Cuadrícula de estadísticas */
-.campaña-stats-grid {
+.Campania-stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   margin-bottom: 30px;
 }
 
-.campaña-stat-item {
+.Campania-stat-item {
   background: #f8f9fa;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
@@ -115,28 +115,28 @@
   text-align: center;
 }
 
-.campaña-stat-item strong {
+.Campania-stat-item strong {
   font-size: 2rem;
   color: #1e293b;
   display: block;
   margin-bottom: 5px;
 }
 
-.campaña-stat-item span {
+.Campania-stat-item span {
   font-size: 0.95rem;
   color: #64748b;
   font-weight: 600;
 }
 
 /* Período */
-.campaña-periodo {
+.Campania-periodo {
   font-size: 1.1rem;
   color: #475569;
   margin-bottom: 25px;
 }
 
 /* Botón de cierre */
-.campaña-btn-cerrar {
+.Campania-btn-cerrar {
   background-color: #dc2626;
   color: white;
   border: none;
@@ -152,75 +152,75 @@
   margin-bottom: 15px;
 }
 
-.campaña-btn-cerrar:hover {
+.Campania-btn-cerrar:hover {
   background-color: #b91c1c;
   transform: translateY(-1px);
 }
 
-.campaña-leyenda {
+.Campania-leyenda {
   font-size: 0.95rem;
   color: #64748b;
   margin: 0;
 }
 
 /* Estados y listas vacías */
-.campaña-vacio {
+.Campania-vacio {
   color: #64748b;
   font-style: italic;
   text-align: center;
   margin: 10px 0;
 }
 
-.campaña-lista {
+.Campania-lista {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.campaña-lista li {
+.Campania-lista li {
   padding: 12px 0;
   border-bottom: 1px solid #e2e8f0;
   color: #334155;
   font-weight: 500;
 }
 
-.campaña-lista li:last-child {
+.Campania-lista li:last-child {
   border-bottom: none;
 }
 
-.campaña-cargando,
-.campaña-error {
+.Campania-cargando,
+.Campania-error {
   text-align: center;
   padding: 40px;
   font-size: 1.2rem;
   color: #64748b;
 }
 
-.campaña-error {
+.Campania-error {
   color: #dc2626;
 }
 
 /* =========================================
-   TABLA HISTORIAL DE CAMPAÑAS
+   TABLA HISTORIAL DE CampaniaS
    ========================================= */
 
-.campaña-tabla-container {
+.Campania-tabla-container {
   padding: 0 !important;
   overflow-x: auto;
 }
 
-.campaña-tabla {
+.Campania-tabla {
   width: 100%;
   border-collapse: collapse;
   font-size: 12px;
   background: #fff;
 }
 
-.campaña-tabla thead {
+.Campania-tabla thead {
   background: #f1f5f4;
 }
 
-.campaña-tabla th {
+.Campania-tabla th {
   padding: 9px 8px;
   text-align: left;
   font-weight: 700;
@@ -229,28 +229,28 @@
   border-bottom: 1px solid #d9e2df;
 }
 
-.campaña-tabla td {
+.Campania-tabla td {
   padding: 9px 8px;
   color: #44534e;
   border-bottom: 1px solid #edf1ef;
   white-space: nowrap;
 }
 
-.campaña-tabla tbody tr:last-child td {
+.Campania-tabla tbody tr:last-child td {
   border-bottom: none;
 }
 
-.campaña-tabla tbody tr:hover {
+.Campania-tabla tbody tr:hover {
   background: #f8faf9;
 }
 
 /* Nombre */
-.campaña-tabla td:first-child {
+.Campania-tabla td:first-child {
   color: #254f43;
 }
 
 /* Badge "Continúa" */
-.campaña-badge-stock {
+.Campania-badge-stock {
   display: inline-block;
   padding: 4px 9px;
   border-radius: 12px;
@@ -260,19 +260,19 @@
   font-size: 11px;
 }
 
-.campaña-badge-stock.no {
+.Campania-badge-stock.no {
   background: #f1e2e2;
   color: #a02b2b;
 }
 
 /* Acciones */
-.campaña-acciones {
+.Campania-acciones {
   display: flex;
   align-items: center;
   gap: 6px;
 }
 
-.campaña-btn-zip {
+.Campania-btn-zip {
   border: none;
   background: #f1f3f4;
   color: #40514b;
@@ -283,11 +283,11 @@
   font-weight: 600;
 }
 
-.campaña-btn-zip:hover {
+.Campania-btn-zip:hover {
   background: #e1e7e4;
 }
 
-.campaña-btn-eliminar {
+.Campania-btn-eliminar {
   border: none;
   background: #c9232d;
   color: white;
@@ -298,6 +298,6 @@
   font-size: 12px;
 }
 
-.campaña-btn-eliminar:hover {
+.Campania-btn-eliminar:hover {
   background: #a91d26;
 }

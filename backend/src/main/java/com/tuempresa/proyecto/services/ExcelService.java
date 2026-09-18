@@ -16,7 +16,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.io.File; 
-import java.util.Map; 
 
 import com.tuempresa.proyecto.models.*;
 import com.tuempresa.proyecto.repositories.*;
@@ -29,7 +28,7 @@ public class ExcelService {
     @Autowired
     private StockRepository stockRepository;
     @Autowired
-    private CampañaRepository campañaRepository;
+    private CampaniaRepository CampaniaRepository;
     @Autowired
     private ProductoRepository productoRepository;
     @Autowired
@@ -37,21 +36,21 @@ public class ExcelService {
     @Autowired
     private OperadorRepository operadorRepository;
 
-    public ByteArrayInputStream generarExcelCierreCampaña(Long id) {     
-        Campaña campaña = campañaRepository.findById(id).orElse(null);
+    public ByteArrayInputStream generarExcelCierreCampania(Long id) {     
+        Campania Campania = CampaniaRepository.findById(id).orElse(null);
         List<Movimiento> movimientos = movimientoRepository.findByArchivadoIdAndActivoTrue(id);
 
         try (Workbook workbook = new XSSFWorkbook(); 
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             
             // ✅ HOJA 1: Movimientos
-            String nombreHoja1 = campaña != null ? "Campaña - " + campaña.getNombre() : "Movimientos";
+            String nombreHoja1 = Campania != null ? "Campania - " + Campania.getNombre() : "Movimientos";
             Sheet sheet1 = workbook.createSheet(nombreHoja1);
             crearHojaMovimientos(sheet1, movimientos);
 
             // ✅ HOJA 2: Resumen o datos adicionales
             Sheet sheet2 = workbook.createSheet("Resumen");
-            crearHojaResumen(sheet2, campaña, movimientos);
+            crearHojaResumen(sheet2, Campania, movimientos);
 
             workbook.write(out);
             return new ByteArrayInputStream(out.toByteArray());
@@ -107,15 +106,15 @@ public class ExcelService {
     }
 
     // ✅ Método para crear la hoja de Resumen
-    private void crearHojaResumen(Sheet sheet, Campaña campaña, List<Movimiento> movimientos) {
+    private void crearHojaResumen(Sheet sheet, Campania Campania, List<Movimiento> movimientos) {
         // Título
         Row titleRow = sheet.createRow(0);
-        titleRow.createCell(0).setCellValue("RESUMEN DE CAMPAÑA");
+        titleRow.createCell(0).setCellValue("RESUMEN DE Campania");
 
-        // Datos de la campaña
+        // Datos de la Campania
         Row row2 = sheet.createRow(2);
-        row2.createCell(0).setCellValue("Campaña:");
-        row2.createCell(1).setCellValue(campaña != null ? campaña.getNombre() : "-");
+        row2.createCell(0).setCellValue("Campania:");
+        row2.createCell(1).setCellValue(Campania != null ? Campania.getNombre() : "-");
 
         Row row3 = sheet.createRow(3);
         row3.createCell(0).setCellValue("Total Movimientos:");
@@ -167,19 +166,19 @@ public class ExcelService {
         Optional<Operador> op = operadorRepository.findByIdAndActivoTrue(id);
         return op.map(Operador::getNombre).orElse("-");
     }
-    public String guardarExcelEnDisco(Long idCampaña) {
-        Campaña campaña = campañaRepository.findById(idCampaña).orElse(null);
-        List<Movimiento> movimientos = movimientoRepository.findByArchivadoIdAndActivoTrue(idCampaña);
+    public String guardarExcelEnDisco(Long idCampania) {
+        Campania Campania = CampaniaRepository.findById(idCampania).orElse(null);
+        List<Movimiento> movimientos = movimientoRepository.findByArchivadoIdAndActivoTrue(idCampania);
 
         try (Workbook workbook = new XSSFWorkbook(); 
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             
-            String nombreHoja1 = campaña != null ? "Campaña - " + campaña.getNombre() : "Movimientos";
+            String nombreHoja1 = Campania != null ? "Campania - " + Campania.getNombre() : "Movimientos";
             Sheet sheet1 = workbook.createSheet(nombreHoja1);
             crearHojaMovimientos(sheet1, movimientos);
 
             Sheet sheet2 = workbook.createSheet("Resumen");
-            crearHojaResumen(sheet2, campaña, movimientos);
+            crearHojaResumen(sheet2, Campania, movimientos);
 
             workbook.write(out);
 
@@ -190,7 +189,7 @@ public class ExcelService {
             }
 
             // 2. Generar nombre del archivo
-            String nombreArchivo = "Cierre_Campaña_" + idCampaña + "_" + LocalDate.now() + ".xlsx";
+            String nombreArchivo = "Cierre_Campania_" + idCampania + "_" + LocalDate.now() + ".xlsx";
             String rutaCompleta = CARPETA_DESCARGAS + File.separator + nombreArchivo;
 
             // 3. Guardar archivo en disco

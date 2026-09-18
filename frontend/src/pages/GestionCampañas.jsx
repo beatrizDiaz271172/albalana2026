@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import CerrarCampaña from './CerrarCampaña';
-import './GestionCampañas.css';
+import CerrarCampania from './CerrarCampania';
+import './GestionCampanias.css';
 
 const API_BASE = import.meta.env.VITE_API_URL;
 
-const GestionCampañas = () => {
+const GestionCampanias = () => {
   const navigate = useNavigate();
-  const [campañaActiva, setCampañaActiva] = useState(null);
+  const [CampaniaActiva, setCampaniaActiva] = useState(null);
   const [historial, setHistorial] = useState([]);
   const [metricas, setMetricas] = useState({
     movimientos: 0,
@@ -38,7 +38,7 @@ const GestionCampañas = () => {
         ]);
 
         if (!resCampanias.ok) {
-          throw new Error('No se pudo obtener la información de las campañas.');
+          throw new Error('No se pudo obtener la información de las Campanias.');
         }
 
         const dataCampanias = await resCampanias.json();
@@ -47,10 +47,10 @@ const GestionCampañas = () => {
           const activaEncontrada = dataCampanias.find(c => c.activo === true) || null;
           const historialFiltrado = dataCampanias.filter(c => c.activo === false);
           debugger;
-          setCampañaActiva(activaEncontrada);
+          setCampaniaActiva(activaEncontrada);
           setHistorial(historialFiltrado);
         } else {
-          setCampañaActiva(dataCampanias?.activa || null);
+          setCampaniaActiva(dataCampanias?.activa || null);
           const historialCrudo = Array.isArray(dataCampanias?.historial) ? dataCampanias.historial : [];
           setHistorial(historialCrudo.filter(c => c.activo === false));
         }
@@ -96,11 +96,11 @@ const GestionCampañas = () => {
     setModalCerrarAbierto(true);
   };
 
-  const confirmarCierreCampaña = async ({ nombreNuevaCampaña, accionStock }) => {
+  const confirmarCierreCampania = async ({ nombreNuevaCampania, accionStock }) => {
     try {
       const bodyData = {
-        id: campañaActiva?.id,
-        nombre: nombreNuevaCampaña,
+        id: CampaniaActiva?.id,
+        nombre: nombreNuevaCampania,
         desdeCero: accionStock === 'desde_cero',
         fechaInicio: '',
         fechaFin: '',
@@ -117,7 +117,7 @@ debugger;
 
       if (!response.ok) {
         const errorText = await response.text();
-        throw new Error(errorText || 'Error al cerrar la campaña.');
+        throw new Error(errorText || 'Error al cerrar la Campania.');
       }
 
       setModalCerrarAbierto(false);
@@ -135,79 +135,79 @@ debugger;
   };
 
   return (
-    <div className="campaña-page">
-      <header className="campaña-topbar">
-        <div className="campaña-topbar-actions">
-          <button className="campaña-btn-volver" onClick={() => navigate('/inicio')}>
+    <div className="Campania-page">
+      <header className="Campania-topbar">
+        <div className="Campania-topbar-actions">
+          <button className="Campania-btn-volver" onClick={() => navigate('/inicio')}>
             ← Inicio
           </button>
-          <button className="campaña-btn-volver" onClick={() => navigate(-1)}>
+          <button className="Campania-btn-volver" onClick={() => navigate(-1)}>
             Volver
           </button>
         </div>
       </header>
 
-      <main className="campaña-documento">
-        <div className="campaña-titulo-seccion">
-          <span className="campaña-icono">📅</span>
-          <h1>Gestión de campañas</h1>
+      <main className="Campania-documento">
+        <div className="Campania-titulo-seccion">
+          <span className="Campania-icono">📅</span>
+          <h1>Gestión de Campanias</h1>
         </div>
 
         {cargando ? (
-          <div className="campaña-cargando">Cargando campañas...</div>
+          <div className="Campania-cargando">Cargando Campanias...</div>
         ) : error ? (
-          <div className="campaña-error">{error}</div>
+          <div className="Campania-error">{error}</div>
         ) : (
           <>
-            {/* CAMPAÑA ACTIVA */}
-            <div className="campaña-card activa">
-              <div className="campaña-card-header azul">
-                <span>📁 Campaña activa (en curso)</span>
+            {/* Campania ACTIVA */}
+            <div className="Campania-card activa">
+              <div className="Campania-card-header azul">
+                <span>📁 Campania activa (en curso)</span>
               </div>
-              <div className="campaña-card-body">
-                <div className="campaña-stats-grid">
-                  <div className="campaña-stat-item">
+              <div className="Campania-card-body">
+                <div className="Campania-stats-grid">
+                  <div className="Campania-stat-item">
                     <strong>{metricas.movimientos}</strong>
                     <span>Movimientos</span>
                   </div>
-                  <div className="campaña-stat-item">
+                  <div className="Campania-stat-item">
                     <strong>{metricas.hormasStock}</strong>
                     <span>Hormas en stock</span>
                   </div>
-                  <div className="campaña-stat-item">
+                  <div className="Campania-stat-item">
                     <strong>{metricas.kgsStock}</strong>
                     <span>Kgs en stock</span>
                   </div>
                 </div>
 
-                <div className="campaña-periodo">
-                  Período: <strong>{formatearFecha(campañaActiva?.fechaInicio || '')}</strong> al <strong>{formatearFecha(campañaActiva?.fechaFin || '')}</strong>
+                <div className="Campania-periodo">
+                  Período: <strong>{formatearFecha(CampaniaActiva?.fechaInicio || '')}</strong> al <strong>{formatearFecha(CampaniaActiva?.fechaFin || '')}</strong>
                 </div>
 
-                <button className="campaña-btn-cerrar" onClick={abrirModalCerrar}>
-                  🔒 Cerrar campaña y archivar
+                <button className="Campania-btn-cerrar" onClick={abrirModalCerrar}>
+                  🔒 Cerrar Campania y archivar
                 </button>
 
-                <p className="campaña-leyenda">
+                <p className="Campania-leyenda">
                   Al cerrar se archivan todos los datos y podés elegir si empezar desde cero o continuar con el stock actual.
                 </p>
               </div>
             </div>
 
-            {/* HISTORIAL DE CAMPAÑAS */}
-            {/* HISTORIAL DE CAMPAÑAS */}
-<div className="campaña-card historial">
-  <div className="campaña-card-header verde">
-    <span>📁 Historial de campañas archivadas ({historial.length})</span>
+            {/* HISTORIAL DE CampaniaS */}
+            {/* HISTORIAL DE CampaniaS */}
+<div className="Campania-card historial">
+  <div className="Campania-card-header verde">
+    <span>📁 Historial de Campanias archivadas ({historial.length})</span>
   </div>
 
-  <div className="campaña-card-body campaña-tabla-container">
+  <div className="Campania-card-body Campania-tabla-container">
     {historial.length === 0 ? (
-      <p className="campaña-vacio">
-        No hay campañas archivadas todavía.
+      <p className="Campania-vacio">
+        No hay Campanias archivadas todavía.
       </p>
     ) : (
-      <table className="campaña-tabla">
+      <table className="Campania-tabla">
         <thead>
           <tr>
             <th>Nombre</th>
@@ -254,11 +254,11 @@ debugger;
               {/* STOCK LLEVADO */}
               <td>
                 {camp.stockLlevado === true ? (
-                  <span className="campaña-badge-stock">
+                  <span className="Campania-badge-stock">
                     Continúa
                   </span>
                 ) : (
-                  <span className="campaña-badge-stock no">
+                  <span className="Campania-badge-stock no">
                     Desde cero
                   </span>
                 )}
@@ -266,14 +266,14 @@ debugger;
 
               {/* ACCIONES */}
               <td>
-                <div className="campaña-acciones">
+                <div className="Campania-acciones">
 
                   <button
                     type="button"
-                    className="campaña-btn-zip"
+                    className="Campania-btn-zip"
                     title="Descargar ZIP"
                     onClick={() => {
-                      console.log('Descargar ZIP campaña:', camp.id);
+                      console.log('Descargar ZIP Campania:', camp.id);
                       // Acá después agregamos el endpoint de descarga
                     }}
                   >
@@ -282,10 +282,10 @@ debugger;
 
                   <button
                     type="button"
-                    className="campaña-btn-eliminar"
-                    title="Eliminar campaña"
+                    className="Campania-btn-eliminar"
+                    title="Eliminar Campania"
                     onClick={() => {
-                      console.log('Eliminar campaña:', camp.id);
+                      console.log('Eliminar Campania:', camp.id);
                       // Acá después agregamos el endpoint DELETE
                     }}
                   >
@@ -306,15 +306,15 @@ debugger;
         )}
       </main>
 
-      {/* MODAL DE CIERRE DE CAMPAÑA */}
-      <CerrarCampaña
+      {/* MODAL DE CIERRE DE Campania */}
+      <CerrarCampania
         isOpen={modalCerrarAbierto}
         onClose={() => setModalCerrarAbierto(false)}
-        onConfirm={confirmarCierreCampaña}
-        nombreCampañaActual={campañaActiva?.nombre}
+        onConfirm={confirmarCierreCampania}
+        nombreCampaniaActual={CampaniaActiva?.nombre}
       />
     </div>
   );
 };
 
-export default GestionCampañas;
+export default GestionCampanias;

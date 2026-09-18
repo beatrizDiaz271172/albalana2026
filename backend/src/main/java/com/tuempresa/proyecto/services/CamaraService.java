@@ -2,7 +2,6 @@ package com.tuempresa.proyecto.services;
 
 
 import com.tuempresa.proyecto.dtos.CamaraRequest;
-import com.tuempresa.proyecto.dtos.ProductoRequest;
 import com.tuempresa.proyecto.models.*;
 import com.tuempresa.proyecto.repositories.*;
 import org.springframework.stereotype.Service;

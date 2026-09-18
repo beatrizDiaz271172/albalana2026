@@ -16,7 +16,7 @@ import ConsultarItemsRemito from './pages/ConsultarItemsRemito';
 import MermasYPesoProm from './pages/MermasYPesoProm';
 import DefinicionesSistemaCamara from './pages/DefinicionesSistemaCamara';
 import ListaQuesos from './pages/ListaQuesos';
-import GestionCampañas from './pages/GestionCampañas';
+import GestionCampanias from './pages/GestionCampanias';
 
 export default function App() {
   return (
@@ -50,7 +50,7 @@ export default function App() {
         <Route path="/movimientos/alertas" element={<Dashboard />} />
         <Route path="/listaQuesos" element={<ListaQuesos />} />
 
-        <Route path="/gestionCampañas" element={<GestionCampañas />} />
+        <Route path="/gestionCampanias" element={<GestionCampanias />} />
         
  
       </Routes>

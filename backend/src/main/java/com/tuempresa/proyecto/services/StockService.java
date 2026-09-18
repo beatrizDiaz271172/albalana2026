@@ -2,7 +2,7 @@ package com.tuempresa.proyecto.services;
 
 
 import com.tuempresa.proyecto.dtos.CamaraRequest;
-import com.tuempresa.proyecto.dtos.CampañaRequest;
+import com.tuempresa.proyecto.dtos.CampaniaRequest;
 import com.tuempresa.proyecto.dtos.MovimientoRequest;
 import com.tuempresa.proyecto.dtos.ProductoRequest;
 import com.tuempresa.proyecto.models.*;
@@ -31,9 +31,9 @@ public class StockService {
         return stocks;
     }
 
-    public Stock cerrarStock(Stock stock, Long campañaId, String descCampaña, boolean desdeCero) {
+    public Stock cerrarStock(Stock stock, Long CampaniaId, String descCampania, boolean desdeCero) {
         stock.setActivo(false);
-        stock.setArchivadoId(campañaId);
+        stock.setArchivadoId(CampaniaId);
         stockRepository.save(stock);
     if (! desdeCero){
         //Mantener el stock, crear mov de ajuste con valores del stock
@@ -44,7 +44,7 @@ public class StockService {
         mov.setCdCamara(stock.getLote().getCamara().getId());
         mov.setHormas(stock.getHormas());
         mov.setKgs(stock.getKgs());        
-        mov.setObs("Stock Inicial: " + descCampaña );
+        mov.setObs("Stock Inicial: " + descCampania );
         mov.setCdOperador(0L);
 
         movimientoService.guardarMovimiento(mov);

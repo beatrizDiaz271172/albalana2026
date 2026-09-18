@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import './CerrarCampaña.css';
+import './CerrarCampania.css';
 
-const CerrarCampañaModal = ({ isOpen, onClose, onConfirm}) => {
-  const [nombreCampaña, setNombreCampaña] = useState('');
+const CerrarCampaniaModal = ({ isOpen, onClose, onConfirm}) => {
+  const [nombreCampania, setNombreCampania] = useState('');
   const [tipoAccion, setTipoAccion] = useState('desde_cero'); // 'desde_cero' o 'continuar'
   const [nombreConfirmacion, setNombreConfirmacion] = useState('');
   const [cargando, setCargando] = useState(false);
 
   if (!isOpen) return null;
 
-  // El nombre exacto que el usuario debe escribir para confirmar (por ejemplo, el nombre de la campaña actual o un texto de validación)
-  const nombreValido = nombreCampaña;
+  // El nombre exacto que el usuario debe escribir para confirmar (por ejemplo, el nombre de la Campania actual o un texto de validación)
+  const nombreValido = nombreCampania;
   const esValido = nombreConfirmacion.trim() === nombreValido.trim();
 
   const handleSubmit = async (e) => {
@@ -20,7 +20,7 @@ const CerrarCampañaModal = ({ isOpen, onClose, onConfirm}) => {
     setCargando(true);
     try {
       await onConfirm({
-        nombreNuevaCampaña: nombreCampaña,
+        nombreNuevaCampania: nombreCampania,
         accionStock: tipoAccion // 'desde_cero' o 'continuar'
       });
       onClose();
@@ -38,7 +38,7 @@ const CerrarCampañaModal = ({ isOpen, onClose, onConfirm}) => {
         <div className="modal-header">
           <div className="modal-title-wrapper">
             <span className="modal-lock-icon">🔒</span>
-            <h2>Cerrar campaña activa</h2>
+            <h2>Cerrar Campania activa</h2>
           </div>
           <button className="modal-close-btn" onClick={onClose}>
             ✕
@@ -46,14 +46,14 @@ const CerrarCampañaModal = ({ isOpen, onClose, onConfirm}) => {
         </div>
 
         <form onSubmit={handleSubmit} className="modal-body">
-          {/* Nombre de la campaña */}
+          {/* Nombre de la Campania */}
           <div className="modal-field">
-            <label>Nombre de la campaña (ej: 2024-2025)</label>
+            <label>Nombre de la Campania (ej: 2024-2025)</label>
             <input
               type="text"
               placeholder="Ej: 2024-2025 o Temporada Primavera"
-              value={nombreCampaña}
-              onChange={(e) => setNombreCampaña(e.target.value)}
+              value={nombreCampania}
+              onChange={(e) => setNombreCampania(e.target.value)}
               required
             />
           </div>
@@ -93,7 +93,7 @@ const CerrarCampañaModal = ({ isOpen, onClose, onConfirm}) => {
             </div>
             <div className="modal-option-content">
               <strong>Continuar con el stock actual</strong>
-              <p>El stock actual pasa como ajuste inicial de la nueva campaña. Los movimientos anteriores se archivan.</p>
+              <p>El stock actual pasa como ajuste inicial de la nueva Campania. Los movimientos anteriores se archivan.</p>
             </div>
           </div>
 
@@ -101,13 +101,13 @@ const CerrarCampañaModal = ({ isOpen, onClose, onConfirm}) => {
           <div className="modal-alert">
             <span className="modal-alert-icon">⚠️</span>
             <span className="modal-alert-text">
-              Todos los datos de la campaña se guardan en una carpeta local (campanias/) y se genera un ZIP descargable automáticamente.
+              Todos los datos de la Campania se guardan en una carpeta local (campanias/) y se genera un ZIP descargable automáticamente.
             </span>
           </div>
 
           {/* Confirmación por texto */}
           <div className="modal-field">
-            <label>Escribí el nombre de la campaña para confirmar</label>
+            <label>Escribí el nombre de la Campania para confirmar</label>
             <input
               type="text"
               placeholder="Nombre exacto"
@@ -139,4 +139,4 @@ const CerrarCampañaModal = ({ isOpen, onClose, onConfirm}) => {
   );
 };
 
-export default CerrarCampañaModal;
+export default CerrarCampaniaModal;
