@@ -10,20 +10,26 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173", "http://192.168.0.32:5173",
-"http://localhost", "https://albalana2026-production.up.railway.app" })
+
 public class AuthController {
 
     @Autowired
     private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+    try {
         LoginResponse respuesta = authService.autenticar(request);
         if (respuesta.isExito()) {
             return ResponseEntity.ok(respuesta);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(respuesta);
         }
+    } catch (Exception e) {
+        e.printStackTrace(); // Verás el error en los logs
+        LoginResponse lr = new LoginResponse(false, null, "Error: " , e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(lr);
     }
+}
+
 }
