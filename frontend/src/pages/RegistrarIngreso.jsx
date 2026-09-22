@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RegistrarIngreso.css';
-import './Config.css';
+import './Config.jsx';
 
 const RegistrarIngreso = () => {
 const navigate = useNavigate();
