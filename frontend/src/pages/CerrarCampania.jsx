@@ -38,7 +38,7 @@ const CerrarCampaniaModal = ({ isOpen, onClose, onConfirm}) => {
         <div className="modal-header">
           <div className="modal-title-wrapper">
             <span className="modal-lock-icon">🔒</span>
-            <h2>Cerrar Campania activa</h2>
+            <h2>Cerrar Campaña activa</h2>
           </div>
           <button className="modal-close-btn" onClick={onClose}>
             ✕

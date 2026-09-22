@@ -231,7 +231,7 @@
 }
 
 .modal-btn-confirmar:hover:not(:disabled) {
-  background-color: b91c1c;
+  background-color: #b91c1c;
 }
 
 .modal-btn-confirmar:disabled {
