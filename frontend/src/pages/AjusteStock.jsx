@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RegistrarIngreso'; 
-import './Config.css';
+import { BASE_URL } from '../Config'; 
 
 const AjusteStock = () => {
   const navigate = useNavigate();

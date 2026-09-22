@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { BASE_URL } from '../Config'; 
 
 const DefinicionesSistemaCamara = () => {
     const navigate = useNavigate();

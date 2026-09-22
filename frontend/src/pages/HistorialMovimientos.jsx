@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HistorialMovimientos.css'; 
+import { BASE_URL } from '../Config'; 
 
 const HistorialMovimientos = () => {
   const navigate = useNavigate();

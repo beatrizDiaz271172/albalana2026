@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import './ConsultarItemsRemito.css';
-
-
+import { BASE_URL } from '../Config'; 
 
 const ConsultarItemsRemito = () => {
   const navigate = useNavigate();

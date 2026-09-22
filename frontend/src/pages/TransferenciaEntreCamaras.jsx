@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RegistrarIngreso'; 
+import { BASE_URL } from '../Config'; 
 
 const TransferenciaEntreCamaras = () => {
   const navigate = useNavigate();

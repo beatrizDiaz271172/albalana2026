@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './EstadoMaduracionLoteCamara.css';
+import { BASE_URL } from '../Config'; 
 
 const EstadoMaduracionLoteCamara = () => {
   const navigate = useNavigate();

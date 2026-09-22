@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RegistrarEgresoRemito.css';
+import { BASE_URL } from '../Config'; 
 
 const RegistrarEgresoRemito = () => {
   const navigate = useNavigate();
