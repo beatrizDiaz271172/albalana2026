@@ -2,9 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RegistrarEgresoRemito.css';
 
-/*const API_BASE = import.meta.env.VITE_API_URL;*/
-const API_BASE = "https://albalana2026-production.up.railway.app/api";
-
 const RegistrarEgresoRemito = () => {
   const navigate = useNavigate();
   const hoy = new Date().toISOString().split('T')[0];

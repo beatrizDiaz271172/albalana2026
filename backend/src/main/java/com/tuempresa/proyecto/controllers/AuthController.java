@@ -16,8 +16,8 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @PostMapping("/login")
-public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+    @GetMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
     try {
         LoginResponse respuesta = authService.autenticar(request);
         if (respuesta.isExito()) {
@@ -30,6 +30,6 @@ public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
         LoginResponse lr = new LoginResponse(false, null, "Error: " , e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(lr);
     }
-}
+    }
 
 }

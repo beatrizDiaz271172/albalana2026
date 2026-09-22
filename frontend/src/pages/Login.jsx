@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
 debugger;
-/*const API_BASE = import.meta.env.VITE_API_URL;*/
-const API_BASE = "https://albalana2026-production.up.railway.app/api";
 
 const Login = () => {
   const [usuario, setUsuario] = useState('');
@@ -19,7 +17,7 @@ const Login = () => {
 debugger;
     try {
      const response = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },

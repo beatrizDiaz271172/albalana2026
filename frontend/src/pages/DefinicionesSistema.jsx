@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './DefinicionesSistema.css';
 
-const API_BASE = import.meta.env.VITE_API_URL;
-
 const DefinicionesSistema = () => {
   const navigate = useNavigate();
 

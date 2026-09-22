@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './ConsultarItemsRemito.css';
 
-const API_BASE = import.meta.env.VITE_API_URL;
+
 
 const ConsultarItemsRemito = () => {
   const navigate = useNavigate();
