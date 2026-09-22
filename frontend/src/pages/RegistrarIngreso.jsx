@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RegistrarIngreso.css';
+import './Config.css';
 
-/*const API_BASE = import.meta.env.VITE_API_URL;*/
-const API_BASE = "https://albalana2026-production.up.railway.app/api";
+/*const API_BASE = import.meta.env.VITE_API_URL;
+const API_BASE = "https://albalana2026-production.up.railway.app/api";*/
 
 const RegistrarIngreso = () => {
 const navigate = useNavigate();
