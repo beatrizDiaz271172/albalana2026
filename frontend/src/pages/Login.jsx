@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
-import './Config.jsx';
+import { BASE_URL } from '../Config'; 
 
 const Login = () => {
   const [usuario, setUsuario] = useState('');

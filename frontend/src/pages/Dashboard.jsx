@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Alertas.css';
 
-import './Config.jsx';
+import { BASE_URL } from '../Config'; 
 
 
 // ============================================================================
