@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './CerrarCampania'
+import './CierreCampania.module.css'
 import { API_BASE } from '../Config'; 
 
 const CerrarCampaniaModal = ({ isOpen, onClose, onConfirm}) => {
