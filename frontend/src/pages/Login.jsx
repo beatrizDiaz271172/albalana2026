@@ -17,7 +17,7 @@ const Login = () => {
 debugger;
     try {
      const response = await fetch(`${API_BASE}/auth/login`, {
-        method: 'GET',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
