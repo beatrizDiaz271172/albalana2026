@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ListaQuesos.css';
-import { BASE_URL } from '../Config'; 
+import { API_BASE } from '../Config'; 
 
 export default function ListaQuesos() {
   const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './RegistrarIngreso.css';
-import { BASE_URL } from '../Config'; 
+import { API_BASE } from '../Config'; 
 
 const RegistrarIngreso = () => {
 const navigate = useNavigate();

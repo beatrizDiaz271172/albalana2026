@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BASE_URL } from '../Config'; 
+import { API_BASE } from '../Config'; 
 
 const PanelReportes = () => {
     const navigate = useNavigate();

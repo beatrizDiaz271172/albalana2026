@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CerrarCampania from './CerrarCampania';
 import './GestionCampanias.css';
-import { BASE_URL } from '../Config'; 
+import { API_BASE } from '../Config'; 
 
 const GestionCampanias = () => {
   const navigate = useNavigate();

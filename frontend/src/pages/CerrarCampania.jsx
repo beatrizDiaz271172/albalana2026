@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BASE_URL } from '../Config'; 
+import { API_BASE } from '../Config'; 
 
 const CerrarCampaniaModal = ({ isOpen, onClose, onConfirm}) => {
   const [nombreCampania, setNombreCampania] = useState('');
