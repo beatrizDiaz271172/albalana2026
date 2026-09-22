@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE } from '../Config'; 
+import './DefinicionesSistema.css';
 
 const PanelReportes = () => {
     const navigate = useNavigate();
