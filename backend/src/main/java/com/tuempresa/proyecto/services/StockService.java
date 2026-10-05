@@ -18,12 +18,14 @@ public class StockService {
 
     private final StockRepository stockRepository;
     private final MovimientoService movimientoService;
-      private static final long TIPO_MOV_AJUSTE = 3L;
+    private final ProductoRepository productoRepository;
+    private static final long TIPO_MOV_AJUSTE = 3L;
 
-    public StockService(StockRepository stockRepository, MovimientoService movimientoService) {
+    public StockService(StockRepository stockRepository, MovimientoService movimientoService, ProductoRepository productoRepository) {
     
         this.stockRepository = stockRepository;     
-        this.movimientoService= movimientoService;
+        this.movimientoService = movimientoService;
+        this.productoRepository = productoRepository;
     }
 
     public List<Stock> obtenerTodos() {
@@ -53,4 +55,28 @@ public class StockService {
     return stock;
     }
 
+    public  Map<String, StockResumen> obtenerResumenStock(Long idCampania) {
+        List<Producto> productos = productoRepository.findAll();
+        Map<String, StockResumen> stockResumenList = new HashMap<>();
+
+    for (Producto producto : productos) {
+      List<Stock> stockList = stockRepository.findByLote_Producto_IdAndArchivadoId(producto.getId(), idCampania);
+      if (stockList.size() > 0){
+        Double hormaStock = 0.00;
+        Double kgsStock = 0.00;
+        if (stockList.size() > 0){
+            for (Stock stock : stockList) {
+                hormaStock =+ stock.getHormas();
+                kgsStock =+ stock.getKgs();
+            } 
+            StockResumen stockR = new StockResumen();
+            stockR.setProducto(producto);
+            stockR.setHormas(hormaStock);
+            stockR.setKgs(kgsStock);
+            stockResumenList.put(producto.getNombre(), stockR)   ;
+        } 
+        }
+        }
+        return stockResumenList;
+      }
 }

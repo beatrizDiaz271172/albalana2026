@@ -29,8 +29,8 @@ const RegistrarEgresoRemito = () => {
     cdCamara: '',
     cdLote: '',
     loteManual: '',
-    hormas: 1,
-    kgs: 0
+    hormas: 0.00,
+    kgs: 0.00
   });
 
   // --- Autocomplete de Productos ---
@@ -73,7 +73,7 @@ const RegistrarEgresoRemito = () => {
 
     if (!idProducto) {
       setCamaras([]);
-      setItemActual(prev => ({ ...prev, cdCamara: '', cdLote: '', hormas: 1, kgs: 0 }));
+      setItemActual(prev => ({ ...prev, cdCamara: '', cdLote: '', hormas: 0.00, kgs: 0.00 }));
       return;
     }
 
@@ -148,8 +148,8 @@ const RegistrarEgresoRemito = () => {
       cdProducto: producto.id,
       cdCamara: '',
       cdLote: '',
-      hormas: 1,
-      kgs: 0
+      hormas: 0.00,
+      kgs: 0.00
     }));
     setProductoTexto(producto.nombre);
     setMostrarSugerenciasProducto(false);
@@ -166,7 +166,7 @@ const RegistrarEgresoRemito = () => {
     setItemActual((prev) => ({
       ...prev,
       [name]: type === 'number' ? (value === '' ? '' : Number(value)) : value,
-      ...(name === 'cdCamara' ? { cdLote: '', hormas: 1, kgs: 0 } : {})
+      ...(name === 'cdCamara' ? { cdLote: '', hormas: 0.00, kgs: 0.00 } : {})
     }));
   };
 
@@ -248,8 +248,8 @@ const RegistrarEgresoRemito = () => {
       cdCamara: '',
       cdLote: '',
       loteManual: '',
-      hormas: 1,
-      kgs: 0
+      hormas: 0.00,
+      kgs: 0.00
     });
     setProductoTexto('');
     setCamaras([]);

@@ -6,8 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -26,19 +25,15 @@ public class ExcelService {
     @Autowired
     private MovimientoRepository movimientoRepository;
     @Autowired
-    private StockRepository stockRepository;
+    private StockService stockService;
     @Autowired
     private CampaniaRepository CampaniaRepository;
     @Autowired
-    private ProductoRepository productoRepository;
-    @Autowired
-    private RemitoRepository remitoRepository;
-    @Autowired
     private OperadorRepository operadorRepository;
-
+/* 
     public ByteArrayInputStream generarExcelCierreCampania(Long id) {     
         Campania Campania = CampaniaRepository.findById(id).orElse(null);
-        List<Movimiento> movimientos = movimientoRepository.findByArchivadoIdAndActivoTrue(id);
+        List<Movimiento> movimientos = movimientoRepository.findByArchivadoId(id);
 
         try (Workbook workbook = new XSSFWorkbook(); 
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
@@ -57,7 +52,7 @@ public class ExcelService {
         } catch (IOException e) {
             throw new RuntimeException("Error al importar los datos a Excel: " + e.getMessage());
         }
-    }
+    }*/
 
     // ✅ Método para crear la hoja de Movimientos
     private void crearHojaMovimientos(Sheet sheet, List<Movimiento> movimientos) {
@@ -86,8 +81,8 @@ public class ExcelService {
             row.createCell(3).setCellValue(mov.getCdTipoMov() != null ? obtenerTipoMov(mov.getCdTipoMov().intValue()) : "-");
             row.createCell(4).setCellValue(mov.getLote() != null && mov.getLote().getProducto() != null ? mov.getLote().getProducto().getNombre() : "-");
             row.createCell(5).setCellValue(mov.getLote() != null && mov.getLote().getCamara() != null ? mov.getLote().getCamara().getNombre() : "-");
-            row.createCell(6).setCellValue(mov.getLote() != null ? mov.getLote().getHormas() : 0);
-            row.createCell(7).setCellValue(mov.getLote() != null ? mov.getLote().getKgs() : 0.0);
+            row.createCell(6).setCellValue( mov.getHormas() != null ? mov.getHormas() : 0);
+            row.createCell(7).setCellValue(mov.getKgs() != null ? mov.getKgs() : 0.0);
             
             String clienteNombre = "-";
             if (mov.getRemito() != null && mov.getRemito().getCliente() != null) {
@@ -105,51 +100,22 @@ public class ExcelService {
         }
     }
 
-    // ✅ Método para crear la hoja de Resumen
-    private void crearHojaResumen(Sheet sheet, Campania Campania, List<Movimiento> movimientos) {
-        // Título
-        Row titleRow = sheet.createRow(0);
-        titleRow.createCell(0).setCellValue("RESUMEN DE Campania");
-
-        // Datos de la Campania
-        Row row2 = sheet.createRow(2);
-        row2.createCell(0).setCellValue("Campania:");
-        row2.createCell(1).setCellValue(Campania != null ? Campania.getNombre() : "-");
-
-        Row row3 = sheet.createRow(3);
-        row3.createCell(0).setCellValue("Total Movimientos:");
-        row3.createCell(1).setCellValue(movimientos.size());
-
-        // Totales por tipo
-        long ingresos = movimientos.stream().filter(m -> m.getCdTipoMov() != null && m.getCdTipoMov() == 1).count();
-        long egresos = movimientos.stream().filter(m -> m.getCdTipoMov() != null && m.getCdTipoMov() == 2).count();
-        long ajustes = movimientos.stream().filter(m -> m.getCdTipoMov() != null && m.getCdTipoMov() == 3).count();
-        long transferencias = movimientos.stream().filter(m -> m.getCdTipoMov() != null && m.getCdTipoMov() == 4).count();
-
-        Row row4 = sheet.createRow(5);
-        row4.createCell(0).setCellValue("Ingresos:");
-        row4.createCell(1).setCellValue(ingresos);
-
-        Row row5 = sheet.createRow(6);
-        row5.createCell(0).setCellValue("Egresos:");
-        row5.createCell(1).setCellValue(egresos);
-
-        Row row6 = sheet.createRow(7);
-        row6.createCell(0).setCellValue("Ajustes:");
-        row6.createCell(1).setCellValue(ajustes);
-
-        Row row7 = sheet.createRow(8);
-        row6.createCell(0).setCellValue("Transferencias:");
-        row6.createCell(1).setCellValue(transferencias);
-
-        // Total Kgs
-        double totalKgs = movimientos.stream()
-            .mapToDouble(m -> m.getLote() != null ? m.getLote().getKgs() : 0.0)
-            .sum();
-
-        Row row8 = sheet.createRow(9);
-        row8.createCell(0).setCellValue("Total Kgs:");
-        row8.createCell(1).setCellValue(totalKgs);
+    // ✅ Método para crear la hoja de Resumen de Stock
+    private void crearHojaStockResumen(Sheet sheet, Map<String, StockResumen> stocks) {
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("Producto");
+        headerRow.createCell(1).setCellValue("Hormas");
+        headerRow.createCell(2).setCellValue("Kgs");
+        int rowIdx = 1;
+        for (Map.Entry<String, StockResumen> entry : stocks.entrySet()) {
+            Row row = sheet.createRow(rowIdx++);
+            String productoNombre = entry.getKey();
+            StockResumen stockResumen = entry.getValue();
+            
+            row.createCell(0).setCellValue(productoNombre);
+            row.createCell(1).setCellValue(stockResumen.getHormas());
+            row.createCell(2).setCellValue(stockResumen.getKgs());
+        }
     }
 
     private String obtenerTipoMov(int mov) {
@@ -167,19 +133,20 @@ public class ExcelService {
         return op.map(Operador::getNombre).orElse("-");
     }
     public String guardarExcelEnDisco(Long idCampania) {
-        Campania Campania = CampaniaRepository.findById(idCampania).orElse(null);
-        List<Movimiento> movimientos = movimientoRepository.findByArchivadoIdAndActivoTrue(idCampania);
+        Campania campania = CampaniaRepository.findById(idCampania).orElse(null);
+        List<Movimiento> movimientos = movimientoRepository.findByArchivadoId(idCampania);
 
         try (Workbook workbook = new XSSFWorkbook(); 
              ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             
-            String nombreHoja1 = Campania != null ? "Campania - " + Campania.getNombre() : "Movimientos";
-            Sheet sheet1 = workbook.createSheet(nombreHoja1);
-            crearHojaMovimientos(sheet1, movimientos);
-
-            Sheet sheet2 = workbook.createSheet("Resumen");
-            crearHojaResumen(sheet2, Campania, movimientos);
-
+            Sheet sheet1 = workbook.createSheet("Stock");
+            Map<String, StockResumen> stockResumenMap = stockService.obtenerResumenStock(campania.getId());
+            crearHojaStockResumen(sheet1, stockResumenMap);
+            
+            String nombreHoja2 = campania != null ? "Campania - " + campania.getNombre() : "Movimientos";
+            Sheet sheet2 = workbook.createSheet(nombreHoja2);
+            crearHojaMovimientos(sheet2, movimientos);   
+            
             workbook.write(out);
 
             // 1. Crear carpeta si no existe

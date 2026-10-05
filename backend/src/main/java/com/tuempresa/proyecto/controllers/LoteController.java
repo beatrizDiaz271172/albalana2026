@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -46,15 +47,18 @@ public class LoteController {
     @GetMapping("/{idProducto}/{idCamara}")
     public ResponseEntity<List<Lote>> obtenerPorProductoYCamara(@PathVariable Long idProducto, @PathVariable Long idCamara) {
         List<Lote> lotesFiltrados = loteRepository.findByProducto_IdAndCamara_IdAndActivoTrue(idProducto, idCamara);
+         List<Lote> lotesFiltradosStock = new ArrayList<>();
         lotesFiltrados.forEach(lote -> {
             Stock stock = stockRepository.findByLote_IdAndActivoTrue(lote.getId());
             if (stock != null && stock.getHormas()>0){
-                lote.setHormas(stock.getHormas());
-                lote.setKgs(stock.getKgs());
-            }
+                Lote loteSt = lote;
+                loteSt.setHormas(stock.getHormas());
+                loteSt.setKgs(stock.getKgs());
+                lotesFiltradosStock.add(loteSt);
+            } 
         });
         
-        return ResponseEntity.ok(lotesFiltrados);
+        return ResponseEntity.ok(lotesFiltradosStock);
     }
     
     @GetMapping("/producto/{idProducto}")

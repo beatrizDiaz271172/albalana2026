@@ -41,6 +41,9 @@ public class Remito {
     @Column(name = "fecha_alta")
     private LocalDateTime fechaAlta;
 
+    @Column(name = "activo")
+    private Boolean activo = true;
+
     @Column(name = "archivado_id", nullable = true) 
     private Long archivadoId;
 

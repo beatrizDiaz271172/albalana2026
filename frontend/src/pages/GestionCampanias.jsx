@@ -98,7 +98,7 @@ const GestionCampanias = () => {
   const confirmarCierreCampania = async ({ nombreNuevaCampania, accionStock }) => {
     try {
       const bodyData = {
-        id: CampaniaActiva?.id,
+        id: CampaniaActiva.id,
         nombre: nombreNuevaCampania,
         desdeCero: accionStock === 'desde_cero',
         fechaInicio: '',

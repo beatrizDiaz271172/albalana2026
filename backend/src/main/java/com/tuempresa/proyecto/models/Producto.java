@@ -43,6 +43,16 @@ public class Producto {
     @Column(name = "activo")
     private Boolean activo = true;
 
+    public Producto(String nombre){
+        this.nombre=nombre;
+        this.activo = true;
+        this.maduracionDias=0L;
+        this.consumoOptDias=0L;
+        this.stockMinimo=0L;
+        this.preMaduracionDias=0L;
+        this.postMaduracionDias=0L;
+        this.diasSinMov=0L;
+    }
     public Producto(String nombre, String codigo, Long maduracionDias, Long consumoOptDias, Long stockMinimo, Long diassinMov, Long preMaduracionDias, Long postMaduracionDias){
         this.nombre=nombre;
         this.codigo=codigo;

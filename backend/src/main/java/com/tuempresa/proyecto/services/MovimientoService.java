@@ -85,6 +85,7 @@ public class MovimientoService {
         if (movimiento.getCdTipoMov()==2){//Tiene un remito, movimiento de tipo Egreso
             Remito rem = movimiento.getRemito();
             rem.setArchivadoId(CampaniaId);
+            rem.setActivo(false);
             remitoRepository.save(rem);
         }
         return movimiento;

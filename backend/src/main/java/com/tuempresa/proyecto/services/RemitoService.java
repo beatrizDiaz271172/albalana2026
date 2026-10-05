@@ -48,7 +48,7 @@ public class RemitoService {
     }
 
     public List<Remito> obtenerTodos() {
-        return remitoRepository.findAll();
+        return remitoRepository.findByActivoTrue();
     }
 
     @Transactional

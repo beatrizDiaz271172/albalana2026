@@ -12,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/remitos")
-///remitos/${remito.id}/items
 public class RemitoController {
 
     private final RemitoService remitoService;

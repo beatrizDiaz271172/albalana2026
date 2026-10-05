@@ -34,9 +34,6 @@ public class CampaniaService {
     public Campania cerrarCampania(CampaniaRequest request) {
         boolean desdeCero = request.isDesdeCero();
         Long CampaniaId = request.getId();
-        if (desdeCero){
-            CampaniaId = 0L;
-        }
 
         List<Movimiento> movimientosActivos = movimientoService.obtenerTodos();
         Long ctMov =0L;
@@ -61,17 +58,21 @@ public class CampaniaService {
        
        
    
-    Campania Campania = CampaniaRepository.findByIdAndActivoTrue(CampaniaId);
+    Campania campania = CampaniaRepository.findByIdAndActivoTrue(CampaniaId);
+    if (campania == null){
+        campania = new Campania();
+        campania.setFechaInicio(LocalDate.now());
+    }
     
-    Campania.setFechaFin(LocalDate.now());
-    Campania.setNombre(request.getNombre());
+    campania.setFechaFin(LocalDate.now());
+    campania.setNombre(request.getNombre());
     //FALTAN ESTOS TOTALES
-    Campania.setCantMov(ctMov);
-    Campania.setCantHormas(hormasTot);
-    Campania.setCantKilos(kgsTot);
-    Campania.setActivo(false);
-    CampaniaRepository.save(Campania);
-    Campania nuevaCampania = new Campania("", LocalDate.now(), LocalDate.now(), 0L, 0.00, 0.00);
+    campania.setCantMov(ctMov);
+    campania.setCantHormas(hormasTot);
+    campania.setCantKilos(kgsTot);
+    campania.setActivo(false);
+    CampaniaRepository.save(campania);
+    Campania nuevaCampania = new Campania("", LocalDate.now(), null, 0L, 0.00, 0.00);
     return CampaniaRepository.save(nuevaCampania);    
 }
 
