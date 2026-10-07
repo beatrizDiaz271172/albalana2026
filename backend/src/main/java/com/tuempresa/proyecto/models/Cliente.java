@@ -14,6 +14,10 @@ import lombok.*;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Cliente {
 
+    public Cliente(String nombre){
+        this.nombre=nombre;
+        this.activo=true;
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id") // Mapea a la clave primaria en la BD

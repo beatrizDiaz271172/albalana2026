@@ -68,30 +68,17 @@ public class ProductoService {
     List<Movimiento> movimientosEgreso = movimientoRepository.findByCdTipoMovAndLote_Producto_idAndActivoTrue(2, producto.getId());
     //Solo se obtienen estadisticas si existen movimientos de egreso para el producto
     if (movimientosEgreso.size()>0) {
-      
         
         double kgsXHormaTot = 0.0;
         long kgsXHormaTotCant = 0;
         List<Movimiento> movimientosIngreso = movimientoRepository.findByCdTipoMovAndLote_Producto_idAndActivoTrue(1, producto.getId());
-      /*   
-        for (Movimiento mov : movimientosIngreso) {// bea
-            if (mov.getLote() != null && mov.getLote().getKgsXHorma() != null) {
-                kgsXHormaTot += mov.getLote().getKgsXHorma();
-                kgsXHormaTotCant += 1;
-            }
-        }
-
-        //Peso promedio Kgs por Hormas en los Ingresos
-        if (kgsXHormaTotCant>0){
-            Double cuenta = kgsXHormaTot / kgsXHormaTotCant;
-            merma.setPesoKgsXHormaIngreso(cuenta);
-        }*/
-
+      
         double hormaTotCant = 0.0;
         //hashMap
         Map<String, Double> hormaTotE = new HashMap<>();
         Map<String, Double> kgsTotE = new HashMap<>();
         for (Movimiento mov : movimientosEgreso) {
+            System.out.println("Producto analizado: " + producto.getNombre() + " movimiento Egreso(Id): " + mov.getId());
             if (mov.getLote() != null && mov.getHormas() != null) {
                 hormaTotE.merge(mov.getLote().getCodigo(), mov.getHormas(), Double::sum);
                 kgsTotE.merge(mov.getLote().getCodigo(), mov.getKgs(), Double::sum);
@@ -121,10 +108,13 @@ public class ProductoService {
              merma.setEgresoKgs(kgs);
              Double kgsXHormaPpio = kgsIporHorma.get(cdLote);   
              merma.setEgresoKgsPpio(hormaE * kgsXHormaPpio);
-             merma.setMermaKgs(merma.getEgresoKgsPpio() - merma.getEgresoKgs());    
-             double porc = (merma.getMermaKgs() * 100) / merma.getEgresoKgsPpio();
+             merma.setMermaKgs(merma.getEgresoKgsPpio() - merma.getEgresoKgs()); 
+             double porc = 0.00;
+             if (merma.getEgresoKgsPpio()>0)   
+                 porc = (merma.getMermaKgs() * 100) / merma.getEgresoKgsPpio();
              merma.setMermaKgsPorc(porc);
-             merma.setPesoKgsXHormaEgreso(merma.getEgresoKgs() / merma.getEgresoHormas());       
+             if (merma.getEgresoHormas() > 0)
+                merma.setPesoKgsXHormaEgreso(merma.getEgresoKgs() / merma.getEgresoHormas());       
              Double hormaSt = hormaStock.get(cdLote);
              merma.setHormasStock(hormaSt);
              merma.setKgsStockReal(hormaSt * merma.getPesoKgsXHormaEgreso());

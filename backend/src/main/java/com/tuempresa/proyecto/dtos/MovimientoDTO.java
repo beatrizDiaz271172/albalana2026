@@ -4,11 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+
 /* 
 "id": "MOV-0001",
     "tipo": "INGRESO",
@@ -26,23 +23,41 @@ import java.time.LocalDate;
     "cliente": "",
     "motivo": "",
     "timestamp_editado": "2026-05-29T13:36:02.737938" */
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MovimientoDTO {
 
-    private String id; 
+    private String id;
     private String tipo;
-    private LocalDate timestamp;
-    private LocalDate fecha;
+    private String timestamp;
+    private String fecha;              // viene como "26/05/2026"
     private String producto;
     private String lote;
     private String camara;
-    private String camaraDestino;
     private Double hormas;
     private Double kgs;
-    private Double lts_leche;
+
+    @JsonProperty("lts_leche")
+    private Double ltsLeche;
+
     private String fermento;
     private String obs;
     private String operador;
     private String cliente;
     private String motivo;
-     private LocalDate timestamp_editado;
+    private String remito;
+
+    @JsonProperty("timestamp_editado")
+    private String timestampEditado;
+
 }

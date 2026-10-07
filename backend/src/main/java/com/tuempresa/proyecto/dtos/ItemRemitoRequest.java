@@ -13,6 +13,6 @@ public class ItemRemitoRequest {
     private Long cdCamara;
     private String cdLote;
     private Long idLote;
-    private Double hormas; // hormas / cuñas
+    private Double hormas; 
     private Double kgs;
 }

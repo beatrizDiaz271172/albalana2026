@@ -22,18 +22,41 @@ public class ImportacionController {
 
     private final ImportacionService service;
 
-    @PostMapping("/stock")
+    @PostMapping
     public ResponseEntity<Void> importarStock(
-            @RequestBody Map<String, Map<String, LoteImportDTO>> json,
-            @RequestParam(required = false) LocalDate fechaElaboracion) {
-
-        service.importarStock(json, fechaElaboracion != null ? fechaElaboracion : LocalDate.now());
+            @RequestBody Map<String, Map<String, LoteImportDTO>> json) {
+              
+        service.importarStock(json);
         return ResponseEntity.ok().build();
     }
+    
     @PostMapping("/movimientos")
     public ResponseEntity<Void> importarMovimientos(@RequestBody List<MovimientoDTO> movimientos) {
+        service.importarConfig();  
         service.importarMovimientos(movimientos);
-        movimientos.forEach(m -> System.out.println(m.getId() + " " + m.getTipo()));
+
         return ResponseEntity.ok().build();
     }
 }
+/*
+
+  
+  {
+    "id": "MOV-0001",
+    "tipo": "INGRESO",
+    "timestamp": "2026-05-26T14:10:43.661119",
+    "fecha": "26/05/2026",
+    "producto": "Peco. Reserva",
+    "lote": "PR01",
+    "camara": "Camara 1",
+    "hormas": 10,
+    "kgs": 30.0,
+    "lts_leche": 0.0,
+    "fermento": "",
+    "obs": "",
+    "operador": "Loro",
+    "cliente": "",
+    "motivo": "",
+    "timestamp_editado": "2026-05-29T13:36:02.737938"
+
+*/

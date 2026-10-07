@@ -47,11 +47,11 @@ public class Producto {
         this.nombre=nombre;
         this.activo = true;
         this.maduracionDias=0L;
-        this.consumoOptDias=0L;
-        this.stockMinimo=0L;
-        this.preMaduracionDias=0L;
-        this.postMaduracionDias=0L;
-        this.diasSinMov=0L;
+        this.consumoOptDias=30L;
+        this.stockMinimo=3L;
+        this.preMaduracionDias=7L;
+        this.postMaduracionDias=30L;
+        this.diasSinMov=30L;
     }
     public Producto(String nombre, String codigo, Long maduracionDias, Long consumoOptDias, Long stockMinimo, Long diassinMov, Long preMaduracionDias, Long postMaduracionDias){
         this.nombre=nombre;

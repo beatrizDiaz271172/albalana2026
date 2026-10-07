@@ -24,6 +24,9 @@ public class Operador {
 
     @Column(name = "activo")
     private Boolean activo = true;
-    
+
+    public Operador(String nombre){
+        this.nombre=nombre;
+    }
 } 
   

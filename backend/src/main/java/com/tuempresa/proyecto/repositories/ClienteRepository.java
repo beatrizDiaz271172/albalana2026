@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
-    // Para el buscador "Escribí para filtrar..." del remito
     List<Cliente> findByActivoTrue();
+    Cliente findByNombreAndActivoTrue(String nombre);
 }

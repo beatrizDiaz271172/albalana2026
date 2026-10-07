@@ -12,4 +12,5 @@ public interface OperadorRepository extends JpaRepository<Operador, Long> {
     
     List<Operador> findByActivoTrue();
     Optional <Operador> findByIdAndActivoTrue(Long id);
+    Operador findByNombreAndActivoTrue(String nombre);
 }
