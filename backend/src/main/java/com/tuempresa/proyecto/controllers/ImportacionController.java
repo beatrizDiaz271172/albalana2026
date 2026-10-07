@@ -30,6 +30,12 @@ public class ImportacionController {
         return ResponseEntity.ok().build();
     }
     
+    @PostMapping("/config")
+    public ResponseEntity<Void> importarConfiguracion() {
+        service.importarConfig();
+        return ResponseEntity.ok().build();
+    }      
+    
     @PostMapping("/movimientos")
     public ResponseEntity<Void> importarMovimientos(@RequestBody List<MovimientoDTO> movimientos) {
         service.importarConfig();  
