@@ -1,1 +1,1 @@
-export const API_BASE =  "http://192.168.0.32:8081/api" || "https://albalana2026-production.up.railway.app/api" 
+export const API_BASE =  "https://albalana2026-production.up.railway.app/api"
