@@ -5,6 +5,8 @@ import com.tuempresa.proyecto.models.Remito;
 import java.util.*;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -12,4 +14,8 @@ public interface RemitoRepository extends JpaRepository<Remito, Long> {
    Optional <Remito> findById(Long productoId);
    Remito findByCodigoJsonAndActivoTrue(String codigo);
    List<Remito> findByActivoTrue();
+
+    @Modifying
+    @Query(value = "TRUNCATE TABLE remito", nativeQuery = true)
+    void vaciarTabla();
 }

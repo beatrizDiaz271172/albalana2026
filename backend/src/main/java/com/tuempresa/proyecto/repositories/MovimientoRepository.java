@@ -3,6 +3,8 @@ package com.tuempresa.proyecto.repositories;
 import com.tuempresa.proyecto.models.Movimiento;
  
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
@@ -14,4 +16,7 @@ public interface MovimientoRepository extends JpaRepository<Movimiento, Long> {
   List<Movimiento> findByActivoTrue();
   List<Movimiento>findByCdTipoMovAndLote_Producto_idAndActivoTrue(Integer cdTipoMov, Long productoId);
   List<Movimiento>findByLote_Producto_idAndActivoTrueOrderByIdDesc( Long productoId);
+  @Modifying
+    @Query(value = "TRUNCATE TABLE movimiento", nativeQuery = true)
+    void vaciarTabla();
 }

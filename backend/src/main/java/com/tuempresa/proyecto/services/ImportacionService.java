@@ -44,14 +44,15 @@ CampaniaRepository campaniaRepository){
 
     @Transactional
     public void importarConfig() {
-       movimientoRepository.deleteAll();
-       stockRepository.deleteAll(); 
-       loteRepository.deleteAll();
-       remitoRepository.deleteAll();
-       productoRepository.deleteAll(); 
-       clienteRepository.deleteAll();
-       operadorRepository.deleteAll();
-       campaniaRepository.deleteAll();
+       movimientoRepository.vaciarTabla();
+       stockRepository.vaciarTabla(); 
+       loteRepository.vaciarTabla();
+       remitoRepository.vaciarTabla();
+       productoRepository.vaciarTabla(); 
+       clienteRepository.vaciarTabla();
+       operadorRepository.vaciarTabla();
+       campaniaRepository.vaciarTabla();
+       camaraRepository.vaciarTabla();
 
        Producto prod = new Producto("Cacciota", "CAC", 0L, 30L, 3L, 0L, 0L, 0L);
        productoRepository.save(prod);
