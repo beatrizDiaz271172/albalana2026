@@ -260,6 +260,26 @@ CampaniaRepository campaniaRepository){
                     mov.setRemito(rem);
                 }
                 movimientoRepository.save(mov);  
+
+                Stock stock = stockRepository.findByLote_IdAndActivoTrue(lote.getId());
+                if (stock == null){
+                    stock = new Stock();
+                    stock.setLote(lote);
+                    stock.setHormas(0.00);
+                    stock.setKgs(0.00);
+
+                    stock.setFechaAlta(LocalDateTime.now());
+                    stock.setActivo(true);
+                }
+                if (mov.getCdTipoMov()==1){
+                    Double hormasA = stock.getHormas() + hormas;
+                    stock.setHormas(hormasA);
+                    Double kgsA = stock.getKgs() + kgs;
+                    stock.setKgs(kgsA);
+                }
+                
+                stockRepository.save(stock);
+
             } else {
               //viene mal de Json  
             }

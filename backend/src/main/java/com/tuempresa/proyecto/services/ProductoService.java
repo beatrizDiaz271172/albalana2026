@@ -106,6 +106,9 @@ public class ProductoService {
              merma.setEgresoHormas(hormaE); 
              Double kgs = kgsTotE.get(cdLote);
              merma.setEgresoKgs(kgs);
+             if (kgsIporHorma.get(cdLote) == null){
+                System.out.println("Producto analizado: " + producto.getNombre() + " cd lote: : " + cdLote);
+             }
              Double kgsXHormaPpio = kgsIporHorma.get(cdLote);   
              merma.setEgresoKgsPpio(hormaE * kgsXHormaPpio);
              merma.setMermaKgs(merma.getEgresoKgsPpio() - merma.getEgresoKgs()); 
