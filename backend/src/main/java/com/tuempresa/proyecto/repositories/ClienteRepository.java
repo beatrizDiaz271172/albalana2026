@@ -14,6 +14,6 @@ public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     List<Cliente> findByActivoTrue();
     Cliente findByNombreAndActivoTrue(String nombre);
     @Modifying
-    @Query(value = "TRUNCATE TABLE cliente", nativeQuery = true)
+    @Query(value = "DELETE FROM cliente", nativeQuery = true)
     void vaciarTabla();
 }

@@ -16,7 +16,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     List<Producto> findByActivoTrue();
     Producto findByNombre(String nombre);
     @Modifying
-    @Query(value = "TRUNCATE TABLE producto", nativeQuery = true)
+    @Query(value = "DELETE FROM producto", nativeQuery = true)
     void vaciarTabla();
    
 }

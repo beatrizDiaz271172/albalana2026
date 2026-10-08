@@ -15,6 +15,6 @@ public interface CampaniaRepository extends JpaRepository<Campania, Long> {
     ArrayList<Campania> findByActivoTrue();
     Campania findByIdAndActivoTrue(Long id);
     @Modifying
-    @Query(value = "TRUNCATE TABLE campania", nativeQuery = true)
+    @Query(value = "DELETE FROM campania", nativeQuery = true)
     void vaciarTabla();
 }

@@ -18,6 +18,6 @@ public interface CamaraRepository extends JpaRepository<Camara, Long> {
     Camara findByNombre(String nombre);
 
     @Modifying
-    @Query(value = "TRUNCATE TABLE camara", nativeQuery = true)
+    @Query(value = "DELETE FROM camara", nativeQuery = true)
     void vaciarTabla();
 }

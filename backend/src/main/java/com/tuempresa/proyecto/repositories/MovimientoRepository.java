@@ -17,6 +17,6 @@ public interface MovimientoRepository extends JpaRepository<Movimiento, Long> {
   List<Movimiento>findByCdTipoMovAndLote_Producto_idAndActivoTrue(Integer cdTipoMov, Long productoId);
   List<Movimiento>findByLote_Producto_idAndActivoTrueOrderByIdDesc( Long productoId);
   @Modifying
-    @Query(value = "TRUNCATE TABLE movimiento", nativeQuery = true)
+    @Query(value = "DELETE FROM movimientos", nativeQuery = true)
     void vaciarTabla();
 }

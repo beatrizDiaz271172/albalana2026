@@ -16,6 +16,6 @@ public interface OperadorRepository extends JpaRepository<Operador, Long> {
     Optional <Operador> findByIdAndActivoTrue(Long id);
     Operador findByNombreAndActivoTrue(String nombre);
     @Modifying
-    @Query(value = "TRUNCATE TABLE operador", nativeQuery = true)
+    @Query(value = "DELETE FROM operador", nativeQuery = true)
     void vaciarTabla();
 }

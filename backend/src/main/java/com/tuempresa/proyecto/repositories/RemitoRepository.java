@@ -16,6 +16,6 @@ public interface RemitoRepository extends JpaRepository<Remito, Long> {
    List<Remito> findByActivoTrue();
 
     @Modifying
-    @Query(value = "TRUNCATE TABLE remito", nativeQuery = true)
+    @Query(value = "DELETE FROM remito", nativeQuery = true)
     void vaciarTabla();
 }

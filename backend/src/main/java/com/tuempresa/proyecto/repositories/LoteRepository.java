@@ -20,6 +20,6 @@ public interface LoteRepository extends JpaRepository<Lote, Long> {
 
     List<Lote> findByProducto_IdAndActivoTrue( Long idProducto);
     @Modifying
-    @Query(value = "TRUNCATE TABLE lote", nativeQuery = true)
+    @Query(value = "DELETE FROM lote", nativeQuery = true)
     void vaciarTabla();
 }

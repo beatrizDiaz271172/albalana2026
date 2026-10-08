@@ -20,6 +20,6 @@ public interface StockRepository extends JpaRepository<Stock, Long> {
     List<Stock> findByLote_Producto_IdAndActivoTrue(Long idProducto);
     List<Stock> findByLote_Producto_IdAndArchivadoId(Long idProducto, Long companiaId);
     @Modifying
-    @Query(value = "TRUNCATE TABLE stock", nativeQuery = true)
+    @Query(value = "DELETE FROM stock", nativeQuery = true)
     void vaciarTabla();
 }

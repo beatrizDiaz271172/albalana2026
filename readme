@@ -1,0 +1,7 @@
+Archivos para configurar prod y dev
+
+.env
+application.properties
+Dockerfile
+Config.js
+vite.config.js
