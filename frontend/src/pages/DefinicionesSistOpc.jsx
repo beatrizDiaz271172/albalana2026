@@ -12,15 +12,15 @@ const PanelReportes = () => {
             id: 'camara',
             titulo: 'Cámara',
             icono: '🏢',
-            colorBorde: '#3b5998', // Azul corporativo
+            colorBorde: '#3b5998', 
             ruta: '/definicionesSistemaCamara'
         },
         {
             id: 'cliente',
             titulo: 'Cliente',
             icono: '👥',
-            colorBorde: '#6f42c1', // Morado / Violeta
-            ruta: '/reportes/cliente'
+            colorBorde: '#6f42c1', 
+            ruta: '/definicionesSistemaCLiente'
         },
         {
             id: 'operador',

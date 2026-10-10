@@ -37,7 +37,7 @@ const GestionCampanias = () => {
         ]);
 
         if (!resCampanias.ok) {
-          throw new Error('No se pudo obtener la información de las Campanias.');
+          throw new Error('No se pudo obtener la información de las Campañas.');
         }
 
         const dataCampanias = await resCampanias.json();
@@ -195,19 +195,19 @@ debugger;
       <main className="Campania-documento">
         <div className="Campania-titulo-seccion">
           <span className="Campania-icono">📅</span>
-          <h1>Gestión de Campanias</h1>
+          <h1>Gestión de Campañas</h1>
         </div>
 
         {cargando ? (
-          <div className="Campania-cargando">Cargando Campanias...</div>
+          <div className="Campania-cargando">Cargando Campañas...</div>
         ) : error ? (
           <div className="Campania-error">{error}</div>
         ) : (
           <>
-            {/* Campania ACTIVA */}
+            {/* Campaña ACTIVA */}
             <div className="Campania-card activa">
               <div className="Campania-card-header azul">
-                <span>📁 Campania activa (en curso)</span>
+                <span>📁 Campaña activa (en curso)</span>
               </div>
               <div className="Campania-card-body">
                 <div className="Campania-stats-grid">
@@ -243,13 +243,13 @@ debugger;
             {/* HISTORIAL DE CampaniaS */}
 <div className="Campania-card historial">
   <div className="Campania-card-header verde">
-    <span>📁 Historial de Campanias archivadas ({historial.length})</span>
+    <span>📁 Historial de Campañas archivadas ({historial.length})</span>
   </div>
 
   <div className="Campania-card-body Campania-tabla-container">
     {historial.length === 0 ? (
       <p className="Campania-vacio">
-        No hay Campanias archivadas todavía.
+        No hay Campañas archivadas todavía.
       </p>
     ) : (
       <table className="Campania-tabla">
@@ -305,7 +305,10 @@ debugger;
       title="Descargar Excel"
       onClick={() => handleDescargarExcel(camp)}
     >
-     -> Excel
+     <h3 style={{ color: '#2e6b4d', marginTop: 0, marginBottom: '20px', fontSize: '1 rem' }}>
+      Excel
+    </h3>
+    
     </button>
 
   </div>

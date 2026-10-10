@@ -69,10 +69,16 @@ frontend/node_modules/
 frontend/dist/
 frontend/.env.local
 frontend/.env.*.local
+frontend/src/Config.js
+frontend/src/Config.js
+frontend/vite.config.js
+
 
 # Backend
 backend/target/
 backend/.idea/
+backend/src/main/resources/application.properties
+backend/target/classes/application.properties
 
 # OS
 .DS_Store

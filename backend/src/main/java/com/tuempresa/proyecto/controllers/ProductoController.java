@@ -4,6 +4,7 @@ import java.util.List; // 👈 Importación que faltaba
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +23,7 @@ import com.tuempresa.proyecto.services.ProductoService;
 public class ProductoController {
 
     private final ProductoService productoService;
+
 
     public ProductoController(ProductoService productoService) {
         this.productoService = productoService;
@@ -45,6 +47,14 @@ public class ProductoController {
         @RequestBody ProductoRequest request) {
     Producto productoActualizado = productoService.actualizarProducto(id, request);
     return ResponseEntity.ok(productoActualizado);
+    }
+
+     @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProducto(
+        @PathVariable Long id,
+        @RequestBody ProductoRequest request) {
+       // productoService.deleteProducto(id);
+    return ResponseEntity.ok(true);
     }
 
     @PostMapping

@@ -41,6 +41,9 @@ public class SecurityConfig {
             .requestMatchers("/api/auth/**").permitAll()
             .requestMatchers("/api/importar/**").permitAll()
             .requestMatchers("/api/campania/**").permitAll()
+            .requestMatchers("/api/camaras/**").permitAll()
+            .requestMatchers("/api/clientes/**").permitAll()
+            .requestMatchers("/api/clientes/**").permitAll()
             .requestMatchers("/error").permitAll()
             .anyRequest().authenticated())           // Nuestro filtro corre antes del filtro estándar de usuario/contraseña
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

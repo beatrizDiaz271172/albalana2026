@@ -263,9 +263,6 @@ const DefinicionesSistemaCamara = () => {
                                                 <button style={btnEditar} onClick={() => abrirModalEditar(cam)}>
                                                     ✏️ Editar
                                                 </button>
-                                                <button style={btnEliminar} onClick={() => eliminarCamara(cam.id, cam.nombre)}>
-                                                    🗑️ Eliminar
-                                                </button>
                                             </td>
                                         </tr>
                                     ))

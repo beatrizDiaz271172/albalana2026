@@ -361,13 +361,6 @@ const DefinicionesSistema = () => {
                       >
                         ✏️
                       </button>
-                      <button
-                        className="btn-accion btn-eliminar"
-                        onClick={() => handleEliminar(producto.id)}
-                        title="Eliminar"
-                      >
-                        🗑️
-                      </button>
                     </td>
                   </tr>
                 ))}

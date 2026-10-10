@@ -94,7 +94,7 @@ const CerrarCampaniaModal = ({ isOpen, onClose, onConfirm}) => {
             </div>
             <div className="modal-option-content">
               <strong>Continuar con el stock actual</strong>
-              <p>El stock actual pasa como ajuste inicial de la nueva Campania. Los movimientos anteriores se archivan.</p>
+              <p>El stock actual pasa como ajuste inicial de la nueva Campaña. Los movimientos anteriores se archivan.</p>
             </div>
           </div>
 
@@ -102,13 +102,13 @@ const CerrarCampaniaModal = ({ isOpen, onClose, onConfirm}) => {
           <div className="modal-alert">
             <span className="modal-alert-icon">⚠️</span>
             <span className="modal-alert-text">
-              Todos los datos de la Campania se guardan en una carpeta local (campanias/) y se genera un ZIP descargable automáticamente.
+              Todos los datos de la Campaña se guardan y se genera excel descargable automáticamente.
             </span>
           </div>
 
           {/* Confirmación por texto */}
           <div className="modal-field">
-            <label>Escribí el nombre de la Campania para confirmar</label>
+            <label>Escribí el nombre de la Campaña para confirmar</label>
             <input
               type="text"
               placeholder="Nombre exacto"

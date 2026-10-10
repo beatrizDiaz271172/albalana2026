@@ -15,6 +15,7 @@ import DefinicionesSistOpc from './pages/DefinicionesSistOpc';
 import ConsultarItemsRemito from './pages/ConsultarItemsRemito';
 import MermasYPesoProm from './pages/MermasYPesoProm';
 import DefinicionesSistemaCamara from './pages/DefinicionesSistemaCamara';
+import DefinicionesSistemaCliente from './pages/DefinicionesSistemaCliente';
 import ListaQuesos from './pages/ListaQuesos';
 import GestionCampanias from './pages/GestionCampanias';
 
@@ -40,6 +41,9 @@ export default function App() {
 
         <Route path="/definicionesSistemaCamara" element={<DefinicionesSistemaCamara />} />
         <Route path="/camaras/:idCamara" element={<DefinicionesSistemaCamara />} />
+
+        <Route path="/definicionesSistemaCliente" element={<DefinicionesSistemaCliente />} />
+        <Route path="/clientes/:idCliente" element={<DefinicionesSistemaCliente />} />
 
         <Route path="/mermasYPesoProm" element={<MermasYPesoProm />} />
         <Route path="/productos/mermas" element={<MermasYPesoProm />} />
