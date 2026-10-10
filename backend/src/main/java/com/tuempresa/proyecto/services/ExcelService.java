@@ -27,7 +27,7 @@ public class ExcelService {
     @Autowired
     private StockService stockService;
     @Autowired
-    private CampaniaRepository CampaniaRepository;
+    private CampaniaRepository campaniaRepository;
     @Autowired
     private OperadorRepository operadorRepository;
 /* 
@@ -132,23 +132,31 @@ public class ExcelService {
         Optional<Operador> op = operadorRepository.findByIdAndActivoTrue(id);
         return op.map(Operador::getNombre).orElse("-");
     }
-    public String guardarExcelEnDisco(Long idCampania) {
-        Campania campania = CampaniaRepository.findById(idCampania).orElse(null);
-        List<Movimiento> movimientos = movimientoRepository.findByArchivadoId(idCampania);
 
-        try (Workbook workbook = new XSSFWorkbook(); 
-             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+    public byte[] descargarExcelLocal(Long idCampania) {
+        Campania campania = campaniaRepository.findById(idCampania).orElse(null);
+        List<Movimiento> movimientos = movimientoRepository.findByArchivadoId(idCampania);
+         ByteArrayOutputStream out = null;
+    try {
+            Workbook workbook = new XSSFWorkbook(); 
+            out = new ByteArrayOutputStream(); 
             
             Sheet sheet1 = workbook.createSheet("Stock");
             Map<String, StockResumen> stockResumenMap = stockService.obtenerResumenStock(campania.getId());
             crearHojaStockResumen(sheet1, stockResumenMap);
             
             String nombreHoja2 = campania != null ? "Campania - " + campania.getNombre() : "Movimientos";
+            if (nombreHoja2.length() > 31) {
+                nombreHoja2 = nombreHoja2.substring(0, 31);
+            }
             Sheet sheet2 = workbook.createSheet(nombreHoja2);
             crearHojaMovimientos(sheet2, movimientos);   
             
             workbook.write(out);
-
+    } catch (Exception e) {
+            throw new RuntimeException("Error al generar el archivo Excel para la campaña " + idCampania, e);
+    }
+       /*  if (local){
             // 1. Crear carpeta si no existe
             File carpeta = new File(CARPETA_DESCARGAS);
             if (!carpeta.exists()) {
@@ -166,9 +174,7 @@ public class ExcelService {
 
             System.out.println("✅ Excel guardado en: " + rutaCompleta);
             return rutaCompleta;
-
-        } catch (IOException e) {
-            throw new RuntimeException("Error al guardar Excel en disco: " + e.getMessage());
-        }
+        */
+        return out.toByteArray();
     }
 }

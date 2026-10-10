@@ -126,6 +126,52 @@ debugger;
       throw err;
     }
   };
+  // Función para manejar la descarga del Excel
+  const handleDescargarExcel = async (campania) => {
+    try {
+      // Ajusta el body según lo que requiera tu endpoint (CampaniaRequest)
+      const bodyData = {
+        id: campania.id,
+        nombre: campania.nombre,
+        fechaInicio: campania.fechaInicio,
+        fechaFin: campania.fechaFin,
+        // Agrega los campos que necesites o que acepte tu DTO
+      };
+
+      const response = await fetch(`${API_BASE}/campania/descargarExcelCampania`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...authHeaders(), // Combina los headers de autenticación
+        },
+        body: JSON.stringify(bodyData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al descargar el archivo Excel');
+      }
+
+      // Convertir la respuesta a Blob y forzar la descarga en el navegador
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Nombre por defecto del archivo (puedes ajustarlo o dejar que el backend lo maneje con Content-Disposition)
+      link.setAttribute('download', `Cierre_Campania_${campania.nombre}.xlsx`);
+      
+      document.body.appendChild(link);
+      link.click();
+      
+      // Limpieza
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+    } catch (error) {
+      console.error('Hubo un error al descargar el Excel:', error);
+      alert('No se pudo descargar el archivo.');
+    }
+  };
 
   const formatearFecha = (fechaISO) => {
     if (!fechaISO) return '-';
@@ -214,7 +260,6 @@ debugger;
             <th>Movim.</th>
             <th>Hormas</th>
             <th>Kgs</th>
-            <th>Stock llevado</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -250,49 +295,21 @@ debugger;
                 {camp.cantKilos ?? 0}
               </td>
 
-              {/* STOCK LLEVADO */}
-              <td>
-                {camp.stockLlevado === true ? (
-                  <span className="Campania-badge-stock">
-                    Continúa
-                  </span>
-                ) : (
-                  <span className="Campania-badge-stock no">
-                    Desde cero
-                  </span>
-                )}
-              </td>
-
               {/* ACCIONES */}
-              <td>
-                <div className="Campania-acciones">
+<td>
+  <div className="Campania-acciones">
 
-                  <button
-                    type="button"
-                    className="Campania-btn-zip"
-                    title="Descargar ZIP"
-                    onClick={() => {
-                      console.log('Descargar ZIP Campania:', camp.id);
-                      // Acá después agregamos el endpoint de descarga
-                    }}
-                  >
-                    🗜️ ZIP
-                  </button>
+    <button
+      type="button"
+      className="Campania-btn-zip"
+      title="Descargar Excel"
+      onClick={() => handleDescargarExcel(camp)}
+    >
+     -> Excel
+    </button>
 
-                  <button
-                    type="button"
-                    className="Campania-btn-eliminar"
-                    title="Eliminar Campania"
-                    onClick={() => {
-                      console.log('Eliminar Campania:', camp.id);
-                      // Acá después agregamos el endpoint DELETE
-                    }}
-                  >
-                    🗑
-                  </button>
-
-                </div>
-              </td>
+  </div>
+</td>
 
             </tr>
           ))}

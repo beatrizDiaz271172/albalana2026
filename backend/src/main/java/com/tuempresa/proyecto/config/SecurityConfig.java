@@ -40,6 +40,7 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // <-- Vital para que el navegador pase el preflight
             .requestMatchers("/api/auth/**").permitAll()
             .requestMatchers("/api/importar/**").permitAll()
+            .requestMatchers("/api/campania/**").permitAll()
             .requestMatchers("/error").permitAll()
             .anyRequest().authenticated())           // Nuestro filtro corre antes del filtro estándar de usuario/contraseña
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

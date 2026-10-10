@@ -1,8 +1,7 @@
 package com.tuempresa.proyecto.controllers;
 
-import java.io.File;  // ✅ AGREGAR
-import java.util.List;
-import java.util.Map;  // ✅ AGREGAR
+import java.time.LocalDate;
+import java.util.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +9,8 @@ import com.tuempresa.proyecto.dtos.CampaniaRequest;
 import com.tuempresa.proyecto.models.Campania;
 import com.tuempresa.proyecto.services.CampaniaService;
 import com.tuempresa.proyecto.services.ExcelService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 
 @RestController
 @RequestMapping("/api")
@@ -37,18 +38,11 @@ public class CampaniaController {
     @PostMapping("/campania/cerrar")
     public ResponseEntity<?> cerrarCampania(@RequestBody CampaniaRequest request) {
         try {
-            // 1. Cerrar la Campania
-            Campania CampaniaNueva = CampaniaService.cerrarCampania(request);
-            
-            // 2. Guardar Excel en disco
-            String rutaArchivo = excelService.guardarExcelEnDisco(request.getId());
+            CampaniaService.cerrarCampania(request);
 
-            // 3. Retornar respuesta con la ruta
             return ResponseEntity.ok(Map.of(
                 "mensaje", "✅ Campania cerrada exitosamente",
-                "idCampania", request.getId(),
-                "rutaArchivo", rutaArchivo,
-                "nombreArchivo", new File(rutaArchivo).getName()
+                "idCampania", request.getId()
             ));
             
         } catch (Exception e) {
@@ -57,4 +51,19 @@ public class CampaniaController {
             ));
         }
     }
+
+    @PostMapping("/campania/descargarExcelCampania")
+    public ResponseEntity<?> mostrarExcel(@RequestBody CampaniaRequest request) {
+        Long id =request.getId();
+        byte[] datos = excelService.descargarExcelLocal(id);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        String nombreArchivo = "Campania_" + request.getNombre() + ".xlsx";
+        
+        headers.setContentDispositionFormData("attachment", nombreArchivo);
+
+        return new ResponseEntity<>(datos, headers, HttpStatus.OK);
+      }
+
 }
