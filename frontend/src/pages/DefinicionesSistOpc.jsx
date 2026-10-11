@@ -20,14 +20,14 @@ const PanelReportes = () => {
             titulo: 'Cliente',
             icono: '👥',
             colorBorde: '#6f42c1', 
-            ruta: '/definicionesSistemaCLiente'
+            ruta: '/definicionesSistemaCliente'
         },
         {
             id: 'operador',
             titulo: 'Operador',
             icono: '🛡️',
             colorBorde: '#2e6b4d', // Verde oscuro (estilo Alba Lana)
-            ruta: '/reportes/operador'
+            ruta: '/definicionesSistemaOperador'
         },
         {
             id: 'producto',

@@ -12,12 +12,14 @@ import RemitoCliente from './pages/RemitoCliente';
 import EstadoMaduracionLoteCamara from './pages/EstadoMaduracionLoteCamara';
 import DefinicionesSistema from './pages/DefinicionesSistema';
 import DefinicionesSistOpc from './pages/DefinicionesSistOpc';
+import DefinicionesSistemaOperador from './pages/DefinicionesSistemaOperador';
 import ConsultarItemsRemito from './pages/ConsultarItemsRemito';
 import MermasYPesoProm from './pages/MermasYPesoProm';
 import DefinicionesSistemaCamara from './pages/DefinicionesSistemaCamara';
 import DefinicionesSistemaCliente from './pages/DefinicionesSistemaCliente';
 import ListaQuesos from './pages/ListaQuesos';
 import GestionCampanias from './pages/GestionCampanias';
+import ReporteImprimible from './pages/ReporteImprimible';
 
 export default function App() {
   return (
@@ -41,7 +43,9 @@ export default function App() {
 
         <Route path="/definicionesSistemaCamara" element={<DefinicionesSistemaCamara />} />
         <Route path="/camaras/:idCamara" element={<DefinicionesSistemaCamara />} />
-
+        
+        <Route path="/definicionesSistemaOperador" element={<DefinicionesSistemaOperador />} />
+        
         <Route path="/definicionesSistemaCliente" element={<DefinicionesSistemaCliente />} />
         <Route path="/clientes/:idCliente" element={<DefinicionesSistemaCliente />} />
 
@@ -55,6 +59,8 @@ export default function App() {
         <Route path="/listaQuesos" element={<ListaQuesos />} />
 
         <Route path="/gestionCampanias" element={<GestionCampanias />} />
+        
+        <Route path="/reporteImprimible" element={<ReporteImprimible />} />
         
  
       </Routes>

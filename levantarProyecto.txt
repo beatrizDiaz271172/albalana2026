@@ -36,3 +36,5 @@ Buscar API de codigo alimentario
 
 netstat -ano | findstr :8081
 taskkill /PID 23768 /F
+
+npx repomix --ignore "**/node_modules/**,**/target/**,**/.git/**,**/dist/**,**/build/**,**/.mvn/**"
