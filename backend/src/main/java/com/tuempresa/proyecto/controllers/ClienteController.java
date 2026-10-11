@@ -38,8 +38,8 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Camara> updateCliente(@PathVariable Long id, @RequestBody ClienteRequest request) {
-    Camara clienteActualizado = clienteService.actualizarCliente(id, request);
+    public ResponseEntity<Cliente> updateCliente(@PathVariable Long id, @RequestBody ClienteRequest request) {
+    Cliente clienteActualizado = clienteService.actualizarCliente(id, request);
     return ResponseEntity.ok(clienteActualizado);
     }
 }
