@@ -1,0 +1,291 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Sidebar from './Sidebar';
+import { API_BASE } from '../Config';
+
+const RedLocal = () => {
+  const navigate = useNavigate();
+
+  // Estado para la barra lateral
+  const [menuAbierto, setMenuAbierto] = useState(false);
+
+  // Estados para la información de red
+  const [nombreEquipo, setNombreEquipo] = useState('Cargando...');
+  const [ipLocal, setIpLocal] = useState('192.168.0.75');
+  const [puerto, setPuerto] = useState('5001');
+  const [escuchandoEn, setEscuchandoEn] = useState('0.0.0.0 (todas las interfaces)');
+  const [cargando, setCargando] = useState(true);
+
+  // Estado para feedback de copiado
+  const [copiado, setCopiado] = useState(false);
+
+  // Obtener información de red al cargar la pantalla
+  useEffect(() => {
+    const obtenerInfoRed = async () => {
+      setCargando(true);
+      try {
+        const token = localStorage.getItem('userToken');
+        // Intenta obtener los datos reales desde el backend Spring Boot
+        const response = await fetch(`${API_BASE}/red/info`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.nombreEquipo) setNombreEquipo(data.nombreEquipo);
+          if (data.ipLocal) setIpLocal(data.ipLocal);
+          if (data.puerto) setPuerto(data.puerto);
+          if (data.escuchandoEn) setEscuchandoEn(data.escuchandoEn);
+        } else {
+          // Si no hay endpoint en el backend, toma el hostname actual de la URL
+          const currentHostname = window.location.hostname;
+          const currentPort = window.location.port || '5001';
+          
+          setNombreEquipo(window.location.host || 'localhost');
+          setIpLocal(currentHostname === 'localhost' ? '192.168.0.75' : currentHostname);
+          setPuerto(currentPort);
+        }
+      } catch (error) {
+        console.warn('Error al obtener la info de red del backend, usando valores detectados:', error);
+        // Fallback en caso de error de red
+        const currentHostname = window.location.hostname;
+        setIpLocal(currentHostname === 'localhost' ? '192.168.0.75' : currentHostname);
+        setNombreEquipo('Servidor Local');
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    obtenerInfoRed();
+  }, []);
+
+  // Construir la URL completa para dispositivos en la red
+  const direccionUrl = `http://${ipLocal}:${puerto}`;
+
+  // Función para copiar al portapapeles
+  const handleCopiar = () => {
+    navigator.clipboard.writeText(direccionUrl);
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 2500);
+  };
+
+  const handleSidebarNavigate = (itemId) => {
+    setMenuAbierto(false);
+    if (itemId === 'inicio') navigate('/');
+    if (itemId === 'stock_actual') navigate('/stockProductoCamaras');
+    if (itemId === 'maduracion_lotes') navigate('/estadoMaduracionLoteCamara');
+    if (itemId === 'ingreso_produccion') navigate('/registrarIngreso');
+    if (itemId === 'egreso_remito') navigate('/registrarEgresoRemito');
+    if (itemId === 'ajuste_stock') navigate('/ajusteStock');
+    if (itemId === 'historial_movimientos') navigate('/historialMovimientos');
+    if (itemId === 'remitos') navigate('/remitoCliente');
+    if (itemId === 'imprimir_pdf' || itemId === 'exportar_excel') navigate('/reporteImprimible');
+    if (itemId === 'cerrar_sesion') {
+      localStorage.removeItem('userToken');
+      navigate('/login');
+    }
+  };
+
+  return (
+    <div style={{ fontFamily: 'Arial, sans-serif', backgroundColor: '#f4f6f8', minHeight: '100vh', position: 'relative' }}>
+      
+      {/* Navbar Superior */}
+      <div style={{ backgroundColor: '#1e5338', color: 'white', padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h2 style={{ margin: 0, fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          🧀 Alba Lana
+        </h2>
+        <button 
+          onClick={() => setMenuAbierto(!menuAbierto)}
+          style={{ 
+            background: 'rgba(255, 255, 255, 0.15)', 
+            border: '1px solid rgba(255, 255, 255, 0.4)', 
+            color: 'white', 
+            padding: '6px 14px', 
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontSize: '0.95rem',
+            fontWeight: 'bold'
+          }}
+        >
+          ☰ Menú
+        </button>
+      </div>
+
+      {/* Sidebar Desplegable */}
+      {menuAbierto && (
+        <>
+          <div 
+            onClick={() => setMenuAbierto(false)}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              backgroundColor: 'rgba(0, 0, 0, 0.4)',
+              zIndex: 1001
+            }}
+          />
+          <div style={{ position: 'fixed', top: 0, left: 0, height: '100vh', zIndex: 1002 }}>
+            <Sidebar activeRoute="red_local" onNavigate={handleSidebarNavigate} />
+          </div>
+        </>
+      )}
+
+      {/* Contenido Principal */}
+      <div style={{ maxWidth: '850px', margin: '30px auto', padding: '0 16px' }}>
+        
+        {/* Botones de Navegación Superior */}
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '20px' }}>
+          <button 
+            onClick={() => navigate('/')}
+            style={{
+              backgroundColor: '#d1fae5',
+              color: '#065f46',
+              border: 'none',
+              padding: '6px 16px',
+              borderRadius: '16px',
+              cursor: 'pointer',
+              fontWeight: '500',
+              fontSize: '0.9rem'
+            }}
+          >
+            ← Inicio
+          </button>
+          <button 
+            onClick={() => navigate(-1)}
+            style={{
+              backgroundColor: 'transparent',
+              color: '#4b5563',
+              border: 'none',
+              padding: '6px 12px',
+              cursor: 'pointer',
+              fontSize: '0.9rem',
+              fontWeight: '500'
+            }}
+          >
+            ↩ Volver
+          </button>
+        </div>
+
+        {/* Título de la sección */}
+        <h2 style={{ color: '#1e5338', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.3rem', marginBottom: '20px' }}>
+          📡 Red y conexión de dispositivos
+        </h2>
+
+        {/* Tarjeta Contenedora Principal */}
+        <div style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '10px',
+          overflow: 'hidden',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+          border: '1px solid #e5e7eb'
+        }}>
+          
+          {/* Encabezado Verde de la Tarjeta */}
+          <div style={{ backgroundColor: '#2d6a4f', color: 'white', padding: '12px 20px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            💻 Este servidor
+          </div>
+
+          {/* Cuerpo de la Tarjeta con los Datos del Servidor */}
+          <div style={{ padding: '24px' }}>
+            
+            {/* Fila de Métricas / Datos */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 0.8fr 1.5fr', gap: '16px', alignItems: 'center', marginBottom: '24px' }}>
+              
+              {/* Nombre del equipo */}
+              <div>
+                <span style={{ fontSize: '0.8rem', color: '#6b7280', display: 'block', marginBottom: '4px' }}>Nombre del equipo</span>
+                <strong style={{ fontSize: '1.05rem', color: '#111827' }}>
+                  {cargando ? '...' : nombreEquipo}
+                </strong>
+              </div>
+
+              {/* IP en la red local */}
+              <div>
+                <span style={{ fontSize: '0.8rem', color: '#6b7280', display: 'block', marginBottom: '4px' }}>IP en la red local</span>
+                <strong style={{ fontSize: '1.4rem', color: '#1e5338' }}>
+                  {cargando ? '...' : ipLocal}
+                </strong>
+              </div>
+
+              {/* Puerto */}
+              <div>
+                <span style={{ fontSize: '0.8rem', color: '#6b7280', display: 'block', marginBottom: '4px' }}>Puerto</span>
+                <strong style={{ fontSize: '1.4rem', color: '#111827' }}>
+                  {puerto}
+                </strong>
+              </div>
+
+              {/* Escuchando en */}
+              <div>
+                <span style={{ fontSize: '0.8rem', color: '#6b7280', display: 'block', marginBottom: '4px' }}>Escuchando en</span>
+                <span style={{
+                  backgroundColor: '#d1fae5',
+                  color: '#065f46',
+                  padding: '4px 10px',
+                  borderRadius: '12px',
+                  fontSize: '0.85rem',
+                  fontWeight: 'bold',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }}>
+                  ✅ {escuchandoEn}
+                </span>
+              </div>
+
+            </div>
+
+            {/* Recuadro Verde Claro con la Dirección para la Red WiFi y Botón de Copiar */}
+            <div style={{
+              backgroundColor: '#e8f5e9',
+              borderRadius: '8px',
+              padding: '20px',
+              border: '1px solid #c8e6c9'
+            }}>
+              <span style={{ fontSize: '0.85rem', color: '#4b5563', display: 'block', marginBottom: '8px' }}>
+                Dirección para dispositivos en esta red WiFi:
+              </span>
+
+              {/* URL Generada */}
+              <div style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#1e5338', marginBottom: '16px' }}>
+                {direccionUrl}
+              </div>
+
+              {/* Botón Copiar Dirección */}
+              <button
+                onClick={handleCopiar}
+                style={{
+                  backgroundColor: copiado ? '#15803d' : '#2d6a4f',
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '6px',
+                  fontSize: '0.9rem',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  transition: 'background-color 0.2s'
+                }}
+              >
+                📋 {copiado ? '¡Dirección copiada!' : 'Copiar dirección'}
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  );
+};
+
+export default RedLocal;

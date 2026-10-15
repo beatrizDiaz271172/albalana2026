@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE } from '../Config'; 
 import './DefinicionesSistema.css';
+import { eliminarRegistro } from '../services/eliminar';
 
 const DefinicionesSistemaCamara = () => {
     const navigate = useNavigate();
@@ -117,25 +118,9 @@ const DefinicionesSistemaCamara = () => {
 
     // Eliminar cámara
     const eliminarCamara = async (id, nombre) => {
-        if (!window.confirm(`¿Está seguro que desea eliminar la cámara "${nombre}"?`)) {
-            return;
-        }
-
-        try {
-            const res = await fetch(`${API_BASE}/camaras/${id}`, {
-                method: 'DELETE',
-                headers: authHeaders()
-            });
-
-            if (res.ok) {
-                await cargarCamaras();
-            } else {
-                alert('No se pudo eliminar la cámara.');
-            }
-        } catch (err) {
-            console.error('Error al eliminar cámara:', err);
-            alert('Error de conexión con el servidor.');
-        }
+        if (!window.confirm(`¿Eliminar la cámara "${nombre}"?`)) return;
+        const r = await eliminarRegistro('camaras', id);
+        if (r.ok) await cargarCamaras(); else alert(r.mensaje);
     };
 
     // Estilos
@@ -262,6 +247,9 @@ const DefinicionesSistemaCamara = () => {
                                             <td style={{ ...tdStyle, textAlign: 'center' }}>
                                                 <button style={btnEditar} onClick={() => abrirModalEditar(cam)}>
                                                     ✏️ Editar
+                                                </button>
+                                                <button style={btnEliminar} onClick={() => eliminarCamara(cam.id, cam.nombre)}>
+                                                    🗑️ Eliminar
                                                 </button>
                                             </td>
                                         </tr>

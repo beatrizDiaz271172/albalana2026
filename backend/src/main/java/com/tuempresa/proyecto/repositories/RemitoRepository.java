@@ -14,6 +14,8 @@ public interface RemitoRepository extends JpaRepository<Remito, Long> {
    Optional <Remito> findById(Long productoId);
    Remito findByCodigoJsonAndActivoTrue(String codigo);
    List<Remito> findByActivoTrue();
+   boolean existsByCliente_Id(Long id);
+   boolean existsByOperador_Id(Long id);
 
     @Modifying
     @Query(value = "DELETE FROM remito", nativeQuery = true)

@@ -183,11 +183,8 @@ debugger;
     <div className="Campania-page">
       <header className="Campania-topbar">
         <div className="Campania-topbar-actions">
-          <button className="Campania-btn-volver" onClick={() => navigate('/inicio')}>
-            ← Inicio
-          </button>
-          <button className="Campania-btn-volver" onClick={() => navigate(-1)}>
-            Volver
+          <button className="Campania-btn-volver" onClick={() => navigate('/dashboard')}>
+            ← Volver
           </button>
         </div>
       </header>

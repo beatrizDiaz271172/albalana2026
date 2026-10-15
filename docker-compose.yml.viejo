@@ -1,0 +1,30 @@
+services:
+  # ⚙️ Backend Spring Boot
+  # Se conecta al Postgres NATIVO instalado en tu PC (puerto 5432),
+  # el que ya tiene cargados lote, producto, usuarios, etc.
+  # No se levanta ningún contenedor de base de datos nuevo.
+  backend:
+    build: ./backend
+    container_name: spring_backend
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/albalanadb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=123
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # 🎨 Frontend React
+  frontend:
+    build: ./frontend
+    container_name: react_frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - backend

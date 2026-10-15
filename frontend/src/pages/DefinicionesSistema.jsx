@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './DefinicionesSistema.css';
+import { eliminarRegistro } from '../services/eliminar';
 import { API_BASE } from '../Config'; 
 
 const DefinicionesSistema = () => {
@@ -243,26 +244,10 @@ const DefinicionesSistema = () => {
     }
   };
 
-  const handleEliminar = async (id) => {
-    if (!window.confirm('¿Estás seguro que querés eliminar este producto?')) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_BASE}/productos/${id}`, {
-        method: 'DELETE',
-        headers: authHeaders()
-      });
-
-      if (response.ok) {
-        alert('✓ Producto eliminado');
-        await cargarProductos();
-      } else {
-        alert('Error al eliminar el producto');
-      }
-    } catch (error) {
-      alert('Error de conexión: ' + error.message);
-    }
+  const handleEliminar = async (id, nombre) => {
+  if (!window.confirm(`¿Eliminar el producto "${nombre}"?`)) return;
+    const r = await eliminarRegistro('productos', id);
+  if (r.ok) await cargarProductos(); else alert(r.mensaje);
   };
 
   return (
@@ -354,13 +339,10 @@ const DefinicionesSistema = () => {
                       {producto.diasSinMov ?? '-'}
                     </td>
                     <td className="celda-acciones">
-                      <button
-                        className="btn-accion btn-editar"
-                        onClick={() => handleAbrirModal(producto)}
-                        title="Editar"
-                      >
-                        ✏️
-                      </button>
+                      <div className="acciones-wrap">
+                        <button className="btn-accion btn-editar" onClick={() => handleAbrirModal(producto)} title="Editar">✏️</button>
+                        <button className="btn-accion btn-eliminar" onClick={() => handleEliminar(producto.id, producto.nombre)} title="Eliminar">🗑️</button>
+                      </div>
                     </td>
                   </tr>
                 ))}

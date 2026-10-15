@@ -15,6 +15,7 @@ public interface MovimientoRepository extends JpaRepository<Movimiento, Long> {
   List<Movimiento> findByRemito_Id(Long remitoId);
   List<Movimiento> findByActivoTrue();
   List<Movimiento>findByCdTipoMovAndLote_Producto_idAndActivoTrue(Integer cdTipoMov, Long productoId);
+  boolean existsByCdOperador(Long id);
   List<Movimiento>findByLote_Producto_idAndActivoTrueOrderByIdDesc( Long productoId);
   @Modifying
     @Query(value = "DELETE FROM movimientos", nativeQuery = true)

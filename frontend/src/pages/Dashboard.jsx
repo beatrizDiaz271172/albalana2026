@@ -1,18 +1,34 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Sidebar from './Sidebar'; // 1. Importación del componente Sidebar
 import './Alertas.css';
 
 import { API_BASE } from '../Config'; 
 
-
 // ============================================================================
-// COMPONENTES AUXILIARES (Extraídos)
+// COMPONENTES AUXILIARES
 // ============================================================================
 
-const Navbar = () => (
-  <div style={{ backgroundColor: '#1e5338', color: 'white', padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+// Se le añade la prop `onToggleMenu` para reaccionar al botón de la barra
+const Navbar = ({ onToggleMenu }) => (
+  <div style={{ backgroundColor: '#1e5338', color: 'white', padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'sticky', top: 0, zIndex: 1000 }}>
     <h2 style={{ margin: 0, fontSize: '1.2rem' }}>🌿 Alba Lana</h2>
-    <button style={{ background: 'transparent', border: '1px solid white', color: 'white', padding: '4px 12px', borderRadius: '4px' }}>
+    <button 
+      onClick={onToggleMenu}
+      style={{ 
+        background: 'rgba(255, 255, 255, 0.15)', 
+        border: '1px solid rgba(255, 255, 255, 0.4)', 
+        color: 'white', 
+        padding: '6px 14px', 
+        borderRadius: '6px',
+        cursor: 'pointer',
+        fontSize: '0.95rem',
+        fontWeight: 'bold',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px'
+      }}
+    >
       ☰ Menú
     </button>
   </div>
@@ -33,9 +49,6 @@ const MetricasGrid = ({ stats, cargando }) => (
   </div>
 );
 
-// ============================================================================
-// BANNER DE ALERTAS CON CONTADOR DE CRÍTICAS
-// ============================================================================
 const AlertasBanner = ({ cantidadAlertas, alertasCriticas, cargando }) => (
   <div style={{ 
     backgroundColor: '#c92a2a', 
@@ -102,8 +115,7 @@ const AlertasSection = ({ alertas, cargando, error }) => {
   return (
     <>
       {alertas.map((alerta, index) => {
-        // Definimos el emoji según el nivelAlerta
-        let icono = 'ℹ️'; // Nivel 1 por defecto
+        let icono = 'ℹ️';
         if (alerta.nivelAlerta === 2) icono = '⚠️';
         if (alerta.nivelAlerta === 3) icono = '⚠️⚠️';
         if (alerta.nivelAlerta === 4) icono = '🚨';
@@ -113,12 +125,10 @@ const AlertasSection = ({ alertas, cargando, error }) => {
             key={alerta.productoId || index} 
             className={`alerta-tarjeta tipo-${alerta.tipoAlerta} nivel-${alerta.nivelAlerta}`}
           >
-            {/* Ícono dinámico */}
             <div className="alerta-icono-contenedor">
               <span className="alerta-emoji">{icono}</span>
             </div>
             
-            {/* Contenido de texto */}
             <div className="alerta-texto-grupo">
               <div className="alerta-titulo">{alerta.productoNombre}</div>
               <div className="alerta-mensaje">{alerta.mensajeAlerta}</div>
@@ -131,7 +141,7 @@ const AlertasSection = ({ alertas, cargando, error }) => {
 };
 
 // ============================================================================
-// SERVICIOS / FUNCIONES UTILITARIAS
+// SERVICIOS UTILITARIOS
 // ============================================================================
 
 const getAuthHeaders = () => {
@@ -222,11 +232,28 @@ const fetchAlertas = async () => {
   }
 };
 
-// ============================================================================
-// FUNCIÓN PARA CONTAR ALERTAS CRÍTICAS
-// ============================================================================
 const contarAlertasCriticas = (alertas) => {
   return alertas.filter(alerta => alerta.nivelAlerta === 4).length;
+};
+
+// Map de rutas asociadas a las opciones del menú lateral
+const RUTAS_SIDEBAR = {
+  inicio: '/',
+  stock_actual: '/stockProductoCamaras',
+  maduracion_lotes: '/estadoMaduracionLoteCamara',
+  mermas: '/mermasYPesoProm',
+  ingreso_produccion: '/registrarIngreso',
+  egreso_remito: '/registrarEgresoRemito',
+  ajuste_stock: '/ajusteStock',
+  transferencia: '/transferenciaEntreCamaras',
+  historial_movimientos: '/historialMovimientos',
+  remitos: '/remitoCliente',
+  definiciones: '/definicionesSistOpc',
+  exportar_excel: '/',
+  campanias: '/GestionCampanias',
+  imprimir_pdf: '/reporteImprimible',
+  red_local: '/redLocal',
+  cerrar_sesion: '/login'
 };
 
 // ============================================================================
@@ -235,6 +262,9 @@ const contarAlertasCriticas = (alertas) => {
 
 const Dashboard = () => {
   const navigate = useNavigate();
+
+  // 2. Estado para controlar la visibilidad del Sidebar
+  const [menuAbierto, setMenuAbierto] = useState(false);
 
   // Estados de Métricas
   const [stats, setStats] = useState({ hormasStock: 0, kgsStock: 0, movimientos: 0 });
@@ -245,7 +275,6 @@ const Dashboard = () => {
   const [cargandoAlertas, setCargandoAlertas] = useState(true);
   const [errorAlertas, setErrorAlertas] = useState(null);
 
-  // Opciones del Menú
   const menuOptions = [
     { title: "Registrar ingreso", icon: "👤", color: "#1e5338", path: "/registrarIngreso" },
     { title: "Registrar egreso", icon: "👤", color: "#d9534f", path: "/registrarEgresoRemito" }, 
@@ -256,15 +285,11 @@ const Dashboard = () => {
     { title: "Remitos", icon: "📦", color: "#2e3880", path: "/remitoCliente" },
     { title: "Ajuste de stock", icon: "⚖️", color: "#7a3e9d", path: "/ajusteStock" },
     { title: "Transferencia", icon: "🔄", color: "#2e3880", path: "/transferenciaEntreCamaras" },
-    { title: "Campanias", icon: "📅", color: "#7a3e9d" , path: "/GestionCampanias"},
+    { title: "Campañas", icon: "📅", color: "#7a3e9d" , path: "/GestionCampanias"},
     { title: "Definiciones", icon: "⚙️", color: "#1e5338", path: "/definicionesSistOpc" },
     { title: "Imprimir / PDF", icon: "🖨️", color: "#d9534f", path: "/reporteImprimible"}
-    //{ title: "Imprimir / PDF-- CONSULTAR API", icon: "🖨️", color: "#d9534f", path: "/listaQuesos"}
   ];
 
-  // ========================================================================
-  // EFFECT 1: Cargar Métricas (Hormas, Kgs, Movimientos)
-  // ========================================================================
   useEffect(() => {
     const cargarMetricas = async () => {
       setCargandoMetricas(true);
@@ -277,13 +302,9 @@ const Dashboard = () => {
         setCargandoMetricas(false);
       }
     };
-
     cargarMetricas();
   }, []);
 
-  // ========================================================================
-  // EFFECT 2: Cargar Alertas
-  // ========================================================================
   useEffect(() => {
     const cargarAlertas = async () => {
       setCargandoAlertas(true);
@@ -298,13 +319,8 @@ const Dashboard = () => {
         setCargandoAlertas(false);
       }
     };
-
     cargarAlertas();
   }, []);
-
-  // ========================================================================
-  // HANDLERS
-  // ========================================================================
 
   const handleOptionClick = useCallback((path) => {
     if (path) {
@@ -312,24 +328,69 @@ const Dashboard = () => {
     }
   }, [navigate]);
 
-  // ========================================================================
-  // CÁLCULOS
-  // ========================================================================
+  // Manejo de navegación desde la Sidebar
+  const handleSidebarNavigate = (itemId) => {
+    setMenuAbierto(false); // Cierra la barra al hacer clic
+    
+    if (itemId === 'cerrar_sesion') {
+      localStorage.removeItem('userToken');
+      navigate('/login');
+      return;
+    }
+
+    const path = RUTAS_SIDEBAR[itemId];
+    if (path) {
+      navigate(path);
+    }
+  };
 
   const alertasCriticas = contarAlertasCriticas(alertas);
 
-  // ========================================================================
-  // RENDER
-  // ========================================================================
-
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', backgroundColor: '#f4f6f8', minHeight: '100vh' }}>
-      <Navbar />
+    <div style={{ fontFamily: 'Arial, sans-serif', backgroundColor: '#f4f6f8', minHeight: '100vh', relative: 'position' }}>
+      
+      {/* 3. Pasa el handler onToggleMenu al Navbar */}
+      <Navbar onToggleMenu={() => setMenuAbierto(!menuAbierto)} />
 
+      {/* 4. Overlay y Sidebar Desplegable */}
+      {menuAbierto && (
+        <>
+          {/* Fondo oscuro traslúcido para cerrar al hacer clic afuera */}
+          <div 
+            onClick={() => setMenuAbierto(false)}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100vw',
+              height: '100vh',
+              backgroundColor: 'rgba(0, 0, 0, 0.4)',
+              zIndex: 1001,
+              transition: 'opacity 0.2s'
+            }}
+          />
+
+          {/* Menú lateral animado a la izquierda */}
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            height: '100vh',
+            zIndex: 1002,
+            boxShadow: '4px 0 12px rgba(0,0,0,0.15)'
+          }}>
+            <Sidebar 
+              activeRoute="inicio" 
+              onNavigate={handleSidebarNavigate} 
+            />
+          </div>
+        </>
+      )}
+
+      {/* Contenido principal del Dashboard */}
       <div style={{ maxWidth: '900px', margin: '20px auto', padding: '0 16px' }}>
         <MetricasGrid stats={stats} cargando={cargandoMetricas} />
         
-        {/* Banner mejorado con contador de alertas críticas */}
         <AlertasBanner 
           cantidadAlertas={alertas.length} 
           alertasCriticas={alertasCriticas}
@@ -338,7 +399,6 @@ const Dashboard = () => {
         
         <MenuGrid menuOptions={menuOptions} onOptionClick={handleOptionClick} />
 
-        {/* Sección de Alertas Detalladas */}
         <div className="alertas-contenedor" style={{ marginTop: '30px', paddingBottom: '40px' }}>
           <h3 style={{ color: '#333', marginBottom: '15px', borderBottom: '2px solid #e5e7eb', paddingBottom: '8px' }}>
             📋 Alertas Activas

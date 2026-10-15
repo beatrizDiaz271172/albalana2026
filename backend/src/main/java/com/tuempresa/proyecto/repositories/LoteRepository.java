@@ -19,6 +19,10 @@ public interface LoteRepository extends JpaRepository<Lote, Long> {
     List<Lote> findByProducto_IdAndCamara_IdAndActivoTrue( Long idProducto, Long idCamara);
 
     List<Lote> findByProducto_IdAndActivoTrue( Long idProducto);
+
+    boolean existsByProducto_Id(Long id);
+    boolean existsByCamara_Id(Long id);
+    
     @Modifying
     @Query(value = "DELETE FROM lote", nativeQuery = true)
     void vaciarTabla();

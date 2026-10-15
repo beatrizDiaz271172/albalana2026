@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.tuempresa.proyecto.services.ClienteService;
 import com.tuempresa.proyecto.dtos.ClienteRequest;
-import com.tuempresa.proyecto.models.Camara;
 import com.tuempresa.proyecto.models.Cliente;
 import com.tuempresa.proyecto.repositories.ClienteRepository;
 

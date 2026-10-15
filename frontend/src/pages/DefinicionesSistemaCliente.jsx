@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE } from '../Config'; 
 import './DefinicionesSistema.css';
+import { eliminarRegistro } from '../services/eliminar';
 
 const DefinicionesSistemaCliente = () => {
     const navigate = useNavigate();
@@ -116,28 +117,11 @@ const DefinicionesSistemaCliente = () => {
     };
 
     // Eliminar cliente
-    const eliminarCliente = async (id, nombre) => {
-        if (!window.confirm(`¿Está seguro que desea eliminar la cliente "${nombre}"?`)) {
-            return;
-        }
-
-        try {
-            const res = await fetch(`${API_BASE}/clientes/${id}`, {
-                method: 'DELETE',
-                headers: authHeaders()
-            });
-
-            if (res.ok) {
-                await cargarClientes();
-            } else {
-                alert('No se pudo eliminar la cliente.');
-            }
-        } catch (err) {
-            console.error('Error al eliminar cliente:', err);
-            alert('Error de conexión con el servidor.');
-        }
-    };
-
+const eliminarCliente = async (id, nombre) => {
+  if (!window.confirm(`¿Eliminar el cliente "${nombre}"?`)) return;
+  const r = await eliminarRegistro('clientes', id);
+  if (r.ok) await cargarClientes(); else alert(r.mensaje);
+};
     // Estilos
     const thStyle = {
         backgroundColor: '#2e6b4d',
@@ -262,6 +246,9 @@ const DefinicionesSistemaCliente = () => {
                                             <td style={{ ...tdStyle, textAlign: 'center' }}>
                                                 <button style={btnEditar} onClick={() => abrirModalEditar(cam)}>
                                                     ✏️ Editar
+                                                </button>
+                                                <button style={btnEliminar} onClick={() => eliminarCliente(cam.id, cam.nombre)}>
+                                                    🗑️ Eliminar
                                                 </button>
                                             </td>
                                         </tr>

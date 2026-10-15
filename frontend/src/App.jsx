@@ -20,6 +20,7 @@ import DefinicionesSistemaCliente from './pages/DefinicionesSistemaCliente';
 import ListaQuesos from './pages/ListaQuesos';
 import GestionCampanias from './pages/GestionCampanias';
 import ReporteImprimible from './pages/ReporteImprimible';
+import RedLocal from './pages/RedLocal';
 
 export default function App() {
   return (
@@ -61,7 +62,7 @@ export default function App() {
         <Route path="/gestionCampanias" element={<GestionCampanias />} />
         
         <Route path="/reporteImprimible" element={<ReporteImprimible />} />
-        
+        <Route path="/redLocal" element={<RedLocal />} />
  
       </Routes>
     </BrowserRouter>

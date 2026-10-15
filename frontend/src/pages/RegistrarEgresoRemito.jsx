@@ -29,8 +29,8 @@ const RegistrarEgresoRemito = () => {
     cdCamara: '',
     cdLote: '',
     loteManual: '',
-    hormas: 0.00,
-    kgs: 0.00
+    hormas: '',
+    kgs: ''
   });
 
   // --- Autocomplete de Productos ---
@@ -73,7 +73,7 @@ const RegistrarEgresoRemito = () => {
 
     if (!idProducto) {
       setCamaras([]);
-      setItemActual(prev => ({ ...prev, cdCamara: '', cdLote: '', hormas: 0.00, kgs: 0.00 }));
+      setItemActual(prev => ({ ...prev, cdCamara: '', cdLote: '', hormas: '', kgs: ''}));
       return;
     }
 
@@ -148,8 +148,8 @@ const RegistrarEgresoRemito = () => {
       cdProducto: producto.id,
       cdCamara: '',
       cdLote: '',
-      hormas: 0.00,
-      kgs: 0.00
+      hormas: '',
+      kgs: ''
     }));
     setProductoTexto(producto.nombre);
     setMostrarSugerenciasProducto(false);
@@ -166,7 +166,7 @@ const RegistrarEgresoRemito = () => {
     setItemActual((prev) => ({
       ...prev,
       [name]: type === 'number' ? (value === '' ? '' : Number(value)) : value,
-      ...(name === 'cdCamara' ? { cdLote: '', hormas: 0.00, kgs: 0.00 } : {})
+      ...(name === 'cdCamara' ? { cdLote: '', hormas: '', kgs: '' } : {})
     }));
   };
 
@@ -213,8 +213,8 @@ const RegistrarEgresoRemito = () => {
       return;
     }
 
-    if (kgsIngresados < 0) {
-      alert('La cantidad de kgs no puede ser menor a 0.');
+    if (kgsIngresados <= 0) {
+      alert('La cantidad de kgs  debe ser mayor a 0.');
       return;
     }
 
@@ -248,8 +248,8 @@ const RegistrarEgresoRemito = () => {
       cdCamara: '',
       cdLote: '',
       loteManual: '',
-      hormas: 0.00,
-      kgs: 0.00
+      hormas: '',
+      kgs: ''
     });
     setProductoTexto('');
     setCamaras([]);
@@ -321,7 +321,7 @@ const RegistrarEgresoRemito = () => {
     <div className="egreso-container">
       <nav className="navbar-egreso">
         <h1>📤 Registrar Egreso (Remito)</h1>
-        <button className="btn-back" onClick={() => navigate('/')}>← Volver</button>
+        <button className="btn-back" onClick={() => navigate('/dashboard')}>← Volver</button>
       </nav>
 
       <main className="egreso-main">

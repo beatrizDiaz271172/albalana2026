@@ -38,3 +38,10 @@ netstat -ano | findstr :8081
 taskkill /PID 23768 /F
 
 npx repomix --ignore "**/node_modules/**,**/target/**,**/.git/**,**/dist/**,**/build/**,**/.mvn/**"
+
+---LEVANTAR DOCKER
+docker compose up -d --build app
+docker compose logs app -f
+
+---DB POSTGRESQL EN DOCKER
+Entrá a http://localhost:5050 con admin@admin.com / admin_password.

@@ -1,0 +1,8 @@
+**/node_modules
+**/target
+**/dist
+**/.git
+frontend/venv
+frontend/android
+Json
+*.txt

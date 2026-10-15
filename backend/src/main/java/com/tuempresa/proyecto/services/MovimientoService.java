@@ -136,6 +136,10 @@ public class MovimientoService {
         }
         if (esIngreso){
             lote = crearYGuardarLote(codigo, producto, camara, request.getFechaElaboracion(), request.getHormas(), request.getKgs()); 
+            String cdCodigoN = "LOTE" + lote.getId();
+            lote.setCodigo(cdCodigoN);
+            lote = loteRepository.save(lote);
+
         }
         if (esAjuste){
             lote = loteOrigen;

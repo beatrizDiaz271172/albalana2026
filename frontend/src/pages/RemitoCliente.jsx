@@ -270,18 +270,6 @@ const RemitoCliente = () => {
                         >
                         Ver
                       </button>
-                        <button 
-                          style={actionBtnStyle('#ff9800')} 
-                          title="Editar"
-                        >
-                          ✏️
-                        </button>
-                        <button 
-                          style={actionBtnStyle('#f44336')} 
-                          title="Eliminar"
-                        >
-                          🗑️
-                        </button>
                       </td>
                     </tr>
                   ))

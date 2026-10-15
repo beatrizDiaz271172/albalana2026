@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE } from '../Config';
 import './DefinicionesSistema.css';
+import { eliminarRegistro } from '../services/eliminar';
 
 const DefinicionesSistemaOperador = () => {
     const navigate = useNavigate();
@@ -24,6 +25,11 @@ const DefinicionesSistemaOperador = () => {
         };
     };
 
+  const eliminarOperador = async (id, nombre) => {
+    if (!window.confirm(`¿Eliminar al operador "${nombre}"?`)) return;
+    const r = await eliminarRegistro('operadores', id);
+    if (r.ok) await cargarOperadores(); else alert(r.mensaje);
+  };
     const cargarOperadores = async () => {
         setCargando(true);
         setError(null);
@@ -126,6 +132,7 @@ const DefinicionesSistemaOperador = () => {
         cursor: 'pointer', fontSize: '0.8rem', marginRight: '6px',
         backgroundColor: '#0275d8', color: 'white'
     };
+    const btnEliminar = { ...btnEditar, backgroundColor: '#d9534f' };
 
     return (
         <div style={{ backgroundColor: '#f4f6f8', minHeight: '100vh', paddingBottom: '40px' }}>
@@ -189,6 +196,7 @@ const DefinicionesSistemaOperador = () => {
                                                 <button style={btnEditar} onClick={() => abrirModalEditar(op)}>
                                                     ✏️ Editar
                                                 </button>
+                                                <button style={btnEliminar} onClick={() => eliminarOperador(op.id, op.nombre)}>🗑️ Eliminar</button>
                                             </td>
                                         </tr>
                                     ))

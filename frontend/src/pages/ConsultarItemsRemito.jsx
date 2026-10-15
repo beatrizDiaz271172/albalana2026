@@ -168,7 +168,7 @@ const ConsultarItemsRemito = () => {
     remito?.cliente?.nombre;
 
   const operador =
-    remito?.operador?.nombre || 'N/A';
+    remito?.operador?.nombre || '';
 
   const fechaEgreso =
     remito?.fechaEgreso;
@@ -566,7 +566,7 @@ const ConsultarItemsRemito = () => {
                     <strong>
                       {item.diasMaduracionProd
                         ? `${item.diasMaduracionProd} días`
-                        : 'N/A'}
+                        : 0}
                     </strong>
 
                   </div>
@@ -574,21 +574,13 @@ const ConsultarItemsRemito = () => {
                   {/* COLUMNA 2 */}
                   <div className="lote-columna">
 
-                    <span>LITROS DE LECHE</span>
-
-                    <strong>
-                      {litrosLeche
-                        ? `${litrosLeche} L`
-                        : 'N/A'}
-                    </strong>
-
                     <span>DÍAS EN CÁMARA AL EGRESO</span>
 
                     <strong>
                       {
                       item.diasMaduracionRem
                         ? `${item.diasMaduracionRem} días`
-                        : 'N/A'}
+                        : '0'}
                     </strong>
 
                   </div>

@@ -238,7 +238,7 @@ CampaniaRepository campaniaRepository){
                     LocalDate fechaElab = lote.getFechaElaboracion();
                     if (fechaElab != null){
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                        fechaElab = LocalDate.parse(m.getFecha(), formatter);
+                        fechaElab = LocalDate.parse(fechaElab.toString(), formatter);
                         LocalDate fechaEgreso = LocalDate.parse(m.getFecha(), formatter);
                         Long diasMaduracionRem = ChronoUnit.DAYS.between(fechaElab, fechaEgreso); 
                         mov.setDiasMaduracionRem(diasMaduracionRem);

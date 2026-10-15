@@ -37,15 +37,11 @@ public class SecurityConfig {
 
             
             .authorizeHttpRequests(auth -> auth
-            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // <-- Vital para que el navegador pase el preflight
+            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .requestMatchers("/api/auth/**").permitAll()
-            .requestMatchers("/api/importar/**").permitAll()
-            .requestMatchers("/api/campania/**").permitAll()
-            .requestMatchers("/api/camaras/**").permitAll()
-            .requestMatchers("/api/clientes/**").permitAll()
-            .requestMatchers("/api/clientes/**").permitAll()
             .requestMatchers("/error").permitAll()
-            .anyRequest().authenticated())           // Nuestro filtro corre antes del filtro estándar de usuario/contraseña
+            .requestMatchers("/api/**").authenticated()   // la API exige JWT
+            .anyRequest().permitAll())                     // el resto: archivos de React        // Nuestro filtro corre antes del filtro estándar de usuario/contraseña
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
             
             /*  Configuración de las rutas
