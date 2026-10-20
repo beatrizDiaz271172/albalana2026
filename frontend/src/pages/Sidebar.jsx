@@ -26,7 +26,7 @@ export default function Sidebar({ activeRoute = 'inicio', onNavigate }) {
       title: 'CONFIGURACIÓN',
       items: [
         { id: 'definiciones', name: 'Definiciones', icon: '⚙️', functional: true },
-        { id: 'exportar_excel', name: 'Exportar Excel', icon: '📊', functional: false },
+        { id: 'exportar_excel', name: 'Exportar Excel', icon: '📊', functional: true },
         { id: 'campanias', name: 'Campañas', icon: '📅', functional: true },
         { id: 'imprimir_pdf', name: 'Imprimir / PDF', icon: '🖨️', functional: true },
         { id: 'red_local', name: 'Red local', icon: '📡', functional: true },
@@ -35,7 +35,7 @@ export default function Sidebar({ activeRoute = 'inicio', onNavigate }) {
     {
       title: 'SESIÓN',
       items: [
-        { id: 'cambiar_contrasena', name: 'Cambiar contraseña', icon: '🔑', functional: false },
+        { id: 'cambiar_contrasena', name: 'Cambiar contraseña', icon: '🔑', functional: true },
         { id: 'cerrar_sesion', name: 'Cerrar sesión', icon: '🚪', functional: true, danger: true },
       ]
     }
@@ -148,11 +148,14 @@ export default function Sidebar({ activeRoute = 'inicio', onNavigate }) {
 
       {/* Pie de página institucional */}
       <div style={{ padding: '16px', borderTop: '1px solid #f3f4f6', backgroundColor: '#f9fafb', fontSize: '0.75rem', color: '#4b5563', lineHeight: '1.4', flexShrink: 0 }}>
-        <p style={{ margin: 0, color: '#6b7280' }}>Diseñado y programado por</p>
+        <p style={{ margin: 0, color: '#6b7280' }}>Diseñado por</p>
         <p style={{ margin: 0, fontWeight: 'bold', color: '#1f2937' }}>Dr. Raúl Jorge Rosa</p>
         <p style={{ margin: 0, color: '#6b7280' }}>Profesor Titular de Administración Agraria</p>
         <p style={{ margin: 0, color: '#6b7280' }}>UNLP</p>
-        <p style={{ margin: '4px 0 0 0', color: '#047857', fontWeight: '500', overflow: 'hidden', textOverflow: 'ellipsis' }}>rjr@agro.unlp.edu.ar</p>
+        <p style={{ margin: '4px 0 0 0', color: '#047857', fontWeight: '500', overflow: 'hidden', textOverflow: 'ellipsis' }}>rjr@agro.unlp.edu.ar</p><p></p>
+        <p style={{ margin: 0, color: '#6b7280' }}>Programado por</p>
+        <p style={{ margin: 0, fontWeight: 'bold', color: '#1f2937' }}>Beatriz Díaz</p>
+        <p style={{ margin: 0, fontWeight: 'bold', color: '#1f2937' }}>en Lite Agros - UNLP</p>
       </div>
 
     </aside>

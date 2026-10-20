@@ -13,5 +13,7 @@ export const RUTAS_SIDEBAR = {
   definiciones: '/definicionesSistOpc',
   campanias: '/gestionCampanias',
   imprimir_pdf: '/reporteImprimible',
-  // red_local no tiene ruta en App.jsx (ver notas)
+  cambiar_contrasena: '/cambiarPassword',
+  red_local:'/redLocal',
+  exportar_excel:'/exportarExcel'
 };

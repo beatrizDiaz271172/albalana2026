@@ -25,12 +25,13 @@ public class ImportacionService {
     private final OperadorRepository operadorRepository;
     private final RemitoRepository remitoRepository;
     private final CampaniaRepository campaniaRepository;
+    private final UsuarioRepository usuarioRepository;
 
 
    public ImportacionService(CamaraRepository camaraRepository, ProductoRepository productoRepository,
     LoteRepository loteRepository, StockRepository stockRepository, MovimientoRepository movimientoRepository,
     OperadorRepository operadorRepository, ClienteRepository clienteRepository, RemitoRepository remitoRepository,
-CampaniaRepository campaniaRepository){
+CampaniaRepository campaniaRepository, UsuarioRepository usuarioRepository){
         this.camaraRepository = camaraRepository;
         this.clienteRepository = clienteRepository;
         this.productoRepository = productoRepository;
@@ -40,6 +41,7 @@ CampaniaRepository campaniaRepository){
         this.operadorRepository = operadorRepository;
         this.remitoRepository = remitoRepository;
         this.campaniaRepository = campaniaRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Transactional
@@ -53,11 +55,12 @@ CampaniaRepository campaniaRepository){
        operadorRepository.vaciarTabla();
        campaniaRepository.vaciarTabla();
        camaraRepository.vaciarTabla();
+       usuarioRepository.vaciarTabla();
 
-       Producto prod = new Producto("Cacciota", "CAC", 0L, 30L, 3L, 0L, 0L, 0L);
+       Producto prod = new Producto("Cacciota", "CAC", 30L, 30L, 3L, 0L, 0L, 0L);
        productoRepository.save(prod);
 
-       prod = new Producto("Caciotta Cuña", "CAC-C", 0L, 30L, 3L, 0L, 0L, 0L);
+       prod = new Producto("Caciotta Cuña", "CAC-C", 30L, 30L, 3L, 0L, 0L, 0L);
        productoRepository.save(prod);
 
        prod = new Producto("Peco. Semi", "PSM", 60L, 90L, 3L, 0L, 0L, 0L);
@@ -97,12 +100,17 @@ CampaniaRepository campaniaRepository){
        productoRepository.save(prod);       
        
        prod = new Producto("Ricota env ch", "RIC-C", 30L, 14L, 3L, 0L, 0L, 0L);
-       productoRepository.save(prod);   
+       productoRepository.save(prod);          
        
        Campania cam = new Campania();
        cam.setFechaInicio(LocalDate.now());
        cam.setActivo(true);
        campaniaRepository.save(cam);
+
+       Usuario usuario = new Usuario();
+       usuario.setUsuario("admin");
+       usuario.setPassword("123");
+       usuarioRepository.save(usuario);
     }
     
     @Transactional

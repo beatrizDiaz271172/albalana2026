@@ -28,9 +28,9 @@ public class AuthService {
             if (usuario.getPassword().equals(request.getPassword())) {
                 String token = jwtUtil.generarToken(usuario.getUsuario());
                 return new LoginResponse(true, "Inicio de sesión exitoso", usuario.getUsuario(), token);
-            }
-        }
-
-        return new LoginResponse(false, "Usuario o contraseña incorrectos", null, null);
+            }else
+                return new LoginResponse(false, "contraseña incorrecta", null, null);
+        } else
+             return new LoginResponse(false, "Usuario no existe", null, null);
     }
 }

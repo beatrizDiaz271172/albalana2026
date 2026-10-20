@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SidebarDrawer from '../components/SidebarDrawer';
 import './RemitoCliente.css';
 import { API_BASE } from '../Config'; 
 
 const RemitoCliente = () => {
   const navigate = useNavigate();
+  const [menuAbierto, setMenuAbierto] = useState(false);
 
   const [remitos, setRemitos] = useState([]);
   const [operadores, setOperadores] = useState([]);
@@ -155,13 +157,19 @@ const RemitoCliente = () => {
   
   return (
     <div className="remito-cliente-page">
+      <SidebarDrawer
+        abierto={menuAbierto}
+        onClose={() => setMenuAbierto(false)}
+        activeRoute="remitos"
+      />
+
       {/* Navbar Superior */}
       <header className="navbar-remito">
         <div className="navbar-brand-remito">
           <span className="brand-icon">🧀</span>
           <span className="brand-title">Alba Lana</span>
         </div>
-        <button className="btn-menu-remito">≡ Menú</button>
+        <button className="btn-menu-remito" onClick={() => setMenuAbierto(true)}>≡ Menú</button>
       </header>
 
       <main className="remito-cliente-container" style={{ maxWidth: '1300px', margin: '0 auto', padding: '20px' }}>

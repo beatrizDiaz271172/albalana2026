@@ -11,17 +11,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.tuempresa.proyecto.dtos.*;
+import com.tuempresa.proyecto.repositories.LoteRepository;
+import com.tuempresa.proyecto.repositories.StockRepository;
 import com.tuempresa.proyecto.services.ImportacionService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/importar")
-@RequiredArgsConstructor
+
 public class ImportacionController {
 
     private final ImportacionService service;
 
+    public ImportacionController(ImportacionService service) {
+        this.service = service;
+    }
+    
     @PostMapping
     public ResponseEntity<Void> importarStock(
             @RequestBody Map<String, Map<String, LoteImportDTO>> json) {

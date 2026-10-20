@@ -3,8 +3,8 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
+
+
 public class StockResumen {
 
     private Producto producto;

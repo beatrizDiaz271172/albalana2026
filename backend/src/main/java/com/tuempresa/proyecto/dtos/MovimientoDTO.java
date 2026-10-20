@@ -32,7 +32,7 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MovimientoDTO {

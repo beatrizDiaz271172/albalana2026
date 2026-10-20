@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SidebarDrawer from '../components/SidebarDrawer';
 import './RegistrarIngreso'; 
 import { API_BASE } from '../Config'; 
 
 const TransferenciaEntreCamaras = () => {
   const navigate = useNavigate();
+  const [menuAbierto, setMenuAbierto] = useState(false);
 
   // Fecha actual por defecto en formato ISO (YYYY-MM-DD)
   const hoy = new Date().toISOString().split('T')[0];
@@ -278,13 +280,19 @@ const TransferenciaEntreCamaras = () => {
 
   return (
     <div className="ingreso-page">
+      <SidebarDrawer
+        abierto={menuAbierto}
+        onClose={() => setMenuAbierto(false)}
+        activeRoute="transferencia"
+      />
+
       {/* Navbar Superior */}
       <header className="navbar">
         <div className="navbar-brand">
           <span className="brand-icon">🧀</span>
           <span className="brand-title">Alba Lana</span>
         </div>
-        <button className="btn-menu">≡ Menú</button>
+        <button className="btn-menu" onClick={() => setMenuAbierto(true)}>≡ Menú</button>
       </header>
 
       {/* Contenido principal */}

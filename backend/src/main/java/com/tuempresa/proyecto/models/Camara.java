@@ -7,10 +7,10 @@ import lombok.*;
 
 @Entity
 @Table(name = "camara") // o el nombre exacto de tu tabla
-@Getter                  // 👈 OBLIGATORIO: Necesario para que Jackson pueda serializar a JSON
+@Getter                  
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Camara {
 

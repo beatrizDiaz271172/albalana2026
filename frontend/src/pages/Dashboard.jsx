@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from './Sidebar'; // 1. Importación del componente Sidebar
+import SidebarDrawer from '../components/SidebarDrawer';
 import './Alertas.css';
 
 import { API_BASE } from '../Config'; 
@@ -129,7 +129,7 @@ const AlertasSection = ({ alertas, cargando, error }) => {
               <span className="alerta-emoji">{icono}</span>
             </div>
             
-            <div className="alerta-texto-grupo">
+            <div className="alerta-texto-g  po">
               <div className="alerta-titulo">{alerta.productoNombre}</div>
               <div className="alerta-mensaje">{alerta.mensajeAlerta}</div>
             </div>
@@ -236,26 +236,6 @@ const contarAlertasCriticas = (alertas) => {
   return alertas.filter(alerta => alerta.nivelAlerta === 4).length;
 };
 
-// Map de rutas asociadas a las opciones del menú lateral
-const RUTAS_SIDEBAR = {
-  inicio: '/',
-  stock_actual: '/stockProductoCamaras',
-  maduracion_lotes: '/estadoMaduracionLoteCamara',
-  mermas: '/mermasYPesoProm',
-  ingreso_produccion: '/registrarIngreso',
-  egreso_remito: '/registrarEgresoRemito',
-  ajuste_stock: '/ajusteStock',
-  transferencia: '/transferenciaEntreCamaras',
-  historial_movimientos: '/historialMovimientos',
-  remitos: '/remitoCliente',
-  definiciones: '/definicionesSistOpc',
-  exportar_excel: '/',
-  campanias: '/GestionCampanias',
-  imprimir_pdf: '/reporteImprimible',
-  red_local: '/redLocal',
-  cerrar_sesion: '/login'
-};
-
 // ============================================================================
 // COMPONENTE PRINCIPAL
 // ============================================================================
@@ -328,64 +308,19 @@ const Dashboard = () => {
     }
   }, [navigate]);
 
-  // Manejo de navegación desde la Sidebar
-  const handleSidebarNavigate = (itemId) => {
-    setMenuAbierto(false); // Cierra la barra al hacer clic
-    
-    if (itemId === 'cerrar_sesion') {
-      localStorage.removeItem('userToken');
-      navigate('/login');
-      return;
-    }
-
-    const path = RUTAS_SIDEBAR[itemId];
-    if (path) {
-      navigate(path);
-    }
-  };
-
   const alertasCriticas = contarAlertasCriticas(alertas);
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', backgroundColor: '#f4f6f8', minHeight: '100vh', relative: 'position' }}>
+    <div style={{ fontFamily: 'Arial, sans-serif', backgroundColor: '#f4f6f8', minHeight: '100vh', position: 'relative' }}>
       
       {/* 3. Pasa el handler onToggleMenu al Navbar */}
-      <Navbar onToggleMenu={() => setMenuAbierto(!menuAbierto)} />
+      <Navbar onToggleMenu={() => setMenuAbierto(true)} />
 
-      {/* 4. Overlay y Sidebar Desplegable */}
-      {menuAbierto && (
-        <>
-          {/* Fondo oscuro traslúcido para cerrar al hacer clic afuera */}
-          <div 
-            onClick={() => setMenuAbierto(false)}
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              width: '100vw',
-              height: '100vh',
-              backgroundColor: 'rgba(0, 0, 0, 0.4)',
-              zIndex: 1001,
-              transition: 'opacity 0.2s'
-            }}
-          />
-
-          {/* Menú lateral animado a la izquierda */}
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            height: '100vh',
-            zIndex: 1002,
-            boxShadow: '4px 0 12px rgba(0,0,0,0.15)'
-          }}>
-            <Sidebar 
-              activeRoute="inicio" 
-              onNavigate={handleSidebarNavigate} 
-            />
-          </div>
-        </>
-      )}
+      <SidebarDrawer
+        abierto={menuAbierto}
+        onClose={() => setMenuAbierto(false)}
+        activeRoute="inicio"
+      />
 
       {/* Contenido principal del Dashboard */}
       <div style={{ maxWidth: '900px', margin: '20px auto', padding: '0 16px' }}>

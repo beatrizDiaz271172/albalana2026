@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SidebarDrawer from '../components/SidebarDrawer';
 import './RegistrarEgresoRemito.css';
 import { API_BASE } from '../Config'; 
 
 const RegistrarEgresoRemito = () => {
   const navigate = useNavigate();
+  const [menuAbierto, setMenuAbierto] = useState(false);
   const hoy = new Date().toISOString().split('T')[0];
 
   // --- Datos de referencia (combos) ---
@@ -319,9 +321,18 @@ const RegistrarEgresoRemito = () => {
 
   return (
     <div className="egreso-container">
+      <SidebarDrawer
+        abierto={menuAbierto}
+        onClose={() => setMenuAbierto(false)}
+        activeRoute="egreso_remito"
+      />
+
       <nav className="navbar-egreso">
         <h1>📤 Registrar Egreso (Remito)</h1>
-        <button className="btn-back" onClick={() => navigate('/dashboard')}>← Volver</button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button className="btn-back" onClick={() => setMenuAbierto(true)}>≡ Menú</button>
+          <button className="btn-back" onClick={() => navigate('/dashboard')}>← Volver</button>
+        </div>
       </nav>
 
       <main className="egreso-main">

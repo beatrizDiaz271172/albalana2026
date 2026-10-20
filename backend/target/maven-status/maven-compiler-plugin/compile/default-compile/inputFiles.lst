@@ -5,11 +5,13 @@ C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proye
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\services\AuthService.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\repositories\StockRepository.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\services\ProductoService.java
+C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\exceptions\ReferenciaExistenteException.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\controllers\RemitoController.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\services\QuesoService.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\models\Producto.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\services\ExcelService.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\controllers\StockController.java
+C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\exceptions\GlobalExceptionHandler.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\repositories\MovimientoRepository.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\controllers\ImportacionController.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\controllers\OperadorController.java
@@ -28,6 +30,8 @@ C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proye
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\models\Operador.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\models\MermasEstadisticas.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\models\Movimiento.java
+C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\services\EliminacionService.java
+C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\services\ReporteExcelService.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\models\Alertas.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\models\Remito.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\repositories\OperadorRepository.java
@@ -37,6 +41,7 @@ C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proye
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\models\Usuario.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\repositories\UsuarioRepository.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\controllers\CampaniaController.java
+C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\controllers\EliminacionController.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\controllers\ClienteController.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\models\Cliente.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\security\JwtUtil.java
@@ -49,6 +54,7 @@ C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proye
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\dtos\ProductoRequest.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\dtos\RemitoRequest.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\repositories\ClienteRepository.java
+C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\controllers\ReporteExcelController.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\controllers\AuthController.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\dtos\UsuarioRequest.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\repositories\LoteRepository.java
@@ -60,6 +66,7 @@ C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proye
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\config\AppConfig.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\controllers\MovimientoController.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\models\Stock.java
+C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\controllers\RedController.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\security\JwtAuthFilter.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\repositories\CamaraRepository.java
 C:\MIO\REACT\proyecto-react-springboot\backend\src\main\java\com\tuempresa\proyecto\services\CampaniaService.java

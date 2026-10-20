@@ -10,8 +10,8 @@ import java.time.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
+
+
 public class Movimiento {
 
     @Id

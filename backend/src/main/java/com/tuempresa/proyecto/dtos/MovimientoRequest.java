@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+
 public class MovimientoRequest {
 
     private Long cdTipoMov;

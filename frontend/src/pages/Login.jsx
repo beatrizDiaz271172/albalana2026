@@ -95,12 +95,16 @@ debugger;
         {/* Pie de página con créditos */}
         <div className="login-footer">
           <p className="footer-title">Stock Alba Lana · Red local</p>
-          <p className="footer-sub">Diseñado y programado por</p>
+          <p className="footer-sub">Diseñado por</p>
           <p className="footer-author">Dr. Raúl Jorge Rosa</p>
           <p className="footer-role">Profesor Titular de Administración Agraria · UNLP</p>
           <a href="mailto:rjr@agro.unlp.edu.ar" className="footer-email">
             rjr@agro.unlp.edu.ar
           </a>
+          <p className="footer-sub">Programado por</p>
+          <p className="footer-author">Beatriz Díaz</p>
+          <p className="footer-author">en Lite Agros - UNLP</p>
+
         </div>
       </div>
     </div>

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SidebarDrawer from '../components/SidebarDrawer';
 import CerrarCampania from './CerrarCampania';
 import './GestionCampanias.css';
 import { API_BASE } from '../Config'; 
 
 const GestionCampanias = () => {
   const navigate = useNavigate();
+  const [menuAbierto, setMenuAbierto] = useState(false);
   const [CampaniaActiva, setCampaniaActiva] = useState(null);
   const [historial, setHistorial] = useState([]);
   const [metricas, setMetricas] = useState({
@@ -181,8 +183,17 @@ debugger;
 
   return (
     <div className="Campania-page">
+      <SidebarDrawer
+        abierto={menuAbierto}
+        onClose={() => setMenuAbierto(false)}
+        activeRoute="campanias"
+      />
+
       <header className="Campania-topbar">
         <div className="Campania-topbar-actions">
+          <button className="Campania-btn-volver" onClick={() => setMenuAbierto(true)}>
+            ≡ Menú
+          </button>
           <button className="Campania-btn-volver" onClick={() => navigate('/dashboard')}>
             ← Volver
           </button>

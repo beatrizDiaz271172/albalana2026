@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SidebarDrawer from '../components/SidebarDrawer';
 import { API_BASE } from '../Config'; 
 
 const MermasEstadisticasTabla = () => {
     const navigate = useNavigate();
+    const [menuAbierto, setMenuAbierto] = useState(false);
 
     // Estados para los datos
     const [mermasData, setMermasData] = useState([]);
@@ -118,13 +120,19 @@ const MermasEstadisticasTabla = () => {
 
     return (
         <div style={{ backgroundColor: '#f4f6f8', minHeight: '100vh', paddingBottom: '40px' }}>
+          <SidebarDrawer
+            abierto={menuAbierto}
+            onClose={() => setMenuAbierto(false)}
+            activeRoute="mermas"
+          />
+
             
             {/* Navbar Superior */}
             <header style={{ backgroundColor: '#2e6b4d', color: 'white', padding: '15px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ fontSize: '1.2rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>🧀</span> Alba Lana
                 </div>
-                <button style={{ backgroundColor: 'transparent', border: 'none', color: 'white', fontSize: '1.1rem', cursor: 'pointer' }}>≡ Menú</button>
+                <button style={{ backgroundColor: 'transparent', border: 'none', color: 'white', fontSize: '1.1rem', cursor: 'pointer' }} onClick={() => setMenuAbierto(true)}>≡ Menú</button>
             </header>
 
             <main style={{ maxWidth: '1400px', margin: '20px auto', padding: '0 20px' }}>

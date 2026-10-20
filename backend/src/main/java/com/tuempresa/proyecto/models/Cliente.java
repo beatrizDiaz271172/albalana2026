@@ -9,7 +9,7 @@ import lombok.*;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+
 @ToString
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Cliente {

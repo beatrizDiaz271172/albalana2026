@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SidebarDrawer from '../components/SidebarDrawer';
 import './RegistrarIngreso.css';
 import { API_BASE } from '../Config'; 
 
 const RegistrarIngreso = () => {
 const navigate = useNavigate();
+const [menuAbierto, setMenuAbierto] = useState(false);
 
   // Fecha actual por defecto en formato ISO (YYYY-MM-DD)
   const hoy = new Date().toISOString().split('T')[0];
@@ -167,13 +169,19 @@ const navigate = useNavigate();
 
   return (
     <div className="ingreso-page">
+      <SidebarDrawer
+        abierto={menuAbierto}
+        onClose={() => setMenuAbierto(false)}
+        activeRoute="ingreso_produccion"
+      />
+
       {/* Navbar Superior */}
       <header className="navbar">
         <div className="navbar-brand">
           <span className="brand-icon">🧀</span>
           <span className="brand-title">Alba Lana</span>
         </div>
-        <button className="btn-menu">≡ Menú</button>
+        <button className="btn-menu" onClick={() => setMenuAbierto(true)}>≡ Menú</button>
       </header>
 
       {/* Contenido principal */}
@@ -234,13 +242,13 @@ const navigate = useNavigate();
                 </select>
               </div>
 
-              {/* N° de lote automático */}
+              {/* N° de lote automático 
               <div className="form-group">
                 <label>N° de lote</label>
                 <div style={{ padding: '8px', background: '#f5f5f5', borderRadius: '4px', fontWeight: 'bold', border: '1px solid #ccc' }}>
                   LOTE-{siguienteNumeroLote || '...'}
                 </div>
-              </div>
+              </div> */}
 
               <div className="form-group">
                 <label htmlFor="cdCamara">Cámara</label>

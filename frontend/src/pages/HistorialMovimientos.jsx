@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SidebarDrawer from '../components/SidebarDrawer';
 import './HistorialMovimientos.css'; 
 import { API_BASE } from '../Config'; 
 
 const HistorialMovimientos = () => {
   const navigate = useNavigate();
+  const [menuAbierto, setMenuAbierto] = useState(false);
 
   // Estados para datos
   const [movimientos, setMovimientos] = useState([]);
@@ -136,13 +138,19 @@ const formatearFecha = (fechaISO) => {
 
   return (
     <div className="historial-page">
+      <SidebarDrawer
+        abierto={menuAbierto}
+        onClose={() => setMenuAbierto(false)}
+        activeRoute="historial_movimientos"
+      />
+
       
       {/* Navbar Superior */}
       <header className="navbar">
         <div className="navbar-brand">
           <span>🧀</span> Alba Lana
         </div>
-        <button>≡ Menú</button>
+        <button onClick={() => setMenuAbierto(true)}>≡ Menú</button>
       </header>
 
       <main style={{ maxWidth: '1300px', margin: '0 auto', padding: '20px' }}>

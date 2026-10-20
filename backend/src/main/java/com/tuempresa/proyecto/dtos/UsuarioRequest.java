@@ -1,27 +1,24 @@
 package com.tuempresa.proyecto.dtos;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+
 public class UsuarioRequest {
     private String nombre;
     private String email;
     private String usuario;
     private String password;
+    private String nuevaPassword;
 
-    public UsuarioRequest() {}
-
+    
     public UsuarioRequest(String nombre, String email) {
         this.nombre = nombre;
         this.email = email;
     }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getUsuario() { return usuario; }
-    public void setUsuario(String usuario) { this.usuario = usuario; }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    
 }

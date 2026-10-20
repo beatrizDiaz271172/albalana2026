@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SidebarDrawer from '../components/SidebarDrawer';
 import './EstadoMaduracionLoteCamara.css';
 import { API_BASE } from '../Config'; 
 
 const EstadoMaduracionLoteCamara = () => {
   const navigate = useNavigate();
+  const [menuAbierto, setMenuAbierto] = useState(false);
 
   const [stocks, setStocks] = useState([]);
   const [cargando, setCargando] = useState(false);
@@ -117,13 +119,19 @@ useEffect(() => {
   return (
 
 <div className="maduracion-page">
+  <SidebarDrawer
+    abierto={menuAbierto}
+    onClose={() => setMenuAbierto(false)}
+    activeRoute="maduracion_lotes"
+  />
+
       {/* Navbar Superior */}
       <header className="navbar-maduracion">
         <div className="navbar-brand-maduracion">
           <span className="brand-icon">🧀</span>
           <span className="brand-title">Alba Lana</span>
         </div>
-        <button className="btn-menu-maduracion">≡ Menú</button>
+        <button className="btn-menu-maduracion" onClick={() => setMenuAbierto(true)}>≡ Menú</button>
       </header>
 
       <main className="maduracion-container">

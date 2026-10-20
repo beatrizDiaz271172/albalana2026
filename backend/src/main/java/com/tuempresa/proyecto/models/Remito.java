@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
+
+
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Remito {
 

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SidebarDrawer from '../components/SidebarDrawer';
 import './DefinicionesSistema.css';
 import { eliminarRegistro } from '../services/eliminar';
 import { API_BASE } from '../Config'; 
 
 const DefinicionesSistema = () => {
   const navigate = useNavigate();
+  const [menuAbierto, setMenuAbierto] = useState(false);
 
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(false);
@@ -252,13 +254,19 @@ const DefinicionesSistema = () => {
 
   return (
     <div className="definiciones-page">
+      <SidebarDrawer
+        abierto={menuAbierto}
+        onClose={() => setMenuAbierto(false)}
+        activeRoute="definiciones"
+      />
+
       {/* Navbar Superior */}
       <header className="navbar-def">
         <div className="navbar-brand-def">
           <span className="brand-icon">🧀</span>
           <span className="brand-title">Alba Lana</span>
         </div>
-        <button className="btn-menu-def">≡ Menú</button>
+        <button className="btn-menu-def" onClick={() => setMenuAbierto(true)}>≡ Menú</button>
       </header>
 
       <main className="definiciones-container">

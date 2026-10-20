@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Getter                  // 👈 OBLIGATORIO: Necesario para que Jackson pueda serializar a JSON
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Campania {
     

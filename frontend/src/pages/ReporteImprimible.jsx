@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SidebarDrawer from '../components/SidebarDrawer';
 import './ReporteImprimible.css';
 import { API_BASE } from '../Config';
 
@@ -35,6 +36,7 @@ const SECCIONES = [
 
 const ReporteImprimible = () => {
   const navigate = useNavigate();
+  const [menuAbierto, setMenuAbierto] = useState(false);
 
   const [stocks, setStocks] = useState([]);
   const [camaras, setCamaras] = useState([]);
@@ -151,10 +153,19 @@ const ReporteImprimible = () => {
 
   return (
     <div className="rep-page">
+      <SidebarDrawer
+        abierto={menuAbierto}
+        onClose={() => setMenuAbierto(false)}
+        activeRoute="imprimir_pdf"
+      />
+
       {/* Barra de acciones: no se imprime */}
       <header className="rep-toolbar rep-noprint">
         <div className="rep-toolbar-title">🧀 Alba Lana — Reporte para imprimir</div>
         <div className="rep-toolbar-actions">
+          <button type="button" className="rep-btn rep-btn-ghost" onClick={() => setMenuAbierto(true)}>
+            ≡ Menú
+          </button>
           <button type="button" className="rep-btn rep-btn-ghost" onClick={() => navigate('/dashboard')}>
             ← Inicio
           </button>
