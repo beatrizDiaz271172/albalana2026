@@ -14,7 +14,7 @@ public interface LoteRepository extends JpaRepository<Lote, Long> {
    // Lote findByCodigoAndActivoTrue(String codigo);
 
     // Método para traer solo los lotes activos
-    List<Lote> findAllByActivoTrue();
+    List<Lote> findAllByActivoTrueOrderByCodigo();
 
     List<Lote> findByProducto_IdAndCamara_IdAndActivoTrue( Long idProducto, Long idCamara);
 

@@ -23,7 +23,7 @@ public class ProductoService {
     }
 
     public List<Producto> obtenerTodos() {
-        List<Producto> productos= productoRepository.findByActivoTrue();
+        List<Producto> productos= productoRepository.findByActivoTrueOrderByNombre();
         return productos;
     }
 

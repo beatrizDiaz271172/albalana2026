@@ -1,7 +1,20 @@
-Archivos para configurar prod y dev
+firewall
 
-.env
-application.properties
-Dockerfile
-Config.js
-vite.config.js
+Método 1: Desde la Interfaz Gráfica (El más visual y fácil)
+
+Si quieres ver la lista completa con menús, nombres y descripciones:
+1. Presiona las teclas Windows + R para abrir el cuadro Ejecutar.
+2. Escribe wf.msc y presiona Enter.
+3. Se abrirá la ventana "Firewall de Windows Defender con seguridad avanzada".
+4. En el panel de la izquierda, haz clic en:
+	• Reglas de entrada: Para ver los programas y puertos que tienen permitido recibir conexiones (como la regla AlbaLana-LAN de la que hablábamos antes).
+	• Reglas de salida: Para ver lo que tiene permitido salir de tu computadora hacia internet.
+
+
+	Lo que importa es qué puerto usa el proceso que querés alcanzar, y el firewall tiene que tener abierto ese puerto.
+
+Qué es cada puerto
+8081 es donde escucha tu app. Lo confirmó Get-NetTCPConnection,
+ que mostró algo escuchando en :: puerto 8081, y es el que abriste en el firewall.
+5173 es el puerto por defecto del servidor de desarrollo de Vite (el frontend React).
+ Si lo estás corriendo con npm run dev, ese es el que ves en el navegador de tu PC.

@@ -117,7 +117,7 @@ public class ReporteExcelService {
             c.setCellStyle(headerStyle);
         }
 
-        List<Producto> productos = productoRepository.findByActivoTrue();
+        List<Producto> productos = productoRepository.findByActivoTrueOrderByNombre();
         int rowIdx = 1;
         for (Producto p : productos) {
             List<Stock> stocks = stockRepository.findByLote_Producto_IdAndActivoTrue(p.getId());

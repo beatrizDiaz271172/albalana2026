@@ -26,7 +26,7 @@ public class ClienteController {
     // GET: Obtener todos los clientes activos (para el buscador del remito)
     @GetMapping
     public ResponseEntity<List<Cliente>> obtenerTodos() {
-        return ResponseEntity.ok(clienteRepository.findByActivoTrue());
+        return ResponseEntity.ok(clienteRepository.findByActivoTrueOrderByNombre());
     }
 
     // POST: Alta rápida de un cliente nuevo

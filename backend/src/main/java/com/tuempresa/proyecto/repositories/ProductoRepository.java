@@ -13,7 +13,9 @@ import org.springframework.stereotype.Repository;
 
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
     boolean existsByNombreIgnoreCase(String nombre);
-    List<Producto> findByActivoTrue();
+    
+    List<Producto> findByActivoTrueOrderByNombre();
+    
     Producto findByNombre(String nombre);
     
     @Modifying

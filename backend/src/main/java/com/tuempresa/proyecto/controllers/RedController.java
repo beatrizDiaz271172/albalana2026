@@ -21,7 +21,7 @@ public class RedController {
             InetAddress ip = InetAddress.getLocalHost();
             info.put("nombreEquipo", ip.getHostName());
             info.put("ipLocal", ip.getHostAddress());
-            info.put("puerto", "5173");
+            info.put("puerto", "8081");
             info.put("escuchandoEn", "0.0.0.0 (todas las interfaces)");
             return ResponseEntity.ok(info);
         } catch (UnknownHostException e) {

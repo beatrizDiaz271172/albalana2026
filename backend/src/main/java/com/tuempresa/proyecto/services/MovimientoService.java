@@ -221,7 +221,7 @@ public class MovimientoService {
     }
 
     public List<Alertas> obtenerAlertas(){
-        List<Producto> productos = productoRepository.findByActivoTrue();
+        List<Producto> productos = productoRepository.findByActivoTrueOrderByNombre();
         List<Alertas> alertasMov = productosSinMovimiento(productos); //TIPO_ALARMA_SIN_MOV
         List<Alertas> alertasStock = stockBajo(productos); // TIPO_ALARMA_STOCK
         alertasMov.addAll(alertasStock);

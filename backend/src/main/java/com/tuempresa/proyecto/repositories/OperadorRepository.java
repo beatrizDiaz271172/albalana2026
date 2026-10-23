@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public interface OperadorRepository extends JpaRepository<Operador, Long> {
     
-    List<Operador> findByActivoTrue();
+    List<Operador> findByActivoTrueOrderByNombre();
     Optional <Operador> findByIdAndActivoTrue(Long id);
     Operador findByNombreAndActivoTrue(String nombre);
     boolean existsByNombreIgnoreCaseAndActivoTrue(String nombre);

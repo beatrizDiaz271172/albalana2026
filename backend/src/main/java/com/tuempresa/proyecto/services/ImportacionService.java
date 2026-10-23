@@ -57,49 +57,49 @@ CampaniaRepository campaniaRepository, UsuarioRepository usuarioRepository){
        camaraRepository.vaciarTabla();
        usuarioRepository.vaciarTabla();
 
-       Producto prod = new Producto("Cacciota", "CAC", 30L, 30L, 3L, 0L, 0L, 0L);
+       Producto prod = new Producto("Cacciota", "CAC", 30L, 30L, 3L,10L,10L,10L);
        productoRepository.save(prod);
 
-       prod = new Producto("Caciotta Cuña", "CAC-C", 30L, 30L, 3L, 0L, 0L, 0L);
+       prod = new Producto("Caciotta Cuña", "CAC-C", 30L, 30L, 3L,10L,10L,10L);
        productoRepository.save(prod);
 
-       prod = new Producto("Peco. Semi", "PSM", 60L, 90L, 3L, 0L, 0L, 0L);
+       prod = new Producto("Peco. Semi", "PSM", 60L, 90L, 3L,10L,10L,10L);
        productoRepository.save(prod);
 
-       prod = new Producto("Peco. Reserva", "PRE", 90L, 120L, 3L, 0L, 0L, 0L);
+       prod = new Producto("Peco. Reserva", "PRE", 90L, 120L, 3L,10L,10L,10L);
        productoRepository.save(prod);
 
-       prod = new Producto("Peco. Medalla", "PME", 180L, 180L, 3L, 0L, 0L, 0L);
+       prod = new Producto("Peco. Medalla", "PME", 180L, 180L, 3L,10L,10L,10L);
        productoRepository.save(prod);
 
-       prod = new Producto("Peco. Reserva Cuña", "PRE-C", 90L, 120L, 3L, 0L, 0L, 0L);
+       prod = new Producto("Peco. Reserva Cuña", "PRE-C", 90L, 120L, 3L,10L,10L,10L);
        productoRepository.save(prod);
 
-       prod = new Producto("Peco. Medalla Cuña", "PME-C", 180L, 180L, 3L, 0L, 0L, 0L);
+       prod = new Producto("Peco. Medalla Cuña", "PME-C", 180L, 180L, 3L,10L,10L,10L);
        productoRepository.save(prod);
 
-       prod = new Producto("Manchego horma", "MAN", 60L, 90L, 3L, 0L, 0L, 0L);
+       prod = new Producto("Manchego horma", "MAN", 60L, 90L, 3L,10L,10L,10L);
        productoRepository.save(prod);      
 
-       prod = new Producto("Manchego cuña", "MAN-C", 60L, 90L, 3L, 0L, 0L, 0L);
+       prod = new Producto("Manchego cuña", "MAN-C", 60L, 90L, 3L,10L,10L,10L);
        productoRepository.save(prod);      
 
-       prod = new Producto("Bravo horma", "BRA", 30L, 60L, 3L, 0L, 0L, 0L);
+       prod = new Producto("Bravo horma", "BRA", 30L, 60L, 3L,10L,10L,10L);
        productoRepository.save(prod);      
 
-       prod = new Producto("Bravo Duo Horma", "BRA-D", 30L, 60L, 3L, 0L, 0L, 0L);
+       prod = new Producto("Bravo Duo Horma", "BRA-D", 30L, 60L, 3L,10L,10L,10L);
        productoRepository.save(prod);   
 
-       prod = new Producto("Bravo Cuña", "BRA-C", 30L, 60L, 3L, 0L, 0L, 0L);
+       prod = new Producto("Bravo Cuña", "BRA-C", 30L, 60L, 3L,10L,10L,10L);
        productoRepository.save(prod);  
        
-       prod = new Producto("Bravo Duo Cuña", "BDC", 30L, 60L, 3L, 0L, 0L, 0L);
+       prod = new Producto("Bravo Duo Cuña", "BDC", 30L, 60L, 3L,10L,10L,10L);
        productoRepository.save(prod);  
        
-       prod = new Producto("Ricota env gr", "RIC-G", 30L, 14L, 3L, 0L, 0L, 0L);
+       prod = new Producto("Ricota env gr", "RIC-G", 30L, 14L, 3L,10L,10L,10L);
        productoRepository.save(prod);       
        
-       prod = new Producto("Ricota env ch", "RIC-C", 30L, 14L, 3L, 0L, 0L, 0L);
+       prod = new Producto("Ricota env ch", "RIC-C", 30L, 14L, 3L,10L,10L,10L);
        productoRepository.save(prod);          
        
        Campania cam = new Campania();

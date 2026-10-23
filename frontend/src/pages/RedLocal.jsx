@@ -9,7 +9,7 @@ const RedLocal = () => {
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [nombreEquipo, setNombreEquipo] = useState('Cargando...');
   const [ipLocal, setIpLocal] = useState('192.168.0.32');
-  const [puerto, setPuerto] = useState('5173');
+  const [puerto, setPuerto] = useState('8081');
   const [escuchandoEn, setEscuchandoEn] = useState('0.0.0.0 (todas las interfaces)');
   const [cargando, setCargando] = useState(true);
   const [copiado, setCopiado] = useState(false);
@@ -30,7 +30,7 @@ const RedLocal = () => {
           if (data.escuchandoEn) setEscuchandoEn(data.escuchandoEn);
         } else {
           const currentHostname = window.location.hostname;
-          const currentPort = window.location.port || '5173';
+          const currentPort = '8081';
           setNombreEquipo(window.location.host || 'localhost');
           setIpLocal(currentHostname === 'localhost' ? '192.168.0.32' : currentHostname);
           setPuerto(currentPort);

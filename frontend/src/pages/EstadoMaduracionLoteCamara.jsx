@@ -57,7 +57,7 @@ useEffect(() => {
 
           // Calcular días transcurridos
           const diferenciaMilisegundos = hoy - fechaElaboracion;
-          const diasTranscurridos = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24)) + 1;
+          const diasTranscurridos = Math.floor(diferenciaMilisegundos / (1000 * 60 * 60 * 24)) ;
 
           // Calcular porcentaje de maduración
           const diasMaduracion = stock.lote?.producto?.maduracionDias || 1;

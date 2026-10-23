@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
 
-    List<Cliente> findByActivoTrue();
+    List<Cliente> findByActivoTrueOrderByNombre();
     Cliente findByNombreAndActivoTrue(String nombre);
     boolean existsByNombreIgnoreCase(String nombre);
     

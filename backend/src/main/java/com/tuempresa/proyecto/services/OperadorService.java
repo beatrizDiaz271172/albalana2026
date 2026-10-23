@@ -18,7 +18,7 @@ public class OperadorService {
     }
 
     public List<Operador> obtenerActivos() {
-        return operadorRepository.findByActivoTrue();
+        return operadorRepository.findByActivoTrueOrderByNombre();
     }
 
     @Transactional
