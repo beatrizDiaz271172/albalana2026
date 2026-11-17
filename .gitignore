@@ -81,3 +81,11 @@ backend/.idea/
 # OS
 .DS_Store
 *.swp
+
+.env
+*.env
+backend/src/main/resources/application-local.properties
+*.dump
+cal.properties
+*.dump
+frontend/src/Config.js.*
