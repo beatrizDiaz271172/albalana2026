@@ -14,6 +14,7 @@ public interface MovimientoRepository extends JpaRepository<Movimiento, Long> {
   List<Movimiento> findByArchivadoId(Long campaniaId);
   List<Movimiento> findByRemito_Id(Long remitoId);
   List<Movimiento> findByActivoTrue();
+  List<Movimiento> findByLote_IdAndActivoTrue(Long loteId);
   List<Movimiento>findByCdTipoMovAndLote_Producto_idAndActivoTrue(Integer cdTipoMov, Long productoId);
   boolean existsByCdOperador(Long id);
   List<Movimiento>findByLote_Producto_idAndActivoTrueOrderByIdDesc( Long productoId);

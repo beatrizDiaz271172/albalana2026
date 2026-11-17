@@ -9,7 +9,7 @@ import com.tuempresa.proyecto.repositories.ProductoRepository;
 import com.tuempresa.proyecto.repositories.RemitoRepository;
 import com.tuempresa.proyecto.repositories.StockRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -59,8 +59,24 @@ public class MovimientoService {
 
     public List<Movimiento> obtenerTodos() {
         List<Movimiento> movimientos= movimientoRepository.findByActivoTrue();
-        return movimientos;
+        List<Movimiento> movOperacion = new ArrayList();
+        //solo puede operar si es movimiento de ingreso y ademas no se hicieron mas movimientos con el lote(ct lotes=1) 
+        for (Movimiento mov : movimientos) {
+            if (mov.getCdTipoMov()==1){        
+                Long loteId= mov.getLote().getId();
+                List<Movimiento> movLotes = movimientoRepository.findByLote_IdAndActivoTrue(loteId);
+                if (movLotes != null && movLotes.size()==1){
+                    mov.setPuedeOperar(true);
+                }else{
+                    mov.setPuedeOperar(false);
+                }
+            }  
+            movOperacion.add(mov); 
+        }   
+        return movOperacion;
     }
+
+    
 
     @Transactional
     public Lote crearYGuardarLote(String codigo, Producto producto, Camara camara, LocalDate fechaElab, Double hormas, Double kgs) {
@@ -91,6 +107,7 @@ public class MovimientoService {
         return movimiento;
     }
 
+    
     @Transactional
     public Movimiento guardarMovimiento(MovimientoRequest request) {
         long tipoMov =  request.getCdTipoMov();
@@ -121,6 +138,14 @@ public class MovimientoService {
         Lote lote = null;
 
         if (esTransferencia){ //Ver si existe el codigo de Lote para Producto y Camara Destino 
+            Stock stockAnt = stockRepository.findByLote_IdAndActivoTrue(loteOrigen.getId());;
+            double hormasActuales = stockAnt.getHormas() != null ? stockAnt.getHormas() : 0.0;
+            
+            if (hormasActuales<request.getHormas()){
+                //ERROR Mensaje "No puede realizarse la Transferencia, otro usuario uso el lote y quedo insuficiente Stock"
+                return null;
+            }
+
             idCamara=request.getCdCamaraDestino();
             camara = camaraRepository.getReferenceById(idCamara);
             List<Lote> lotesDest =loteRepository.findByProducto_IdAndCamara_IdAndActivoTrue(idProducto, idCamara);
@@ -129,6 +154,15 @@ public class MovimientoService {
                                 .toList();
 
             if (lotesFiltradosDest.size()==0){
+                if (loteOrigen.getFechaElaboracion() ==null){
+                    //TODO MENSAJE ERROR "Fecha Elaboracion Invalida"
+                    return null;
+                }
+
+                if (request.getHormas() ==null || request.getHormas()==0){
+                    //TODO MENSAJE ERROR "Horma no puede ser nula o 0 "
+                    return null;
+                }
                 lote = crearYGuardarLote(codigo, producto, camara, loteOrigen.getFechaElaboracion(), request.getHormas(), request.getKgs());
             } else {
                 lote = lotesFiltradosDest.get(0);
@@ -170,6 +204,7 @@ public class MovimientoService {
      * sumando o restando las hormas y kgs del movimiento
      * según su tipo (INGRESO suma, cualquier otro tipo se considera EGRESO y resta).
      */
+    @Transactional(propagation = Propagation.MANDATORY)
     private void actualizarStock(Lote lote, Long cdTipoMov, Double hormas, Double kgs, Lote loteAnt) {
         double deltaHormas = hormas != null ? hormas : 0.0;
         double deltaKgs = kgs != null ? kgs : 0.0;
@@ -349,6 +384,7 @@ public class MovimientoService {
     return alertas;
     }
 
+    
     private List<Alertas> stockBajo(List<Producto> productos){
         List<Alertas> alertas = new ArrayList<>();
          for (Producto producto : productos) {
@@ -382,6 +418,46 @@ public class MovimientoService {
             }
          }
         return alertas;
+    }
+
+    @Transactional
+    public Movimiento actualizarMovimiento(Long id, MovimientoRequest request) {
+    Movimiento movimiento = movimientoRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Movimiento no encontrado con ID: " + id));
+    Double hormas = request.getHormas(); 
+    Double kgs = request.getKgs();
+    movimiento.setHormas(hormas);
+    movimiento.setKgs(kgs);
+
+    Lote loteMov= movimiento.getLote();
+    loteMov.setHormas(hormas);
+    loteMov.setKgs(kgs);
+    loteMov.setKgsXHorma(kgs/hormas);
+    Stock stock = stockRepository.findByLote_IdAndActivoTrue(loteMov.getId());
+    if (stock != null){
+        stock.setHormas(hormas);
+        stock.setKgs(kgs);
+        stockRepository.save(stock);
+    }
+    loteRepository.save(loteMov);
+    movimientoRepository.save(movimiento);
+    
+    return movimiento;
+    }
+
+    @Transactional
+    public Movimiento eliminarMovimiento(Long id) {
+    Movimiento movimiento = movimientoRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Movimiento no encontrado con ID: " + id));
+    Lote loteMov= movimiento.getLote();
+    Stock stock = stockRepository.findByLote_IdAndActivoTrue(loteMov.getId());
+    if (stock != null){
+        stockRepository.delete(stock);
+    }
+    movimientoRepository.delete(movimiento);
+    loteRepository.delete(loteMov);
+    
+    return movimiento;
     }
 }
 

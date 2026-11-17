@@ -5,6 +5,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -23,8 +25,15 @@ public class JwtUtil {
     @Value("${jwt.expiration-ms:86400000}")
     private long expirationMs;
 
+@PostConstruct
+void debugSecret() {
+    System.out.println("secret=[" + secret + "] length=" + secret.length());
+    secret.chars().filter(c -> c > 127)
+          .forEach(c -> System.out.println("char no ASCII: " + c));
+}
     private SecretKey getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        secret = "6LAwKf1gX+WdY9aYTMoBAp2LAUnHRCo8Xe9T/8IznwI=";
+        byte[] keyBytes = Decoders.BASE64.decode(secret.trim());
         return Keys.hmacShaKeyFor(keyBytes);
     }
 

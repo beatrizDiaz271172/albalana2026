@@ -66,4 +66,6 @@ public class Movimiento {
 
     @Column(name = "archivado_id", nullable = true) 
     private Long archivadoId;
+    
+    private boolean puedeOperar;
 }

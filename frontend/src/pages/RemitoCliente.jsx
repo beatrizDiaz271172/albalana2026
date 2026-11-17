@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SidebarDrawer from '../components/SidebarDrawer';
 import './RemitoCliente.css';
 import { API_BASE } from '../Config'; 
+import { eliminarRegistro } from '../services/eliminar';
 
 const RemitoCliente = () => {
   const navigate = useNavigate();
@@ -25,67 +26,76 @@ const RemitoCliente = () => {
     return { 'Authorization': `Bearer ${token}` };
   };
 
-  // 1. Cargar datos al montar
-  useEffect(() => {
-    const cargarDatos = async () => {
-      setCargando(true);
-      try {
-        const [resRemitos, resOperadores, resMovimientos, resClientes] = await Promise.all([
-          fetch(`${API_BASE}/remitos`, { headers: authHeaders() }),
-          fetch(`${API_BASE}/operadores`, { headers: authHeaders() }),
-          fetch(`${API_BASE}/movimientos`, { headers: authHeaders() }),
-          fetch(`${API_BASE}/clientes`, { headers: authHeaders() })
-        ]);
+  // 1. Definir cargarDatos con useCallback para poder llamarla desde cualquier lugar
+  const cargarDatos = useCallback(async () => {
+    setCargando(true);
+    try {
+      const [resRemitos, resOperadores, resMovimientos, resClientes] = await Promise.all([
+        fetch(`${API_BASE}/remitos`, { headers: authHeaders() }),
+        fetch(`${API_BASE}/operadores`, { headers: authHeaders() }),
+        fetch(`${API_BASE}/movimientos`, { headers: authHeaders() }),
+        fetch(`${API_BASE}/clientes`, { headers: authHeaders() })
+      ]);
 
-        if (resRemitos.ok) {
-          const dataRemitos = await resRemitos.json();
-          setRemitos(Array.isArray(dataRemitos) ? dataRemitos : []);
-        }
-
-        if (resOperadores.ok) {
-          const dataOperadores = await resOperadores.json();
-          setOperadores(Array.isArray(dataOperadores) ? dataOperadores : []);
-        }
-
-        if (resMovimientos.ok) {
-          const dataMovimientos = await resMovimientos.json();
-          setMovimientos(Array.isArray(dataMovimientos) ? dataMovimientos : []);
-        }
-
-        if (resClientes.ok) {
-          const dataClientes = await resClientes.json();
-          setClientes(Array.isArray(dataClientes) ? dataClientes : []);
-        }
-      } catch (error) {
-        console.error('Error al cargar datos:', error);
-      } finally {
-        setCargando(false);
+      if (resRemitos.ok) {
+        const dataRemitos = await resRemitos.json();
+        setRemitos(Array.isArray(dataRemitos) ? dataRemitos : []);
       }
-    };
 
-    cargarDatos();
+      if (resOperadores.ok) {
+        const dataOperadores = await resOperadores.json();
+        setOperadores(Array.isArray(dataOperadores) ? dataOperadores : []);
+      }
+
+      if (resMovimientos.ok) {
+        const dataMovimientos = await resMovimientos.json();
+        setMovimientos(Array.isArray(dataMovimientos) ? dataMovimientos : []);
+      }
+
+      if (resClientes.ok) {
+        const dataClientes = await resClientes.json();
+        setClientes(Array.isArray(dataClientes) ? dataClientes : []);
+      }
+    } catch (error) {
+      console.error('Error al cargar datos:', error);
+    } finally {
+      setCargando(false);
+    }
   }, []);
 
-  // 2. Procesar, calcular detalles y ordenar alfabéticamente por nombre de cliente
+  // 2. Ejecutar la carga inicial al montar el componente
+  useEffect(() => {
+    cargarDatos();
+  }, [cargarDatos]);
+  
+  const handleEliminar = async (remito) => {
+    if (!window.confirm(
+      `¿Eliminar el remito MOV-${String(remito.id).padStart(4, '0')} de ${remito.cliente?.nombre || 'N/A'}?\n` +
+      `Las hormas y kgs de sus ítems volverán al stock.`
+    )) return;
+
+    const r = await eliminarRegistro('remitos', remito.id);
+    if (r.ok){
+       // 🔄 AQUÍ ESTÁ EL CAMBIO: Llamamos a cargarDatos() para refrescar la pantalla automáticamente
+       await cargarDatos();
+     } else {
+       alert(r.mensaje);
+     }
+  };
+
+  // 3. Procesar, calcular detalles y ordenar alfabéticamente por nombre de cliente
   useEffect(() => {
     if (remitos.length > 0) {
       const remitosCalculados = remitos.map((remito) => {
-        // Filtrar movimientos: movimiento.remito.id = remito.id y movimientos.remito.cliente.id = cliente.id
         const movimientosDelRemito = movimientos.filter(
           (mov) => mov.remito && mov.remito.id === remito.id && mov.remito.cliente?.id === remito.cliente?.id
         );
 
-        // Sumar cantidad de registros (Items)
         const totalItems = movimientosDelRemito.length;
-
-        // Sumar movimiento.hormas
         const totalHormas = movimientosDelRemito.reduce((acc, mov) => acc + (mov.hormas || 0), 0);
-
-        // Sumar movimiento.kgs
         const totalKgs = movimientosDelRemito.reduce((acc, mov) => acc + (mov.kgs || 0), 0);
-
-        // Operador: operador.nombre si operador.id = remito.cdOperador
-        const operador = operadores.find((op) => op.id === remito.operador.id);
+        
+        const operador = operadores.find((op) => op.id === remito.operador?.id);
         const operadorNombre = operador?.nombre || 'N/A';
 
         return {
@@ -99,7 +109,6 @@ const RemitoCliente = () => {
         };
       });
 
-      // Ordenar alfabéticamente por nombre de cliente
       remitosCalculados.sort((a, b) => {
         const nombreA = a.cliente?.nombre || '';
         const nombreB = b.cliente?.nombre || '';
@@ -107,12 +116,13 @@ const RemitoCliente = () => {
       });
 
       setRemitosConDetalles(remitosCalculados);
+    } else {
+      setRemitosConDetalles([]);   
     }
   }, [remitos, operadores, movimientos]);
 
-  // 3. Filtrar remitos según las reglas de la interfaz y fechas
+  // 4. Filtrar remitos según las reglas de la interfaz y fechas
   const remitosVisibles = remitosConDetalles.filter((r) => {
-    // Si Cliente = Todos (filtroCliente vacío), se muestran todos. Si se elige uno, solo ese.
     if (filtroCliente !== '' && String(r.cliente?.id) !== filtroCliente) {
       return false;
     }
@@ -121,9 +131,7 @@ const RemitoCliente = () => {
     
     if (fechaRemitoStr) {
       const fechaRemito = new Date(fechaRemitoStr).setHours(0, 0, 0, 1);
-      //alert("Fecha Remito: " + fechaRemito)
 
-      // Si ingresa Desde: remito.fechaEgreso >= fecha Desde
       if (filtroDesde) {
         const fechaDesde = new Date(filtroDesde).setHours(0, 0, 0, 0);
         if (fechaRemito <= fechaDesde) {
@@ -142,17 +150,10 @@ const RemitoCliente = () => {
     return true;
   });
 
-  const limpiarFiltros = () => {
-    setFiltroCliente('');
-    setFiltroDesde('');
-    setFiltroHasta('');
-  };
-
-  // Formatear fecha
-    const formatearFecha = (fechaISO) => {
+  const formatearFecha = (fechaISO) => {
       if (!fechaISO) return '';
-          const [año, mes, dia] = fechaISO.split('-');
-          return `${dia}/${mes}/${año}`;
+      const [año, mes, dia] = fechaISO.split('-');
+      return `${dia}/${mes}/${año}`;
   };
   
   return (
@@ -173,7 +174,6 @@ const RemitoCliente = () => {
       </header>
 
       <main className="remito-cliente-container" style={{ maxWidth: '1300px', margin: '0 auto', padding: '20px' }}>
-        {/* Navegación superior */}
         <div className="nav-actions-remito" style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
           <button className="btn-nav-top-remito" onClick={() => navigate('/dashboard')} style={btnStyleLight}>
             ← Inicio
@@ -183,7 +183,6 @@ const RemitoCliente = () => {
           </button>
         </div>
 
-        {/* Título principal */}
         <h2 className="screen-title-remito" style={{ color: '#2e6b4d', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span>📦</span> Remitos emitidos
         </h2>
@@ -276,8 +275,15 @@ const RemitoCliente = () => {
                           style={actionBtnStyle('#4caf50')} 
                           title="Ver"
                         >
-                        Ver
-                      </button>
+                          Ver
+                        </button>
+                      <button
+                          onClick={() => handleEliminar(remito)}
+                          style={actionBtnStyle('#d9534f')}
+                          title="Eliminar"
+                        >
+                          Eliminar
+                        </button>
                       </td>
                     </tr>
                   ))

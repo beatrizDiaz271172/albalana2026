@@ -36,9 +36,13 @@ export default function App() {
         <Route path="/registrarEgresoRemito" element={<RegistrarEgresoRemito />} />
         <Route path="/ajusteStock" element={<AjusteStock />} />
         <Route path="/transferenciaEntreCamaras" element={<TransferenciaEntreCamaras />} />
+        
+        <Route path="/movimientos/:idMovmiento" element={<HistorialMovimientos />} />
+
         <Route path="/historialMovimientos" element={<HistorialMovimientos />} />     
         <Route path="/stockProductoCamaras" element={<StockProductoCamaras />} />   
         <Route path="/remitoCliente" element={<RemitoCliente />} />
+        <Route path="/remitos/:idRemito" element={<RemitoCliente />} />
         <Route path="/estadoMaduracionLoteCamara" element={<EstadoMaduracionLoteCamara />} />
         <Route path="/definicionesSistOpc" element={<DefinicionesSistOpc />} />
 

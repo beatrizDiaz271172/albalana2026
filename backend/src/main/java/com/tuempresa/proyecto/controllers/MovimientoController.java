@@ -1,6 +1,7 @@
 package com.tuempresa.proyecto.controllers;
 
 import com.tuempresa.proyecto.dtos.MovimientoRequest;
+import com.tuempresa.proyecto.dtos.ProductoRequest;
 import com.tuempresa.proyecto.models.*;
 import com.tuempresa.proyecto.services.MovimientoService;
 import org.springframework.http.HttpStatus;
@@ -35,5 +36,13 @@ public class MovimientoController {
     public ResponseEntity<Movimiento> crearMovimiento(@RequestBody MovimientoRequest request) {
         Movimiento nuevoMovimiento = movimientoService.guardarMovimiento(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoMovimiento);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Movimiento> updateMovimiento(
+        @PathVariable Long id,
+        @RequestBody MovimientoRequest request) {
+    Movimiento movActualizado = movimientoService.actualizarMovimiento(id, request);
+    return ResponseEntity.ok(movActualizado);
     }
 }

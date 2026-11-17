@@ -2,10 +2,14 @@ package com.tuempresa.proyecto.services;
 
 import com.tuempresa.proyecto.dtos.ItemRemitoRequest;
 import com.tuempresa.proyecto.dtos.RemitoRequest;
+import com.tuempresa.proyecto.exceptions.ReferenciaExistenteException;
 import com.tuempresa.proyecto.models.*;
 import com.tuempresa.proyecto.repositories.*;
+
+import jakarta.persistence.EntityNotFoundException;
+
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -84,6 +88,7 @@ public class RemitoService {
      * (asociado al remito mediante cdRemito) y se descuenta el stock
      * correspondiente a la combinación producto + cámara.
      */
+    @Transactional(propagation = Propagation.MANDATORY)
     private void registrarItem(Remito remito, RemitoRequest request, ItemRemitoRequest item) {
         Producto producto = productoRepository.getById(item.getCdProducto());
         Camara camara = camaraRepository.getById(item.getCdCamara());
@@ -96,6 +101,13 @@ public class RemitoService {
                                 .filter(lotef -> lotef.getCodigo().equals(item.getCdLote()))
                                 .toList();
         Lote lote = lotesFiltrados.get(0);
+        Stock stock = stockRepository.findByLote_IdAndActivoTrue(lote.getId());;
+        double hormasActuales = stock.getHormas() != null ? stock.getHormas() : 0.0;
+        if (hormasActuales<item.getHormas()){
+        //TODO ERROR Mensaje "No puede registrarse el remito, otro usuario uso el lote y quedo insuficiente Stock"
+            return ;
+        }
+
         movimiento.setLote(lote);
         movimiento.setHormas(item.getHormas());
         movimiento.setKgs(item.getKgs());
@@ -117,7 +129,8 @@ public class RemitoService {
         actualizarStock(lote, item.getHormas(), item.getKgs());
     }
 
-        private void actualizarStock(Lote lote, Double hormas, Double kgs) {
+    @Transactional(propagation = Propagation.MANDATORY)    
+    private void actualizarStock(Lote lote, Double hormas, Double kgs) {
         double deltaHormas = hormas != null ? -hormas : 0.0;
         double deltaKgs = -hormas * lote.getKgsXHorma(); //ajustar los kgs a lo q representaria cada horma sin la merma
 
@@ -143,5 +156,48 @@ public class RemitoService {
  public Remito obtenerEncabezadoRemito(Long remitoId) {
     return remitoRepository.findById(remitoId)
         .orElseThrow(() -> new jakarta.persistence.EntityNotFoundException("Remito no encontrado con ID: " + remitoId));
-}
+    }
+
+    /**
+     * Elimina un remito: devuelve al stock lo que había egresado cada ítem,
+     * borra los movimientos de egreso asociados y finalmente el remito.
+     * Todo en una transacción: si algo falla, no se toca nada.
+     */
+    @Transactional
+    public void eliminarRemito(Long id) {
+        var remito = remitoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Remito no encontrado con ID: " + id));
+
+        if (Boolean.FALSE.equals(remito.getActivo()) || remito.getArchivadoId() != null)
+            throw new ReferenciaExistenteException(
+                "No se puede eliminar el remito porque pertenece a una campaña ya cerrada.");
+
+        List<Movimiento> items = movimientoRepository.findByRemito_Id(id);
+
+        for (Movimiento m : items) {
+            Lote lote = m.getLote();
+            double hormas = m.getHormas() != null ? m.getHormas() : 0.0;
+            // Mismo criterio que RemitoService.actualizarStock: kgs = hormas * kgsXHorma del lote
+            double kgsXHorma = lote.getKgsXHorma() != null ? lote.getKgsXHorma() : 0.0;
+
+            Stock stock = stockRepository.findByLote_IdAndActivoTrue(lote.getId());
+            if (stock == null) {
+                stock = new Stock();
+                stock.setLote(lote);
+                stock.setHormas(0.0);
+                stock.setKgs(0.0);
+                stock.setFechaAlta(LocalDateTime.now());
+                stock.setActivo(true);
+            }
+            stock.setHormas((stock.getHormas() != null ? stock.getHormas() : 0.0) + hormas);
+            stock.setKgs((stock.getKgs() != null ? stock.getKgs() : 0.0) + hormas * kgsXHorma);
+            //stock.setFechaEmision(LocalDateTime.now());
+            stockRepository.save(stock);
+        }
+
+        movimientoRepository.deleteAll(items);
+        movimientoRepository.flush();
+
+        remitoRepository.delete(remito);
+    }
 }
